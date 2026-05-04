@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
 
 interface Props {
   open: boolean;
@@ -6,6 +7,7 @@ interface Props {
 }
 
 export default function LoginModal({ open, onClose }: Props) {
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -42,12 +44,19 @@ export default function LoginModal({ open, onClose }: Props) {
       return;
     }
 
+    login(email);
     setSuccess(true);
+  };
+
+  const handleClose = () => {
+    onClose();
+    // Resetear después de cerrar para la próxima vez
+    setTimeout(() => setSuccess(false), 350);
   };
 
   return (
     <div
-      onClick={onClose}
+      onClick={handleClose}
       style={{
         position: "fixed",
         inset: 0,
@@ -74,9 +83,8 @@ export default function LoginModal({ open, onClose }: Props) {
           transition: "transform 0.35s ease",
         }}
       >
-        {/* Close button */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           style={{
             position: "absolute",
             top: "16px",
@@ -241,10 +249,10 @@ export default function LoginModal({ open, onClose }: Props) {
                 lineHeight: 1.5,
               }}
             >
-              Bienvenido al ecosistema. Próximamente podrás subir tus proyectos.
+              Bienvenido al ecosistema, {email.split("@")[0].replace(".", " ")}.
             </p>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               style={{
                 padding: "10px 28px",
                 background: "transparent",

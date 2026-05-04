@@ -1,10 +1,14 @@
 import { useState, useMemo } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { projects, areas, semesters } from "@/config/projects";
 import type { Project } from "@/config/projects";
 import { siteConfig } from "@/config";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Projects() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
   const [selectedSemester, setSelectedSemester] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
@@ -57,19 +61,55 @@ export default function Projects() {
             gap: "16px",
           }}
         >
-          <Link
-            to="/"
-            style={{
-              fontFamily: "'Times New Roman', serif",
-              fontSize: "20px",
-              color: "#000",
-              textDecoration: "none",
-              letterSpacing: "0.05em",
-            }}
-          >
-            {siteConfig.brandName}
-          </Link>
+          {/* Left: Logo + Nav */}
+          <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+            <Link
+              to="/"
+              style={{
+                fontFamily: "'Times New Roman', serif",
+                fontSize: "20px",
+                color: "#000",
+                textDecoration: "none",
+                letterSpacing: "0.05em",
+              }}
+            >
+              {siteConfig.brandName}
+            </Link>
 
+            <Link
+              to="/projects"
+              style={{
+                fontFamily: "system-ui, sans-serif",
+                fontSize: "13px",
+                color: "#000",
+                textDecoration: "none",
+                opacity: 0.7,
+                transition: "opacity 0.3s ease",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+            >
+              Proyectos
+            </Link>
+
+            <Link
+              to="/info"
+              style={{
+                fontFamily: "system-ui, sans-serif",
+                fontSize: "13px",
+                color: "#000",
+                textDecoration: "none",
+                opacity: 0.7,
+                transition: "opacity 0.3s ease",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+            >
+              Info
+            </Link>
+          </div>
+
+          {/* Right: Filters + Auth */}
           <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
             {/* Search */}
             <input
@@ -164,6 +204,82 @@ export default function Projects() {
                 Limpiar
               </button>
             )}
+
+            {/* Auth section */}
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", marginLeft: "8px", paddingLeft: "16px", borderLeft: "1px solid rgba(0,0,0,0.1)" }}>
+              {isAuthenticated ? (
+                <>
+                  <button
+                    onClick={() => navigate("/yo")}
+                    style={{
+                      fontFamily: "system-ui, sans-serif",
+                      fontSize: "13px",
+                      color: "#000",
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      opacity: 0.7,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      transition: "opacity 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+                  >
+                    <div style={{
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "50%",
+                      background: "rgba(0,0,0,0.1)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "11px",
+                      fontFamily: "'Times New Roman', serif",
+                    }}>
+                      {user?.name.charAt(0).toUpperCase()}
+                    </div>
+                    Yo
+                  </button>
+                  <button
+                    onClick={logout}
+                    style={{
+                      fontFamily: "system-ui, sans-serif",
+                      fontSize: "13px",
+                      color: "#000",
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      opacity: 0.7,
+                      transition: "opacity 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+                  >
+                    Salir
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => navigate("/")}
+                  style={{
+                    fontFamily: "system-ui, sans-serif",
+                    fontSize: "13px",
+                    color: "#000",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    opacity: 0.7,
+                    transition: "opacity 0.3s ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+                >
+                  Acceso
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -1,18 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import VortexGallery from "@/lib/VortexGallery";
 import Lenis from "lenis";
 import {
   siteConfig,
   navigationConfig,
-  //galleryConfig,
 } from "@/config";
 import ImageDetailOverlay from "@/components/ImageDetailOverlay";
 import LoginModal from "@/components/LoginModal";
 import { useMemo } from "react";
 import { projects } from "@/config/projects";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const vortexRef = useRef<VortexGallery | null>(null);
   const lenisRef = useRef<Lenis | null>(null);
@@ -21,17 +24,17 @@ export default function Home() {
   const [isNight, setIsNight] = useState(false);
 
   const images = useMemo(() => {
-  return projects.flatMap((p) =>
-    (p.images || []).map((img) => ({
-      src: img,
-      category: p.area || "General",
-      title: p.title || "Sin título",
-      description: p.originStory || "",
-    }))
-  );
-}, []);
+    return projects.flatMap((p) =>
+      (p.images || []).map((img) => ({
+        src: img,
+        category: p.area || "General",
+        title: p.title || "Sin título",
+        description: p.originStory || "",
+      }))
+    );
+  }, []);
 
-const hasImages = images.length > 0;
+  const hasImages = images.length > 0;
 
   useEffect(() => {
     if (!canvasRef.current || !hasImages) return;
@@ -85,11 +88,9 @@ const hasImages = images.length > 0;
     }
   };
 
-    // Función para scrollear a la siguiente sección
   const scrollToContent = () => {
     const element = document.getElementById("como-funciona");
     if (element) {
-      // Usar scrollIntoView nativo con behavior smooth
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
@@ -102,9 +103,7 @@ const hasImages = images.length > 0;
 
   return (
     <div style={{ background: bgColor, transition: "background 1.2s ease" }}>
-      {/* ═══════════════════════════════════════════════════════════════
-          HERO: VORTEX (100vh, sección normal)
-      ═══════════════════════════════════════════════════════════════ */}
+      {/* HERO: VORTEX */}
       <section
         style={{
           position: "relative",
@@ -113,7 +112,6 @@ const hasImages = images.length > 0;
           overflow: "hidden",
         }}
       >
-        {/* WebGL Canvas */}
         <canvas
           ref={canvasRef}
           onClick={handleCanvasClick}
@@ -128,7 +126,6 @@ const hasImages = images.length > 0;
           }}
         />
 
-        {/* UI Overlay */}
         <div
           style={{
             position: "absolute",
@@ -154,7 +151,6 @@ const hasImages = images.length > 0;
               pointerEvents: "auto",
             }}
           >
-            {/* Left: Logo */}
             <Link
               to="/"
               style={{
@@ -172,7 +168,6 @@ const hasImages = images.length > 0;
               {siteConfig.brandName}
             </Link>
 
-            {/* Right: Navigation Links */}
             <div
               style={{
                 display: "flex",
@@ -199,43 +194,105 @@ const hasImages = images.length > 0;
               </Link>
 
               <Link
-  to="/projects"
-  style={{
-    fontFamily: "system-ui, -apple-system, sans-serif",
-    fontSize: "13px",
-    fontWeight: 400,
-    color: textColor,
-    textDecoration: "none",
-    letterSpacing: "0.02em",
-    opacity: 0.7,
-    transition: "opacity 0.3s ease, color 1.2s ease",
-  }}
-  onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-  onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
->
-  Proyectos
-</Link>
-
-              <button
-                onClick={() => setLoginOpen(true)}
+                to="/projects"
                 style={{
                   fontFamily: "system-ui, -apple-system, sans-serif",
                   fontSize: "13px",
                   fontWeight: 400,
                   color: textColor,
-                  background: "transparent",
-                  border: "none",
-                  cursor: "pointer",
+                  textDecoration: "none",
                   letterSpacing: "0.02em",
                   opacity: 0.7,
                   transition: "opacity 0.3s ease, color 1.2s ease",
-                  padding: 0,
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
                 onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
               >
-                Acceso
-              </button>
+                Proyectos
+              </Link>
+
+              {isAuthenticated ? (
+                <>
+                  <button
+                    onClick={() => navigate("/yo")}
+                    style={{
+                      fontFamily: "system-ui, -apple-system, sans-serif",
+                      fontSize: "13px",
+                      fontWeight: 400,
+                      color: textColor,
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      letterSpacing: "0.02em",
+                      opacity: 0.7,
+                      transition: "opacity 0.3s ease, color 1.2s ease",
+                      padding: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+                  >
+                    <div style={{
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "50%",
+                      background: isNight ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "11px",
+                      fontFamily: "'Times New Roman', serif",
+                      color: textColor,
+                    }}>
+                      {user?.name.charAt(0).toUpperCase()}
+                    </div>
+                    Yo
+                  </button>
+                  <button
+                    onClick={logout}
+                    style={{
+                      fontFamily: "system-ui, -apple-system, sans-serif",
+                      fontSize: "13px",
+                      fontWeight: 400,
+                      color: textColor,
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      letterSpacing: "0.02em",
+                      opacity: 0.7,
+                      transition: "opacity 0.3s ease, color 1.2s ease",
+                      padding: 0,
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+                  >
+                    Salir
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setLoginOpen(true)}
+                  style={{
+                    fontFamily: "system-ui, -apple-system, sans-serif",
+                    fontSize: "13px",
+                    fontWeight: 400,
+                    color: textColor,
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    letterSpacing: "0.02em",
+                    opacity: 0.7,
+                    transition: "opacity 0.3s ease, color 1.2s ease",
+                    padding: 0,
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+                >
+                  Acceso
+                </button>
+              )}
 
               <button
                 onClick={() => setIsNight(!isNight)}
@@ -279,7 +336,6 @@ const hasImages = images.length > 0;
               padding: "20px 32px",
             }}
           >
-            {/* Left: Project Info */}
             <div
               style={{
                 fontFamily: "system-ui, -apple-system, sans-serif",
@@ -300,7 +356,6 @@ const hasImages = images.length > 0;
               <div>Diseño Digital y Multimedia</div>
             </div>
 
-            {/* Center: Botón Explorar */}
             <button
               onClick={scrollToContent}
               style={{
@@ -356,7 +411,6 @@ const hasImages = images.length > 0;
               </svg>
             </button>
 
-            {/* Right: View Project CTA */}
             <button
               onClick={() => {
                 const vortex = vortexRef.current;
@@ -399,9 +453,7 @@ const hasImages = images.length > 0;
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          SECCIÓN: FUNCIONAMIENTO (#como-funciona)
-      ═══════════════════════════════════════════════════════════════ */}
+      {/* SECCIÓN: FUNCIONAMIENTO */}
       <section
         id="como-funciona"
         style={{
@@ -516,9 +568,7 @@ const hasImages = images.length > 0;
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          SECCIÓN: ECOSISTEMA (#ecosistema)
-      ═══════════════════════════════════════════════════════════════ */}
+      {/* SECCIÓN: ECOSISTEMA */}
       <section
         id="ecosistema"
         style={{
@@ -530,32 +580,31 @@ const hasImages = images.length > 0;
         }}
       >
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          {/* Video placeholder 21:9 */}
           <div
-  style={{
-    width: "100%",
-    aspectRatio: "21/9",
-    borderRadius: "8px",
-    overflow: "hidden",
-    position: "relative",
-    marginBottom: "48px",
-  }}
->
-  <video
-    autoPlay
-    muted
-    loop
-    playsInline
-    style={{
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      display: "block",
-    }}
-  >
-    <source src="/videos/ecosistema.mp4" type="video/mp4" />
-    Tu navegador no soporta videos HTML5.
-  </video>
+            style={{
+              width: "100%",
+              aspectRatio: "21/9",
+              borderRadius: "8px",
+              overflow: "hidden",
+              position: "relative",
+              marginBottom: "48px",
+            }}
+          >
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
+            >
+              <source src="/videos/ecosistema.mp4" type="video/mp4" />
+              Tu navegador no soporta videos HTML5.
+            </video>
             <div
               style={{
                 position: "absolute",
@@ -631,9 +680,7 @@ const hasImages = images.length > 0;
         </div>
       </section>
 
-            {/* ═══════════════════════════════════════════════════════════════
-          SECCIÓN: DESTACADOS (#destacados) — ALIMENTADO POR projects.ts
-      ═══════════════════════════════════════════════════════════════ */}
+      {/* SECCIÓN: DESTACADOS */}
       <section
         id="destacados"
         style={{
@@ -678,14 +725,14 @@ const hasImages = images.length > 0;
             }}
           >
             {projects
-  .filter((p) => p.status === "Publicado")
-  .sort((a, b) => {
-    const totalA = a.reactions.inspires + a.reactions.learned + a.reactions.professional;
-    const totalB = b.reactions.inspires + b.reactions.learned + b.reactions.professional;
-    return totalB - totalA; // Mayor a menor
-  })
-  .slice(0, 12)
-  .map((project, _i) => (
+              .filter((p) => p.status === "Publicado")
+              .sort((a, b) => {
+                const totalA = a.reactions.inspires + a.reactions.learned + a.reactions.professional;
+                const totalB = b.reactions.inspires + b.reactions.learned + b.reactions.professional;
+                return totalB - totalA;
+              })
+              .slice(0, 12)
+              .map((project) => (
                 <Link
                   key={project.id}
                   to={`/projects/${project.id}`}
@@ -773,9 +820,7 @@ const hasImages = images.length > 0;
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          SECCIÓN: EXPLORAR POR ÁREAS (#explorar)
-      ═══════════════════════════════════════════════════════════════ */}
+      {/* SECCIÓN: EXPLORAR */}
       <section
         id="explorar"
         style={{
@@ -812,7 +857,6 @@ const hasImages = images.length > 0;
             Navega por disciplinas<br />y áreas de interés
           </h2>
 
-          {/* Nube de etiquetas */}
           <div
             style={{
               display: "flex",
@@ -846,7 +890,6 @@ const hasImages = images.length > 0;
             ))}
           </div>
 
-          {/* Tarjetas de categorías */}
           <div
             style={{
               display: "grid",
@@ -913,9 +956,7 @@ const hasImages = images.length > 0;
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          SECCIÓN: COMUNIDAD (#comunidad)
-      ═══════════════════════════════════════════════════════════════ */}
+      {/* SECCIÓN: COMUNIDAD */}
       <section
         id="comunidad"
         style={{
@@ -985,7 +1026,6 @@ const hasImages = images.length > 0;
                   e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                {/* Avatar */}
                 <div
                   style={{
                     width: "64px",
@@ -1028,7 +1068,6 @@ const hasImages = images.length > 0;
                   {creator.role}
                 </p>
 
-                {/* Tags */}
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "20px" }}>
                   {creator.tags.map((tag) => (
                     <span
@@ -1047,7 +1086,6 @@ const hasImages = images.length > 0;
                   ))}
                 </div>
 
-                {/* Stats */}
                 <div
                   style={{
                     display: "flex",
@@ -1093,9 +1131,7 @@ const hasImages = images.length > 0;
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════════════
-          FOOTER
-      ═══════════════════════════════════════════════════════════════ */}
+      {/* FOOTER */}
       <footer
         style={{
           position: "relative",
@@ -1116,7 +1152,6 @@ const hasImages = images.length > 0;
             marginBottom: "64px",
           }}
         >
-          {/* Columna 1: Plataforma */}
           <div>
             <h4
               style={{
@@ -1153,7 +1188,6 @@ const hasImages = images.length > 0;
             </ul>
           </div>
 
-          {/* Columna 2: Recursos */}
           <div>
             <h4
               style={{
@@ -1190,7 +1224,6 @@ const hasImages = images.length > 0;
             </ul>
           </div>
 
-          {/* Columna 3: Conectar */}
           <div>
             <h4
               style={{
@@ -1228,7 +1261,6 @@ const hasImages = images.length > 0;
           </div>
         </div>
 
-        {/* Bottom bar */}
         <div
           style={{
             maxWidth: "1200px",
