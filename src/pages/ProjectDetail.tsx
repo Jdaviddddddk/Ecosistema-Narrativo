@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router";
 import { projects } from "@/config/projects";
 import type { Project } from "@/config/projects";
-import { siteConfig } from "@/config";
+//import { siteConfig } from "@/config";
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
