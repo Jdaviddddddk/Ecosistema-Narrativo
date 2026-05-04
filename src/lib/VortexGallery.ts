@@ -182,25 +182,37 @@ export default class VortexGallery {
   }
 
   async loadTextureAtlas(paths: string[]) {
-    const images = await Promise.all(
-      paths.map(
-        (path) =>
-          new Promise<HTMLImageElement>((resolve, reject) => {
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.onload = () => resolve(img);
-            img.onerror = () => reject(new Error(`Failed to load: ${path}`));
-            img.src = path;
-          })
-      )
-    );
+    // ✅ DESPUÉS — carga las que pueda, ignora las rotas
+const images = await Promise.all(
+  paths.map(
+    (path) =>
+      new Promise<HTMLImageElement | null>((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = () => {
+          console.warn(`VortexGallery: imagen no cargada, se omite: ${path}`);
+          resolve(null); // ← no rechaza, resuelve con null
+        };
+        img.src = path;
+      })
+  )
+);
+
+// Filtra las imágenes que no cargaron
+const validImages = images.filter((img): img is HTMLImageElement => img !== null);
+
+if (validImages.length === 0) {
+  console.error("VortexGallery: no se pudo cargar ninguna imagen");
+  return;
+}
 
     // Resize each image to fit within the atlas grid while preserving aspect ratio.
     // Target cell: 256x320 (4:5 portrait). Images are scaled-down copies.
     const CELL_W = 256;
     const CELL_H = 320;
-    const cols = Math.ceil(Math.sqrt(images.length));
-    const rows = Math.ceil(images.length / cols);
+    const cols = Math.ceil(Math.sqrt(validImages.length));
+    const rows = Math.ceil(validImages.length / cols);
 
     const atlasWidth = cols * CELL_W;
     const atlasHeight = rows * CELL_H;
@@ -213,7 +225,7 @@ export default class VortexGallery {
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, atlasWidth, atlasHeight);
 
-    this.imageInfos = images.map((img, i) => {
+    this.imageInfos = validImages.map((img, i) => {
       const col = i % cols;
       const row = Math.floor(i / cols);
       const destX = col * CELL_W;
