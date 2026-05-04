@@ -1,0 +1,29 @@
+# Query: /images/logo-nexo.svg
+# ContextLines: 1
+
+5 results - 5 files
+
+src\components\LoginModal.tsx:
+  96  >
+  97:   <img src="/images/logo-nexo.png" alt="NEXO" className="w-full h-full object-contain" />
+  98  </div>
+
+src\components\NexoHeader.tsx:
+  39              <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-all duration-300 group-hover:scale-105">
+  40:   <img src="/images/logo-nexo.png" alt="NEXO" className="w-full h-full object-contain" />
+  41  </div>
+
+src\pages\Home.tsx:
+  166    <img 
+  167:     src="/images/logo-nexo.png" 
+  168      alt="NEXO" 
+
+src\pages\Profile.tsx:
+  102                <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden shadow-xl shadow-blue-500/20 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+  103:   <img src="/images/logo-nexo.png" alt="NEXO" className="w-16 h-16 object-contain opacity-90" />
+  104  </div>
+
+src\pages\Projects.tsx:
+  71    <div className="w-9 h-9 rounded-lg overflow-hidden">
+  72:   <img src="/images/logo-nexo.png" alt="NEXO" className="w-full h-full object-contain" />
+  73  </div>

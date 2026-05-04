@@ -64,22 +64,19 @@ export default function Projects() {
           {/* Left: Logo + Nav */}
           <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
             <Link
-              to="/"
-              style={{
-                fontFamily: "'Times New Roman', serif",
-                fontSize: "20px",
-                color: "#000",
-                textDecoration: "none",
-                letterSpacing: "0.05em",
-              }}
-            >
-              {siteConfig.brandName}
-            </Link>
+  to="/"
+  className="flex items-center gap-3"
+  style={{ textDecoration: "none" }}
+>
+  <div className="w-9 h-9 rounded-lg overflow-hidden">
+  <img src="/images/logo-nexo.png" alt="NEXO" className="w-full h-full object-contain" />
+</div>
+</Link>
 
             <Link
               to="/projects"
               style={{
-                fontFamily: "system-ui, sans-serif",
+                fontFamily: "'Montserrat', sans-serif",
                 fontSize: "13px",
                 color: "#000",
                 textDecoration: "none",
@@ -95,7 +92,7 @@ export default function Projects() {
             <Link
               to="/info"
               style={{
-                fontFamily: "system-ui, sans-serif",
+                fontFamily: "'Montserrat', sans-serif",
                 fontSize: "13px",
                 color: "#000",
                 textDecoration: "none",
@@ -118,7 +115,7 @@ export default function Projects() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
-                fontFamily: "system-ui, sans-serif",
+                fontFamily: "'Montserrat', sans-serif",
                 fontSize: "14px",
                 padding: "10px 16px",
                 borderRadius: "100px",
@@ -133,7 +130,7 @@ export default function Projects() {
               value={selectedArea || ""}
               onChange={(e) => setSelectedArea(e.target.value || null)}
               style={{
-                fontFamily: "system-ui, sans-serif",
+                fontFamily: "'Montserrat', sans-serif",
                 fontSize: "13px",
                 padding: "10px 16px",
                 borderRadius: "100px",
@@ -153,7 +150,7 @@ export default function Projects() {
               value={selectedSemester || ""}
               onChange={(e) => setSelectedSemester(e.target.value || null)}
               style={{
-                fontFamily: "system-ui, sans-serif",
+                fontFamily: "'Montserrat', sans-serif",
                 fontSize: "13px",
                 padding: "10px 16px",
                 borderRadius: "100px",
@@ -173,7 +170,7 @@ export default function Projects() {
               value={selectedStatus || ""}
               onChange={(e) => setSelectedStatus(e.target.value || null)}
               style={{
-                fontFamily: "system-ui, sans-serif",
+                fontFamily: "'Montserrat', sans-serif",
                 fontSize: "13px",
                 padding: "10px 16px",
                 borderRadius: "100px",
@@ -192,7 +189,7 @@ export default function Projects() {
               <button
                 onClick={clearFilters}
                 style={{
-                  fontFamily: "system-ui, sans-serif",
+                  fontFamily: "'Montserrat', sans-serif",
                   fontSize: "13px",
                   padding: "10px 16px",
                   borderRadius: "100px",
@@ -212,7 +209,7 @@ export default function Projects() {
                   <button
                     onClick={() => navigate("/yo")}
                     style={{
-                      fontFamily: "system-ui, sans-serif",
+                      fontFamily: "'Montserrat', sans-serif",
                       fontSize: "13px",
                       color: "#000",
                       background: "transparent",
@@ -236,7 +233,7 @@ export default function Projects() {
                       alignItems: "center",
                       justifyContent: "center",
                       fontSize: "11px",
-                      fontFamily: "'Times New Roman', serif",
+                      fontFamily: "'Sono', sans-serif",
                     }}>
                       {user?.name.charAt(0).toUpperCase()}
                     </div>
@@ -245,7 +242,7 @@ export default function Projects() {
                   <button
                     onClick={logout}
                     style={{
-                      fontFamily: "system-ui, sans-serif",
+                      fontFamily: "'Montserrat', sans-serif",
                       fontSize: "13px",
                       color: "#000",
                       background: "transparent",
@@ -264,7 +261,7 @@ export default function Projects() {
                 <button
                   onClick={() => navigate("/")}
                   style={{
-                    fontFamily: "system-ui, sans-serif",
+                    fontFamily: "'Montserrat', sans-serif",
                     fontSize: "13px",
                     color: "#000",
                     background: "transparent",
@@ -294,7 +291,7 @@ export default function Projects() {
       >
         <p
           style={{
-            fontFamily: "system-ui, sans-serif",
+            fontFamily: "'Montserrat', sans-serif",
             fontSize: "14px",
             color: "rgba(0,0,0,0.5)",
           }}
@@ -360,7 +357,7 @@ export default function Projects() {
                     right: "12px",
                     padding: "4px 12px",
                     borderRadius: "100px",
-                    fontFamily: "system-ui, sans-serif",
+                    fontFamily: "'Montserrat', sans-serif",
                     fontSize: "11px",
                     fontWeight: 500,
                     background:
@@ -388,7 +385,7 @@ export default function Projects() {
                 >
                   <span
                     style={{
-                      fontFamily: "system-ui, sans-serif",
+                      fontFamily: "'Montserrat', sans-serif",
                       fontSize: "11px",
                       color: "rgba(0,0,0,0.5)",
                       textTransform: "uppercase",
@@ -399,7 +396,7 @@ export default function Projects() {
                   </span>
                   <span
                     style={{
-                      fontFamily: "system-ui, sans-serif",
+                      fontFamily: "'Montserrat', sans-serif",
                       fontSize: "11px",
                       color: "rgba(0,0,0,0.4)",
                     }}
@@ -410,7 +407,7 @@ export default function Projects() {
 
                 <h3
                   style={{
-                    fontFamily: "'Times New Roman', serif",
+                    fontFamily: "'Sono', sans-serif",
                     fontSize: "20px",
                     color: "#000",
                     marginBottom: "8px",
@@ -422,7 +419,7 @@ export default function Projects() {
 
                 <p
                   style={{
-                    fontFamily: "system-ui, sans-serif",
+                    fontFamily: "'Montserrat', sans-serif",
                     fontSize: "13px",
                     color: "rgba(0,0,0,0.6)",
                     marginBottom: "16px",

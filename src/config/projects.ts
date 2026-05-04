@@ -27,6 +27,73 @@ export interface Project {
   collections: string[];
 }
 
+// IDs de imágenes de Unsplash que SÍ funcionan
+// IDs de imágenes de Unsplash que SÍ funcionan (verificadas 2026)
+const UNSPLASH_IMAGES = {
+  branding: [
+    "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1600607686527-6fb886090705?w=800&h=1200&fit=crop&q=80",
+  ],
+  typography: [
+    "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&h=1200&fit=crop&q=80",
+  ],
+  uxui: [
+    "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=1200&fit=crop&q=80",
+  ],
+  architecture: [
+    "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=800&h=1200&fit=crop&q=80",
+  ],
+  photography: [
+    "https://images.unsplash.com/photo-1494526585095-c41746248156?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1508057198894-247b23fe5ade?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&h=1200&fit=crop&q=80",
+  ],
+  illustration: [
+    "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1526318472351-bc6c5c0c5c8c?w=800&h=1200&fit=crop&q=80",
+  ],
+  dataviz: [
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=1200&fit=crop&q=80",
+  ],
+  // CORREGIDO: Moda - URLs que SÍ funcionan
+  fashion: [
+    "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&h=1200&fit=crop&q=80",
+  ],
+  // CORREGIDO: Motion - URLs que SÍ funcionan
+  motion: [
+    "public/images/proyecto_12.jpg",
+    "public/images/proyecto_12.jpg",
+    "public/images/proyecto_12.jpg",
+  ],
+  xr: [
+    "public/images/proyecto_02.jpg",
+    "public/images/proyecto_02.jpg",
+    "public/images/proyecto_02.jpg",
+  ],
+  graphic: [
+    "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1600607686527-6fb886090705?w=800&h=1200&fit=crop&q=80",
+  ],
+  signage: [
+    "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=1200&fit=crop&q=80",
+    "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&h=1200&fit=crop&q=80",
+  ],
+};
+
 export const projects: Project[] = [
   {
     id: "rebranding-cafeteria",
@@ -43,18 +110,9 @@ export const projects: Project[] = [
     fullLink: "behance.net/mariafl/rebranding-cafeteria",
     learnings: "Aprendí a manejar paletas de color accesibles y a presentar propuestas a clientes reales.",
     recognitions: "Mención honorífica en la muestra de proyectos 2026",
-    reactions: {
-      inspires: 24,
-      learned: 18,
-      professional: 31,
-      inProgress: 2,
-    },
-    thumbnail: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&h=1200&fit=crop&q=80"
-    ],
+    reactions: { inspires: 24, learned: 18, professional: 31, inProgress: 2 },
+    thumbnail: UNSPLASH_IMAGES.branding[0],
+    images: UNSPLASH_IMAGES.branding,
     process: ["Sketch inicial", "Primera iteración", "Feedback del profesor", "Versión final"],
     prototypeLink: "https://figma.com/proto/...",
     relatedProjects: ["tipografia-experimental", "app-bienestar"],
@@ -75,18 +133,9 @@ export const projects: Project[] = [
     fullLink: "behance.net/carlosr/tipografia-experimental",
     learnings: "Descubrí cómo las variables tipográficas pueden responder a datos en tiempo real.",
     recognitions: "",
-    reactions: {
-      inspires: 42,
-      learned: 35,
-      professional: 28,
-      inProgress: 5,
-    },
-    thumbnail: "https://images.unsplash.com/photo-1529336953121-ad5a0d43d0d2?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1529336953121-ad5a0d43d0d2?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=1200&fit=crop&q=80"
-    ],
+    reactions: { inspires: 42, learned: 35, professional: 28, inProgress: 5 },
+    thumbnail: UNSPLASH_IMAGES.typography[0],
+    images: UNSPLASH_IMAGES.typography,
     process: ["Investigación sonora", "Generación de glifos", "Pruebas de legibilidad", "Familia tipográfica final"],
     relatedProjects: ["rebranding-cafeteria", "app-bienestar"],
     collections: ["Tipografía Generativa", "6° semestre"],
@@ -106,18 +155,9 @@ export const projects: Project[] = [
     fullLink: "behance.net/valentinas/app-bienestar",
     learnings: "Aprendí a realizar tests de usabilidad con usuarios reales y a iterar rápidamente.",
     recognitions: "",
-    reactions: {
-      inspires: 18,
-      learned: 12,
-      professional: 22,
-      inProgress: 8,
-    },
-    thumbnail: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=1200&fit=crop&q=80"
-    ],
+    reactions: { inspires: 18, learned: 12, professional: 22, inProgress: 8 },
+    thumbnail: UNSPLASH_IMAGES.uxui[0],
+    images: UNSPLASH_IMAGES.uxui,
     process: ["Entrevistas con usuarios", "Wireframes", "Prototipo de alta fidelidad", "Testing"],
     prototypeLink: "https://figma.com/proto/bienestar",
     relatedProjects: ["rebranding-cafeteria", "tipografia-experimental"],
@@ -138,18 +178,9 @@ export const projects: Project[] = [
     fullLink: "https://behance.net/arquitectura-modular",
     learnings: "Aprendí a diseñar sistemas flexibles y adaptables según el entorno.",
     recognitions: "Expuesto en feria académica 2026",
-    reactions: {
-      inspires: 30,
-      learned: 21,
-      professional: 27,
-      inProgress: 3,
-    },
-    thumbnail: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=800&h=1200&fit=crop&q=80"
-    ],
+    reactions: { inspires: 30, learned: 21, professional: 27, inProgress: 3 },
+    thumbnail: UNSPLASH_IMAGES.architecture[0],
+    images: UNSPLASH_IMAGES.architecture,
     process: ["Investigación", "Modelado 3D", "Simulación", "Presentación final"],
     relatedProjects: ["app-bienestar"],
     collections: ["Arquitectura 2026"],
@@ -169,18 +200,9 @@ export const projects: Project[] = [
     fullLink: "https://behance.net/fotografia-urbana",
     learnings: "Dominé la exposición en condiciones de baja luz.",
     recognitions: "",
-    reactions: {
-      inspires: 45,
-      learned: 20,
-      professional: 18,
-      inProgress: 1,
-    },
-    thumbnail: "https://images.unsplash.com/photo-1494526585095-c41746248156?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1494526585095-c41746248156?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1508057198894-247b23fe5ade?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=1200&fit=crop&q=80"
-    ],
+    reactions: { inspires: 45, learned: 20, professional: 18, inProgress: 1 },
+    thumbnail: UNSPLASH_IMAGES.photography[0],
+    images: UNSPLASH_IMAGES.photography,
     process: ["Exploración urbana", "Captura nocturna", "Edición"],
     relatedProjects: ["tipografia-experimental"],
     collections: ["Fotografía"],
@@ -200,18 +222,9 @@ export const projects: Project[] = [
     fullLink: "https://behance.net/ilustracion-editorial",
     learnings: "Desarrollé un estilo gráfico coherente para narrativa editorial.",
     recognitions: "",
-    reactions: {
-      inspires: 33,
-      learned: 14,
-      professional: 19,
-      inProgress: 2,
-    },
-    thumbnail: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1526318472351-bc6c5c0c5c8c?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=1200&fit=crop&q=80"
-    ],
+    reactions: { inspires: 33, learned: 14, professional: 19, inProgress: 2 },
+    thumbnail: UNSPLASH_IMAGES.illustration[0],
+    images: UNSPLASH_IMAGES.illustration,
     process: ["Concepto", "Sketch", "Color", "Final"],
     relatedProjects: ["rebranding-cafeteria"],
     collections: ["Ilustración"],
@@ -231,18 +244,9 @@ export const projects: Project[] = [
     fullLink: "https://behance.net/data-viz",
     learnings: "Aprendí a traducir datos complejos en experiencias visuales.",
     recognitions: "",
-    reactions: {
-      inspires: 50,
-      learned: 40,
-      professional: 35,
-      inProgress: 6,
-    },
-    thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&h=1200&fit=crop&q=80"
-    ],
+    reactions: { inspires: 50, learned: 40, professional: 35, inProgress: 6 },
+    thumbnail: UNSPLASH_IMAGES.dataviz[0],
+    images: UNSPLASH_IMAGES.dataviz,
     process: ["Recolección de datos", "Análisis", "Diseño", "Desarrollo"],
     relatedProjects: ["tipografia-experimental"],
     collections: ["Data Viz"],
@@ -262,18 +266,9 @@ export const projects: Project[] = [
     fullLink: "https://behance.net/moda-digital",
     learnings: "Integré moda con tecnologías XR.",
     recognitions: "",
-    reactions: {
-      inspires: 60,
-      learned: 25,
-      professional: 40,
-      inProgress: 4,
-    },
-    thumbnail: "https://images.unsplash.com/photo-1521335629791-ce4aec67dd53?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1521335629791-ce4aec67dd53?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1494526585095-c41746248156?w=800&h=1200&fit=crop&q=80"
-    ],
+    reactions: { inspires: 60, learned: 25, professional: 40, inProgress: 4 },
+    thumbnail: UNSPLASH_IMAGES.fashion[0],
+    images: UNSPLASH_IMAGES.fashion,
     process: ["Concepto", "Modelado", "Render"],
     relatedProjects: ["app-bienestar"],
     collections: ["Moda"],
@@ -293,18 +288,9 @@ export const projects: Project[] = [
     fullLink: "https://behance.net/motion-graphics",
     learnings: "Aprendí principios de animación avanzada.",
     recognitions: "",
-    reactions: {
-      inspires: 38,
-      learned: 19,
-      professional: 25,
-      inProgress: 2,
-    },
-    thumbnail: "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&h=1200&fit=crop&q=80"
-    ],
+    reactions: { inspires: 38, learned: 19, professional: 25, inProgress: 2 },
+    thumbnail: UNSPLASH_IMAGES.motion[0],
+    images: UNSPLASH_IMAGES.motion,
     process: ["Storyboard", "Animatic", "Render final"],
     relatedProjects: ["rebranding-cafeteria"],
     collections: ["Motion"],
@@ -325,12 +311,8 @@ export const projects: Project[] = [
     learnings: "Diseñé experiencias inmersivas centradas en el usuario.",
     recognitions: "",
     reactions: { inspires: 55, learned: 30, professional: 45, inProgress: 3 },
-    thumbnail: "https://images.unsplash.com/photo-1581090700227-1e8a4a53a1c3?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1581090700227-1e8a4a53a1c3?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=1200&fit=crop&q=80"
-    ],
+    thumbnail: UNSPLASH_IMAGES.xr[0],
+    images: UNSPLASH_IMAGES.xr,
     process: ["Concepto", "Prototipo", "Testing"],
     relatedProjects: ["moda-digital"],
     collections: ["XR"],
@@ -351,12 +333,8 @@ export const projects: Project[] = [
     learnings: "Construí sistemas visuales escalables.",
     recognitions: "",
     reactions: { inspires: 41, learned: 22, professional: 28, inProgress: 2 },
-    thumbnail: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=1200&fit=crop&q=80"
-    ],
+    thumbnail: UNSPLASH_IMAGES.branding[1],
+    images: UNSPLASH_IMAGES.branding,
     process: ["Concepto", "Diseño", "Aplicaciones"],
     relatedProjects: ["rebranding-cafeteria"],
     collections: ["Branding"],
@@ -377,12 +355,8 @@ export const projects: Project[] = [
     learnings: "Optimización de flujos complejos.",
     recognitions: "",
     reactions: { inspires: 36, learned: 29, professional: 31, inProgress: 4 },
-    thumbnail: "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=1200&fit=crop&q=80"
-    ],
+    thumbnail: UNSPLASH_IMAGES.uxui[1],
+    images: UNSPLASH_IMAGES.uxui,
     process: ["Research", "Wireframes", "UI"],
     relatedProjects: ["app-bienestar"],
     collections: ["UX"],
@@ -403,12 +377,8 @@ export const projects: Project[] = [
     learnings: "Narrativa visual desde lo real.",
     recognitions: "",
     reactions: { inspires: 60, learned: 33, professional: 20, inProgress: 1 },
-    thumbnail: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1508057198894-247b23fe5ade?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1494526585095-c41746248156?w=800&h=1200&fit=crop&q=80"
-    ],
+    thumbnail: UNSPLASH_IMAGES.photography[1],
+    images: UNSPLASH_IMAGES.photography,
     process: ["Campo", "Captura", "Edición"],
     relatedProjects: [],
     collections: ["Fotografía"],
@@ -429,12 +399,8 @@ export const projects: Project[] = [
     learnings: "Construcción de personajes.",
     recognitions: "",
     reactions: { inspires: 47, learned: 18, professional: 15, inProgress: 2 },
-    thumbnail: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1526318472351-bc6c5c0c5c8c?w=800&h=1200&fit=crop&q=80"
-    ],
+    thumbnail: UNSPLASH_IMAGES.illustration[1],
+    images: UNSPLASH_IMAGES.illustration,
     process: ["Sketch", "Color"],
     relatedProjects: [],
     collections: ["Ilustración"],
@@ -455,12 +421,8 @@ export const projects: Project[] = [
     learnings: "Comunicación de datos críticos.",
     recognitions: "",
     reactions: { inspires: 52, learned: 44, professional: 39, inProgress: 3 },
-    thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=1200&fit=crop&q=80"
-    ],
+    thumbnail: UNSPLASH_IMAGES.dataviz[1],
+    images: UNSPLASH_IMAGES.dataviz,
     process: ["Datos", "Diseño", "Dev"],
     relatedProjects: [],
     collections: ["Data Viz"],
@@ -481,12 +443,8 @@ export const projects: Project[] = [
     learnings: "Narrativa en movimiento.",
     recognitions: "",
     reactions: { inspires: 39, learned: 21, professional: 27, inProgress: 2 },
-    thumbnail: "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=1200&fit=crop&q=80"
-    ],
+    thumbnail: UNSPLASH_IMAGES.motion[1],
+    images: UNSPLASH_IMAGES.motion,
     process: ["Storyboard", "Animación"],
     relatedProjects: [],
     collections: ["Motion"],
@@ -507,12 +465,8 @@ export const projects: Project[] = [
     learnings: "Materiales sostenibles.",
     recognitions: "",
     reactions: { inspires: 44, learned: 25, professional: 22, inProgress: 3 },
-    thumbnail: "https://images.unsplash.com/photo-1585386959984-a41552231658?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1585386959984-a41552231658?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=800&h=1200&fit=crop&q=80"
-    ],
+    thumbnail: UNSPLASH_IMAGES.graphic[0],
+    images: UNSPLASH_IMAGES.graphic,
     process: ["Concepto", "Producción"],
     relatedProjects: [],
     collections: ["Diseño"],
@@ -533,12 +487,8 @@ export const projects: Project[] = [
     learnings: "Diseño de sistemas espaciales.",
     recognitions: "",
     reactions: { inspires: 29, learned: 17, professional: 20, inProgress: 1 },
-    thumbnail: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=800&h=1200&fit=crop&q=80"
-    ],
+    thumbnail: UNSPLASH_IMAGES.signage[0],
+    images: UNSPLASH_IMAGES.signage,
     process: ["Mapeo", "Diseño"],
     relatedProjects: [],
     collections: ["Señalética"],
@@ -559,12 +509,8 @@ export const projects: Project[] = [
     learnings: "Estrategias pasivas.",
     recognitions: "",
     reactions: { inspires: 48, learned: 26, professional: 30, inProgress: 2 },
-    thumbnail: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=600&h=900&fit=crop&q=80",
-    images: [
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=800&h=1200&fit=crop&q=80",
-      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=800&h=1200&fit=crop&q=80"
-    ],
+    thumbnail: UNSPLASH_IMAGES.architecture[1],
+    images: UNSPLASH_IMAGES.architecture,
     process: ["Investigación", "Diseño"],
     relatedProjects: [],
     collections: ["Arquitectura"],

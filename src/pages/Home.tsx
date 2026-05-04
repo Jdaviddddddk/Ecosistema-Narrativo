@@ -137,191 +137,131 @@ export default function Home() {
             pointerEvents: "none",
           }}
         >
-          {/* Top Navigation Bar */}
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "20px 32px",
-              pointerEvents: "auto",
-            }}
-          >
-            <Link
-              to="/"
-              style={{
-                fontFamily: "'Times New Roman', serif",
-                fontSize: "18px",
-                fontWeight: 400,
-                color: textColor,
-                letterSpacing: "0.05em",
-                textDecoration: "none",
-                transition: "opacity 0.3s ease, color 1.2s ease",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.6")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-            >
-              {siteConfig.brandName}
-            </Link>
+          {/* Top Navigation Bar - NEXO Style */}
+<div
+  style={{
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "20px 32px",
+    pointerEvents: "auto",
+  }}
+>
+  {/* Logo NEXO */}
+  <Link to="/" className="flex items-center gap-3 group" style={{ textDecoration: "none" }}>
+  <img 
+    src="/images/logo-nexo.png"
+    className="h-8 w-auto transition-transform duration-300 group-hover:scale-105"
+    style={{ filter: isNight ? "brightness(0) invert(1)" : "none" }}
+  />
+</Link>
 
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "24px",
-              }}
-            >
-              <Link
-                to="/info"
-                style={{
-                  fontFamily: "system-ui, -apple-system, sans-serif",
-                  fontSize: "13px",
-                  fontWeight: 400,
-                  color: textColor,
-                  textDecoration: "none",
-                  letterSpacing: "0.02em",
-                  opacity: 0.7,
-                  transition: "opacity 0.3s ease, color 1.2s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
-              >
-                {navigationConfig.infoLinkLabel}
-              </Link>
+  <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+    <Link
+      to="/info"
+      className="nexo-nav-link"
+      style={{
+        color: textColor,
+        opacity: 0.8,
+        fontSize: "13px",
+      }}
+    >
+      Nosotros
+    </Link>
 
-              <Link
-                to="/projects"
-                style={{
-                  fontFamily: "system-ui, -apple-system, sans-serif",
-                  fontSize: "13px",
-                  fontWeight: 400,
-                  color: textColor,
-                  textDecoration: "none",
-                  letterSpacing: "0.02em",
-                  opacity: 0.7,
-                  transition: "opacity 0.3s ease, color 1.2s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
-              >
-                Proyectos
-              </Link>
+    <Link
+      to="/projects"
+      className="nexo-nav-link"
+      style={{
+        color: textColor,
+        opacity: 0.8,
+        fontSize: "13px",
+      }}
+    >
+      Proyectos
+    </Link>
 
-              {isAuthenticated ? (
-                <>
-                  <button
-                    onClick={() => navigate("/yo")}
-                    style={{
-                      fontFamily: "system-ui, -apple-system, sans-serif",
-                      fontSize: "13px",
-                      fontWeight: 400,
-                      color: textColor,
-                      background: "transparent",
-                      border: "none",
-                      cursor: "pointer",
-                      letterSpacing: "0.02em",
-                      opacity: 0.7,
-                      transition: "opacity 0.3s ease, color 1.2s ease",
-                      padding: 0,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
-                  >
-                    <div style={{
-                      width: "24px",
-                      height: "24px",
-                      borderRadius: "50%",
-                      background: isNight ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.1)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "11px",
-                      fontFamily: "'Times New Roman', serif",
-                      color: textColor,
-                    }}>
-                      {user?.name.charAt(0).toUpperCase()}
-                    </div>
-                    Yo
-                  </button>
-                  <button
-                    onClick={logout}
-                    style={{
-                      fontFamily: "system-ui, -apple-system, sans-serif",
-                      fontSize: "13px",
-                      fontWeight: 400,
-                      color: textColor,
-                      background: "transparent",
-                      border: "none",
-                      cursor: "pointer",
-                      letterSpacing: "0.02em",
-                      opacity: 0.7,
-                      transition: "opacity 0.3s ease, color 1.2s ease",
-                      padding: 0,
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
-                  >
-                    Salir
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => setLoginOpen(true)}
-                  style={{
-                    fontFamily: "system-ui, -apple-system, sans-serif",
-                    fontSize: "13px",
-                    fontWeight: 400,
-                    color: textColor,
-                    background: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                    letterSpacing: "0.02em",
-                    opacity: 0.7,
-                    transition: "opacity 0.3s ease, color 1.2s ease",
-                    padding: 0,
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
-                >
-                  Acceso
-                </button>
-              )}
-
-              <button
-                onClick={() => setIsNight(!isNight)}
-                style={{
-                  fontFamily: "system-ui, -apple-system, sans-serif",
-                  fontSize: "11px",
-                  fontWeight: 400,
-                  color: textColor,
-                  background: "transparent",
-                  border: `1px solid ${borderColor}`,
-                  cursor: "pointer",
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  padding: "6px 12px",
-                  transition: "all 0.3s ease, color 1.2s ease, border-color 1.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = isNight
-                    ? "rgba(255,255,255,0.08)"
-                    : "rgba(0,0,0,0.05)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                }}
-              >
-                {isNight ? "Día" : "Noche"}
-              </button>
-            </div>
+    {isAuthenticated ? (
+      <>
+        <button
+          onClick={() => navigate("/yo")}
+          className="flex items-center gap-2 transition-all duration-300 hover:opacity-100"
+          style={{
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: "13px",
+            color: textColor,
+            background: "transparent",
+            border: "none",
+            cursor: "pointer",
+            opacity: 0.8,
+          }}
+        >
+          <div style={{
+            width: "28px",
+            height: "28px",
+            borderRadius: "50%",
+            background: "linear-gradient(135deg, #004FCD, #0039a8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "12px",
+            fontFamily: "'Sono', sans-serif",
+            color: "white",
+            fontWeight: 700,
+          }}>
+            {user?.name.charAt(0).toUpperCase()}
           </div>
+          Yo
+        </button>
+        <button
+          onClick={logout}
+          style={{
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: "13px",
+            color: textColor,
+            background: "transparent",
+            border: "none",
+            cursor: "pointer",
+            opacity: 0.7,
+            transition: "opacity 0.3s ease",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+        >
+          Salir
+        </button>
+      </>
+    ) : (
+      <button
+        onClick={() => setLoginOpen(true)}
+        className="nexo-btn-primary"
+        style={{ fontSize: "12px", padding: "10px 20px" }}
+      >
+        Acceso
+      </button>
+    )}
+
+    <button
+      onClick={() => setIsNight(!isNight)}
+      className="flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-300"
+      style={{
+        fontFamily: "'Montserrat', sans-serif",
+        fontSize: "11px",
+        color: textColor,
+        background: isNight ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+        border: `1px solid ${borderColor}`,
+        letterSpacing: "0.08em",
+        textTransform: "uppercase",
+      }}
+    >
+      {isNight ? "☀️ Día" : "🌙 Noche"}
+    </button>
+  </div>
+</div>
 
           {/* Bottom Info Bar */}
           <div
@@ -357,59 +297,56 @@ export default function Home() {
             </div>
 
             <button
-              onClick={scrollToContent}
-              style={{
-                position: "absolute",
-                bottom: "24px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                fontFamily: "system-ui, -apple-system, sans-serif",
-                fontSize: "12px",
-                fontWeight: 500,
-                color: isNight ? "#001233" : "#ffffff",
-                background: isNight ? "#ffffff" : "#000000",
-                border: "none",
-                borderRadius: "100px",
-                padding: "14px 32px",
-                cursor: "pointer",
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                pointerEvents: "auto",
-                transition: "all 0.3s ease, background 1.2s ease, color 1.2s ease",
-                boxShadow: isNight
-                  ? "0 4px 20px rgba(255,255,255,0.15)"
-                  : "0 4px 20px rgba(0,0,0,0.15)",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateX(-50%) translateY(-2px)";
-                e.currentTarget.style.boxShadow = isNight
-                  ? "0 8px 30px rgba(255,255,255,0.25)"
-                  : "0 8px 30px rgba(0,0,0,0.25)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateX(-50%) translateY(0)";
-                e.currentTarget.style.boxShadow = isNight
-                  ? "0 4px 20px rgba(255,255,255,0.15)"
-                  : "0 4px 20px rgba(0,0,0,0.15)";
-              }}
-            >
-              Explorar
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M12 5v14M5 12l7 7 7-7" />
-              </svg>
-            </button>
+  onClick={scrollToContent}
+  style={{
+    position: "absolute",
+    bottom: "32px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: "13px",
+    fontWeight: 600,
+    color: "#ffffff",
+    background: "linear-gradient(135deg, #004FCD, #0039a8)",
+    border: "none",
+    borderRadius: "100px",
+    padding: "16px 36px",
+    cursor: "pointer",
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    pointerEvents: "auto",
+    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+    boxShadow: "0 8px 32px rgba(0, 79, 205, 0.4)",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.transform = "translateX(-50%) translateY(-3px)";
+    e.currentTarget.style.boxShadow = "0 12px 40px rgba(0, 79, 205, 0.6)";
+    e.currentTarget.style.background = "linear-gradient(135deg, #0058e6, #0045a0)";
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.transform = "translateX(-50%) translateY(0)";
+    e.currentTarget.style.boxShadow = "0 8px 32px rgba(0, 79, 205, 0.4)";
+    e.currentTarget.style.background = "linear-gradient(135deg, #004FCD, #0039a8)";
+  }}
+>
+  Explorar
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ transition: "transform 0.3s ease" }}
+  >
+    <path d="M12 5v14M5 12l7 7 7-7" />
+  </svg>
+</button>
 
             <button
               onClick={() => {
@@ -454,119 +391,208 @@ export default function Home() {
       </section>
 
       {/* SECCIÓN: FUNCIONAMIENTO */}
-      <section
-        id="como-funciona"
-        style={{
-          position: "relative",
-          zIndex: 20,
-          padding: "120px 32px",
-          background: bgColor,
-          transition: "background 1.2s ease",
-        }}
-      >
-        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <p
-            style={{
-              fontFamily: "system-ui, sans-serif",
-              fontSize: "11px",
-              color: mutedColor,
-              letterSpacing: "0.15em",
-              textTransform: "uppercase",
-              marginBottom: "16px",
-            }}
-          >
-            Funcionamiento
-          </p>
-          <h2
-            style={{
-              fontFamily: "'Times New Roman', serif",
-              fontSize: "clamp(32px, 5vw, 56px)",
-              color: textColor,
-              marginBottom: "64px",
-              lineHeight: 1.1,
-              transition: "color 1.2s ease",
-            }}
-          >
-            Un ecosistema que potencia<br />cada proyecto
-          </h2>
+<section
+  id="como-funciona"
+  style={{
+    position: "relative",
+    zIndex: 20,
+    padding: "120px 32px",
+    background: bgColor,
+    transition: "background 1.2s ease",
+  }}
+>
+  <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+    <p
+      style={{
+        fontFamily: "'Montserrat', sans-serif",
+        fontSize: "11px",
+        color: isNight ? "rgba(0,79,205,0.8)" : "#004FCD",
+        letterSpacing: "0.2em",
+        textTransform: "uppercase",
+        marginBottom: "16px",
+        fontWeight: 600,
+      }}
+    >
+      Funcionamiento
+    </p>
+    <h2
+      style={{
+        fontFamily: "'Sono', sans-serif",
+        fontWeight: 700,
+        fontSize: "clamp(32px, 5vw, 56px)",
+        color: textColor,
+        marginBottom: "64px",
+        lineHeight: 1.1,
+        transition: "color 1.2s ease",
+        letterSpacing: "-0.02em",
+      }}
+    >
+      Un ecosistema que potencia<br />cada proyecto
+    </h2>
 
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+        gap: "24px",
+      }}
+    >
+      {[
+        {
+          title: "Narrativa Estructurada",
+          description: "Plantillas que guían la publicación de proyectos con formatos claros y coherentes.",
+          icon: (
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004FCD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+          ),
+        },
+        {
+          title: "Curaduría Inteligente",
+          description: "Visibilidad dirigida a audiencias relevantes según disciplina e intereses.",
+          icon: (
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004FCD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+              <path d="M11 8v6" />
+              <path d="M8 11h6" />
+            </svg>
+          ),
+        },
+        {
+          title: "Conexiones entre Proyectos",
+          description: "Red de vinculación automática por etiquetas y áreas de conocimiento.",
+          icon: (
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004FCD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </svg>
+          ),
+        },
+        {
+          title: "Comunidad Activa",
+          description: "Espacios de interacción, retroalimentación y colaboración entre pares.",
+          icon: (
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004FCD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          ),
+        },
+      ].map((cap, i) => (
+        <div
+          key={i}
+          style={{
+            background: isNight ? "rgba(255,255,255,0.03)" : "white",
+            border: `1px solid ${isNight ? "rgba(0,79,205,0.15)" : "rgba(0,79,205,0.08)"}`,
+            padding: "40px 32px",
+            borderRadius: "16px",
+            cursor: "pointer",
+            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+            position: "relative",
+            overflow: "hidden",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = "translateY(-8px)";
+            e.currentTarget.style.boxShadow = isNight
+              ? "0 20px 40px rgba(0,79,205,0.2)"
+              : "0 20px 40px rgba(0,79,205,0.12)";
+            e.currentTarget.style.borderColor = "rgba(0,79,205,0.3)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "none";
+            e.currentTarget.style.borderColor = isNight ? "rgba(0,79,205,0.15)" : "rgba(0,79,205,0.08)";
+          }}
+        >
+          {/* Número de fondo decorativo */}
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-              gap: "24px",
+              position: "absolute",
+              top: "20px",
+              right: "24px",
+              fontFamily: "'Sono', sans-serif",
+              fontSize: "64px",
+              fontWeight: 700,
+              color: isNight ? "rgba(0,79,205,0.08)" : "rgba(0,79,205,0.06)",
+              lineHeight: 1,
+              userSelect: "none",
             }}
           >
-            {[
-              {
-                title: "Narrativa Estructurada",
-                description: "Plantillas que guían la publicación de proyectos con formatos claros y coherentes.",
-                icon: "📐",
-              },
-              {
-                title: "Curaduría Inteligente",
-                description: "Visibilidad dirigida a audiencias relevantes según disciplina e intereses.",
-                icon: "🎯",
-              },
-              {
-                title: "Conexiones entre Proyectos",
-                description: "Red de vinculación automática por etiquetas y áreas de conocimiento.",
-                icon: "🔗",
-              },
-              {
-                title: "Comunidad Activa",
-                description: "Espacios de interacción, retroalimentación y colaboración entre pares.",
-                icon: "🤝",
-              },
-            ].map((cap, i) => (
-              <div
-                key={i}
-                style={{
-                  background: cardBg,
-                  border: `1px solid ${borderColor}`,
-                  padding: "40px 32px",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  transition: "transform 0.4s ease, box-shadow 0.4s ease, background 0.3s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-8px)";
-                  e.currentTarget.style.boxShadow = isNight
-                    ? "0 20px 40px rgba(0,0,0,0.4)"
-                    : "0 20px 40px rgba(0,0,0,0.08)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                <div style={{ fontSize: "32px", marginBottom: "20px" }}>{cap.icon}</div>
-                <h3
-                  style={{
-                    fontFamily: "'Times New Roman', serif",
-                    fontSize: "22px",
-                    color: textColor,
-                    marginBottom: "12px",
-                    transition: "color 1.2s ease",
-                  }}
-                >
-                  {cap.title}
-                </h3>
-                <p
-                  style={{
-                    fontFamily: "system-ui, sans-serif",
-                    fontSize: "14px",
-                    color: mutedColor,
-                    lineHeight: 1.6,
-                  }}
-                >
-                  {cap.description}
-                </p>
-              </div>
-            ))}
+            0{i + 1}
           </div>
+
+          {/* Icono */}
+          <div
+            style={{
+              width: "56px",
+              height: "56px",
+              borderRadius: "12px",
+              background: isNight ? "rgba(0,79,205,0.15)" : "rgba(0,79,205,0.08)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: "24px",
+              transition: "all 0.3s ease",
+            }}
+          >
+            {cap.icon}
+          </div>
+
+          <h3
+            style={{
+              fontFamily: "'Sono', sans-serif",
+              fontWeight: 700,
+              fontSize: "22px",
+              color: textColor,
+              marginBottom: "12px",
+              transition: "color 1.2s ease",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            {cap.title}
+          </h3>
+          <p
+            style={{
+              fontFamily: "'Montserrat', sans-serif",
+              fontSize: "14px",
+              color: mutedColor,
+              lineHeight: 1.7,
+              fontWeight: 400,
+            }}
+          >
+            {cap.description}
+          </p>
+
+          {/* Línea decorativa inferior */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: "32px",
+              right: "32px",
+              height: "3px",
+              background: "linear-gradient(90deg, #004FCD, #3b7de8)",
+              borderRadius: "3px 3px 0 0",
+              opacity: 0,
+              transition: "opacity 0.3s ease",
+            }}
+            className="card-accent-line"
+          />
         </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
 
       {/* SECCIÓN: ECOSISTEMA */}
       <section
@@ -591,20 +617,23 @@ export default function Home() {
             }}
           >
             <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                display: "block",
-              }}
-            >
-              <source src="/videos/ecosistema.mp4" type="video/mp4" />
-              Tu navegador no soporta videos HTML5.
-            </video>
+  autoPlay
+  muted
+  loop
+  playsInline
+  style={{
+    width: "100%",
+    height: "100%",
+    objectFit: "cover",
+    display: "block",
+  }}
+>
+  <source 
+    src="public\videos\ecosistema.mp4" 
+    type="video/mp4" 
+  />
+  Tu navegador no soporta videos HTML5.
+</video>
             <div
               style={{
                 position: "absolute",
@@ -653,13 +682,15 @@ export default function Home() {
             </p>
             <h2
               style={{
-                fontFamily: "'Times New Roman', serif",
-                fontSize: "clamp(28px, 4vw, 48px)",
-                color: textColor,
-                marginBottom: "24px",
-                lineHeight: 1.15,
-                transition: "color 1.2s ease",
-              }}
+    fontFamily: "'Sono', sans-serif",
+    fontWeight: 700,
+    fontSize: "clamp(32px, 5vw, 56px)",
+    color: textColor,
+    marginBottom: "64px",
+    lineHeight: 1.1,
+    transition: "color 1.2s ease",
+    letterSpacing: "-0.02em",
+  }}
             >
               Más que un repositorio,<br />una red viva
             </h2>
@@ -706,13 +737,15 @@ export default function Home() {
           </p>
           <h2
             style={{
-              fontFamily: "'Times New Roman', serif",
-              fontSize: "clamp(32px, 5vw, 56px)",
-              color: textColor,
-              marginBottom: "64px",
-              lineHeight: 1.1,
-              transition: "color 1.2s ease",
-            }}
+    fontFamily: "'Sono', sans-serif",
+    fontWeight: 700,
+    fontSize: "clamp(32px, 5vw, 56px)",
+    color: textColor,
+    marginBottom: "64px",
+    lineHeight: 1.1,
+    transition: "color 1.2s ease",
+    letterSpacing: "-0.02em",
+  }}
           >
             Proyectos que definen<br />el programa
           </h2>
@@ -846,13 +879,15 @@ export default function Home() {
           </p>
           <h2
             style={{
-              fontFamily: "'Times New Roman', serif",
-              fontSize: "clamp(32px, 5vw, 56px)",
-              color: textColor,
-              marginBottom: "48px",
-              lineHeight: 1.1,
-              transition: "color 1.2s ease",
-            }}
+    fontFamily: "'Sono', sans-serif",
+    fontWeight: 700,
+    fontSize: "clamp(32px, 5vw, 56px)",
+    color: textColor,
+    marginBottom: "64px",
+    lineHeight: 1.1,
+    transition: "color 1.2s ease",
+    letterSpacing: "-0.02em",
+  }}
           >
             Navega por disciplinas<br />y áreas de interés
           </h2>
@@ -982,13 +1017,15 @@ export default function Home() {
           </p>
           <h2
             style={{
-              fontFamily: "'Times New Roman', serif",
-              fontSize: "clamp(32px, 5vw, 56px)",
-              color: textColor,
-              marginBottom: "64px",
-              lineHeight: 1.1,
-              transition: "color 1.2s ease",
-            }}
+    fontFamily: "'Sono', sans-serif",
+    fontWeight: 700,
+    fontSize: "clamp(32px, 5vw, 56px)",
+    color: textColor,
+    marginBottom: "64px",
+    lineHeight: 1.1,
+    transition: "color 1.2s ease",
+    letterSpacing: "-0.02em",
+  }}
           >
             Creadores que construyen<br />el ecosistema
           </h2>

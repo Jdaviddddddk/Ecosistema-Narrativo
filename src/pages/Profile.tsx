@@ -1,7 +1,6 @@
-import { Navigate, Link } from 'react-router';
-import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
-import { siteConfig } from '../config';
+import { Navigate, Link } from "react-router";
+import { useAuth } from "@/context/AuthContext";
+import { useState } from "react";
 
 interface Project {
   id: string;
@@ -56,36 +55,15 @@ const MOCK_REVIEWS: Review[] = [
     id: "rev_1",
     projectTitle: "Ecosistema Lumínico",
     rating: 5,
-    comment: "Una narrativa visual impresionante. La composición del vórtice transmite movimiento y quietud al mismo tiempo.",
+    comment: "Una narrativa visual impresionante. La composición transmite movimiento y quietud simultáneamente.",
     date: "2025-02-15",
   },
 ];
 
 const MOCK_INSIGHTS: Insight[] = [
-  {
-    id: "ins_1",
-    type: "milestone",
-    title: "Primer Proyecto",
-    description: "Publicaste tu primera obra en el ecosistema",
-    unlockedAt: "2025-01-20",
-    icon: "🎯",
-  },
-  {
-    id: "ins_2",
-    type: "badge",
-    title: "Creador Visual",
-    description: "Acumulaste más de 1,000 vistas en tus proyectos",
-    unlockedAt: "2025-02-01",
-    icon: "👁",
-  },
-  {
-    id: "ins_3",
-    type: "streak",
-    title: "Constancia",
-    description: "30 días consecutivos de actividad",
-    unlockedAt: "2025-04-01",
-    icon: "🔥",
-  },
+  { id: "ins_1", type: "milestone", title: "Primer Proyecto", description: "Publicaste tu primera obra en NEXO", unlockedAt: "2025-01-20", icon: "🎯" },
+  { id: "ins_2", type: "badge", title: "Creador Visual", description: "Superaste las 1,000 vistas en tus proyectos", unlockedAt: "2025-02-01", icon: "👁" },
+  { id: "ins_3", type: "streak", title: "Constancia", description: "30 días consecutivos de actividad", unlockedAt: "2025-04-01", icon: "🔥" },
 ];
 
 type Tab = "info" | "proyectos" | "calificaciones" | "resenas" | "insights";
@@ -94,732 +72,315 @@ export default function Profile() {
   const { user, isAuthenticated, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("info");
 
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
+  if (!isAuthenticated) return <Navigate to="/" replace />;
 
   const tabs: { key: Tab; label: string }[] = [
     { key: "info", label: "Información" },
     { key: "proyectos", label: "Proyectos" },
     { key: "calificaciones", label: "Calificaciones" },
     { key: "resenas", label: "Reseñas" },
-    { key: "insights", label: "Insights" },
+    { key: "insights", label: "Logros" },
   ];
 
-  const renderStars = (rating: number) => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <span key={i} style={{ color: i < rating ? "#eab308" : "#d1d5db" }}>★</span>
-    ));
-  };
+  const stats = [
+    { label: "Proyectos", value: "2" },
+    { label: "Vistas", value: "1,240" },
+    { label: "Reseñas", value: "1" },
+    { label: "Logros", value: "3" },
+    { label: "Calificación", value: "5.0" },
+    { label: "Días activo", value: "45" },
+  ];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#ffffff" }}>
-      {/* Header */}
-      <div
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 100,
-          background: "rgba(255,255,255,0.95)",
-          backdropFilter: "blur(10px)",
-          borderBottom: "1px solid rgba(0,0,0,0.08)",
-          padding: "20px 32px",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1400px",
-            margin: "0 auto",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Link
-            to="/"
-            style={{
-              fontFamily: "'Times New Roman', serif",
-              fontSize: "20px",
-              color: "#000",
-              textDecoration: "none",
-              letterSpacing: "0.05em",
-            }}
-          >
-            {siteConfig.brandName}
-          </Link>
+    <div className="min-h-screen bg-gray-50 pt-20">
+      {/* Header del perfil */}
+      <div className="bg-white border-b border-blue-100">
+        <div className="max-w-6xl mx-auto px-6 py-12">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+            {/* Avatar */}
+            <div className="relative">
+              <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden shadow-xl shadow-blue-500/20 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+  <img src="/images/logo-nexo.png" alt="NEXO" className="w-16 h-16 object-contain opacity-90" />
+</div>
+              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              </div>
+            </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-            <Link
-              to="/projects"
-              style={{
-                fontFamily: "system-ui, sans-serif",
-                fontSize: "13px",
-                color: "#000",
-                textDecoration: "none",
-                opacity: 0.7,
-              }}
-            >
-              Proyectos
-            </Link>
-            <Link
-              to="/info"
-              style={{
-                fontFamily: "system-ui, sans-serif",
-                fontSize: "13px",
-                color: "#000",
-                textDecoration: "none",
-                opacity: 0.7,
-              }}
-            >
-              Info
-            </Link>
-            <button
-              onClick={logout}
-              style={{
-                fontFamily: "system-ui, sans-serif",
-                fontSize: "13px",
-                color: "#000",
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                opacity: 0.7,
-              }}
-            >
-              Salir
-            </button>
+            {/* Info */}
+            <div className="flex-1 text-center md:text-left">
+              <h1 className="text-3xl md:text-4xl mb-2" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 700, color: "#1a1a1a" }}>
+                {user?.name}
+              </h1>
+              <p className="text-sm mb-1" style={{ fontFamily: "'Montserrat', sans-serif", color: "#004FCD" }}>
+                {user?.email}
+              </p>
+              <p className="text-sm mb-4" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                {user?.location}
+              </p>
+              <p className="text-base max-w-xl leading-relaxed mb-4" style={{ fontFamily: "'Montserrat', sans-serif", color: "#666" }}>
+                {user?.bio}
+              </p>
+              <div className="flex items-center justify-center md:justify-start gap-4 text-xs uppercase tracking-wider" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                <span>Miembro desde {new Date(user?.joinedAt || "").toLocaleDateString("es-MX")}</span>
+                <span className="w-1 h-1 rounded-full bg-gray-300" />
+                <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-600 font-medium">
+                  {user?.role === "creator" ? "Creador" : "Espectador"}
+                </span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex flex-col gap-3">
+              <button className="nexo-button-primary text-sm">
+                Editar Perfil
+              </button>
+              <button 
+                onClick={logout}
+                className="nexo-button-outline text-sm"
+              >
+                Cerrar Sesión
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Profile Content */}
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "48px 32px 80px" }}>
-        {/* Profile Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "32px",
-            marginBottom: "48px",
-            paddingBottom: "40px",
-            borderBottom: "1px solid rgba(0,0,0,0.1)",
-          }}
-        >
-          <div style={{ position: "relative" }}>
-            <div
-              style={{
-                width: "100px",
-                height: "100px",
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #e0e0e0, #c0c0c0)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "36px",
-                fontFamily: "'Times New Roman', serif",
-                color: "#000",
-                border: "2px solid rgba(0,0,0,0.1)",
-              }}
-            >
-              {user?.name.charAt(0).toUpperCase()}
-            </div>
-            <div
-              style={{
-                position: "absolute",
-                bottom: "-2px",
-                right: "-2px",
-                width: "24px",
-                height: "24px",
-                borderRadius: "50%",
-                background: "#22c55e",
-                border: "3px solid #fff",
-              }}
-            />
-          </div>
-
-          <div style={{ flex: 1 }}>
-            <h1
-              style={{
-                fontFamily: "'Times New Roman', serif",
-                fontSize: "36px",
-                color: "#000",
-                marginBottom: "8px",
-              }}
-            >
-              {user?.name}
-            </h1>
-            <p
-              style={{
-                fontFamily: "system-ui, sans-serif",
-                fontSize: "14px",
-                color: "rgba(0,0,0,0.5)",
-                marginBottom: "4px",
-              }}
-            >
-              {user?.email}
-            </p>
-            <p
-              style={{
-                fontFamily: "system-ui, sans-serif",
-                fontSize: "14px",
-                color: "rgba(0,0,0,0.5)",
-                marginBottom: "12px",
-              }}
-            >
-              {user?.location}
-            </p>
-            <p
-              style={{
-                fontFamily: "system-ui, sans-serif",
-                fontSize: "15px",
-                color: "rgba(0,0,0,0.7)",
-                lineHeight: 1.6,
-                maxWidth: "600px",
-              }}
-            >
-              {user?.bio}
-            </p>
-            <div
-              style={{
-                display: "flex",
-                gap: "16px",
-                marginTop: "16px",
-                fontFamily: "system-ui, sans-serif",
-                fontSize: "11px",
-                color: "rgba(0,0,0,0.4)",
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-              }}
-            >
-              <span>Miembro desde {new Date(user?.joinedAt || "").toLocaleDateString("es-MX")}</span>
-              <span>•</span>
-              <span>{user?.role === "creator" ? "Creador" : "Espectador"}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div
-          style={{
-            display: "flex",
-            gap: "4px",
-            marginBottom: "40px",
-            borderBottom: "1px solid rgba(0,0,0,0.1)",
-          }}
-        >
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              style={{
-                padding: "12px 20px",
-                fontFamily: "system-ui, sans-serif",
-                fontSize: "14px",
-                fontWeight: 500,
-                background: "transparent",
-                border: "none",
-                borderBottom: activeTab === tab.key ? "2px solid #000" : "2px solid transparent",
-                color: activeTab === tab.key ? "#000" : "rgba(0,0,0,0.4)",
-                cursor: "pointer",
-                marginBottom: "-1px",
-                transition: "all 0.2s ease",
-              }}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Tab Content */}
-        <div>
-          {activeTab === "info" && (
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-                gap: "48px",
-              }}
-            >
-              <div>
-                <h3
-                  style={{
-                    fontFamily: "'Times New Roman', serif",
-                    fontSize: "24px",
-                    color: "#000",
-                    marginBottom: "24px",
-                  }}
-                >
-                  Datos personales
-                </h3>
-                <dl style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                  {[
-                    { label: "Nombre completo", value: user?.name },
-                    { label: "Correo electrónico", value: user?.email },
-                    { label: "Ubicación", value: user?.location },
-                    { label: "Rol en el ecosistema", value: user?.role === "creator" ? "Creador" : "Espectador" },
-                  ].map((item) => (
-                    <div key={item.label}>
-                      <dt
-                        style={{
-                          fontFamily: "system-ui, sans-serif",
-                          fontSize: "11px",
-                          color: "rgba(0,0,0,0.4)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.08em",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        {item.label}
-                      </dt>
-                      <dd
-                        style={{
-                          fontFamily: "system-ui, sans-serif",
-                          fontSize: "15px",
-                          color: "rgba(0,0,0,0.8)",
-                        }}
-                      >
-                        {item.value}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
+      {/* Stats bar */}
+      <div className="bg-white border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-6 py-6">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-blue-600" style={{ fontFamily: "'Sono', sans-serif" }}>
+                  {stat.value}
+                </div>
+                <div className="text-xs uppercase tracking-wider mt-1" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                  {stat.label}
+                </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
-              <div>
-                <h3
-                  style={{
-                    fontFamily: "'Times New Roman', serif",
-                    fontSize: "24px",
-                    color: "#000",
-                    marginBottom: "24px",
-                  }}
-                >
-                  Estadísticas del ecosistema
-                </h3>
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)",
-                    gap: "12px",
-                  }}
-                >
-                  {[
-                    { label: "Proyectos publicados", value: "1" },
-                    { label: "Total de vistas", value: "1,240" },
-                    { label: "Reseñas recibidas", value: "1" },
-                    { label: "Insights desbloqueados", value: "3" },
-                    { label: "Calificación promedio", value: "5.0" },
-                    { label: "Días activo", value: "45" },
-                  ].map((stat) => (
-                    <div
-                      key={stat.label}
-                      style={{
-                        padding: "20px",
-                        border: "1px solid rgba(0,0,0,0.1)",
-                        borderRadius: "4px",
-                      }}
-                    >
-                      <div
-                        style={{
-                          fontFamily: "'Times New Roman', serif",
-                          fontSize: "28px",
-                          color: "#000",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        {stat.value}
-                      </div>
-                      <div
-                        style={{
-                          fontFamily: "system-ui, sans-serif",
-                          fontSize: "11px",
-                          color: "rgba(0,0,0,0.4)",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.08em",
-                        }}
-                      >
-                        {stat.label}
-                      </div>
-                    </div>
+      {/* Tabs */}
+      <div className="bg-white border-b border-gray-100 sticky top-16 z-40">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex gap-1 overflow-x-auto">
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className="px-6 py-4 text-sm font-medium transition-all relative whitespace-nowrap"
+                style={{
+                  fontFamily: "'Montserrat', sans-serif",
+                  color: activeTab === tab.key ? "#004FCD" : "#999",
+                  fontWeight: activeTab === tab.key ? 600 : 400,
+                }}
+              >
+                {tab.label}
+                {activeTab === tab.key && (
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-nexo rounded-full" />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-6xl mx-auto px-6 py-10">
+        {activeTab === "info" && (
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="nexo-card p-8">
+              <h3 className="text-xl mb-6" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 700 }}>
+                Datos Personales
+              </h3>
+              <dl className="space-y-5">
+                {[
+                  { label: "Nombre completo", value: user?.name },
+                  { label: "Correo electrónico", value: user?.email },
+                  { label: "Ubicación", value: user?.location },
+                  { label: "Rol", value: user?.role === "creator" ? "Creador" : "Espectador" },
+                ].map((item) => (
+                  <div key={item.label}>
+                    <dt className="text-xs uppercase tracking-wider mb-1" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                      {item.label}
+                    </dt>
+                    <dd className="text-base" style={{ fontFamily: "'Montserrat', sans-serif", color: "#1a1a1a" }}>
+                      {item.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            <div className="nexo-card p-8">
+              <h3 className="text-xl mb-6" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 700 }}>
+                Sobre Mí
+              </h3>
+              <p className="leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif", color: "#666" }}>
+                {user?.bio}
+              </p>
+              
+              <div className="mt-6 pt-6 border-t border-gray-100">
+                <h4 className="text-sm font-semibold mb-3" style={{ fontFamily: "'Montserrat', sans-serif", color: "#1a1a1a" }}>
+                  Áreas de interés
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {["Diseño Visual", "Fotografía", "Branding", "UI/UX"].map((tag) => (
+                    <span key={tag} className="nexo-tag">
+                      {tag}
+                    </span>
                   ))}
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {activeTab === "proyectos" && (
-            <div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "24px",
-                }}
-              >
-                <h3
-                  style={{
-                    fontFamily: "'Times New Roman', serif",
-                    fontSize: "24px",
-                    color: "#000",
-                  }}
-                >
-                  Mis proyectos
-                </h3>
-                <span
-                  style={{
-                    fontFamily: "system-ui, sans-serif",
-                    fontSize: "14px",
-                    color: "rgba(0,0,0,0.5)",
-                  }}
-                >
-                  {MOCK_PROJECTS.length} proyectos
-                </span>
-              </div>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-                  gap: "20px",
-                }}
-              >
-                {MOCK_PROJECTS.map((project) => (
-                  <div
-                    key={project.id}
-                    style={{
-                      border: "1px solid rgba(0,0,0,0.1)",
-                      borderRadius: "4px",
-                      overflow: "hidden",
-                      transition: "border-color 0.3s ease",
-                    }}
-                  >
-                    <div style={{ aspectRatio: "4/3", overflow: "hidden", background: "rgba(0,0,0,0.03)" }}>
-                      <img
-                        src={project.thumbnail}
-                        alt={project.title}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          transition: "transform 0.5s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = "scale(1.05)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = "scale(1)";
-                        }}
-                      />
-                    </div>
-                    <div style={{ padding: "20px" }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          marginBottom: "8px",
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontFamily: "system-ui, sans-serif",
-                            fontSize: "11px",
-                            color: "rgba(0,0,0,0.4)",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.08em",
-                          }}
-                        >
-                          {project.category}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "11px",
-                            padding: "4px 10px",
-                            borderRadius: "100px",
-                            background:
-                              project.status === "published"
-                                ? "#dcfce7"
-                                : project.status === "draft"
-                                ? "#fef9c3"
-                                : "#f3f4f6",
-                            color:
-                              project.status === "published"
-                                ? "#166534"
-                                : project.status === "draft"
-                                ? "#854d0e"
-                                : "#374151",
-                          }}
-                        >
-                          {project.status === "published" ? "Publicado" : project.status === "draft" ? "Borrador" : "Archivado"}
-                        </span>
-                      </div>
-                      <h4
-                        style={{
-                          fontFamily: "'Times New Roman', serif",
-                          fontSize: "18px",
-                          color: "#000",
-                          marginBottom: "8px",
-                        }}
-                      >
-                        {project.title}
-                      </h4>
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "16px",
-                          fontFamily: "system-ui, sans-serif",
-                          fontSize: "12px",
-                          color: "rgba(0,0,0,0.5)",
-                        }}
-                      >
-                        <span>{new Date(project.createdAt).toLocaleDateString("es-MX")}</span>
-                        {project.views > 0 && <span>{project.views.toLocaleString()} vistas</span>}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === "calificaciones" && (
-            <div>
-              <h3
-                style={{
-                  fontFamily: "'Times New Roman', serif",
-                  fontSize: "24px",
-                  color: "#000",
-                  marginBottom: "24px",
-                }}
-              >
-                Calificaciones recibidas
+        {activeTab === "proyectos" && (
+          <div>
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-2xl" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 700 }}>
+                Mis Proyectos
               </h3>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "16px",
-                  marginBottom: "32px",
-                  padding: "24px",
-                  border: "1px solid rgba(0,0,0,0.1)",
-                  borderRadius: "4px",
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: "'Times New Roman', serif",
-                    fontSize: "48px",
-                    color: "#000",
-                  }}
-                >
-                  5.0
-                </div>
-                <div>
-                  <div style={{ fontSize: "20px" }}>{renderStars(5)}</div>
-                  <p
-                    style={{
-                      fontFamily: "system-ui, sans-serif",
-                      fontSize: "14px",
-                      color: "rgba(0,0,0,0.5)",
-                    }}
-                  >
-                    Basado en 1 reseña
-                  </p>
-                </div>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {MOCK_REVIEWS.map((review) => (
-                  <div
-                    key={review.id}
-                    style={{
-                      padding: "20px",
-                      border: "1px solid rgba(0,0,0,0.1)",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: "12px",
-                      }}
-                    >
-                      <h4
-                        style={{
-                          fontFamily: "system-ui, sans-serif",
-                          fontSize: "15px",
-                          fontWeight: 500,
-                          color: "#000",
-                        }}
-                      >
-                        {review.projectTitle}
-                      </h4>
-                      <span
-                        style={{
-                          fontFamily: "system-ui, sans-serif",
-                          fontSize: "12px",
-                          color: "rgba(0,0,0,0.4)",
-                        }}
-                      >
-                        {new Date(review.date).toLocaleDateString("es-MX")}
+              <Link to="/upload" className="nexo-button-primary text-sm">
+                + Nuevo Proyecto
+              </Link>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {MOCK_PROJECTS.map((project) => (
+                <div key={project.id} className="nexo-card overflow-hidden group">
+                  <div className="aspect-video overflow-hidden bg-gray-100">
+                    <img
+                      src={project.thumbnail}
+                      alt={project.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                  </div>
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs uppercase tracking-wider" style={{ fontFamily: "'Montserrat', sans-serif", color: "#004FCD" }}>
+                        {project.category}
+                      </span>
+                      <span className={`text-xs px-3 py-1 rounded-full font-medium ${
+                        project.status === "published" 
+                          ? "bg-green-100 text-green-700" 
+                          : project.status === "draft"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : "bg-gray-100 text-gray-700"
+                      }`}>
+                        {project.status === "published" ? "Publicado" : project.status === "draft" ? "Borrador" : "Archivado"}
                       </span>
                     </div>
-                    <div style={{ marginBottom: "8px" }}>{renderStars(review.rating)}</div>
-                    <p
-                      style={{
-                        fontFamily: "system-ui, sans-serif",
-                        fontSize: "14px",
-                        color: "rgba(0,0,0,0.6)",
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      "{review.comment}"
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === "resenas" && (
-            <div>
-              <h3
-                style={{
-                  fontFamily: "'Times New Roman', serif",
-                  fontSize: "24px",
-                  color: "#000",
-                  marginBottom: "24px",
-                }}
-              >
-                Reseñas
-              </h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {MOCK_REVIEWS.map((review) => (
-                  <div
-                    key={review.id}
-                    style={{
-                      padding: "20px",
-                      border: "1px solid rgba(0,0,0,0.1)",
-                      borderRadius: "4px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        marginBottom: "12px",
-                      }}
-                    >
-                      <div>
-                        <h4
-                          style={{
-                            fontFamily: "system-ui, sans-serif",
-                            fontSize: "15px",
-                            fontWeight: 500,
-                            color: "#000",
-                            marginBottom: "4px",
-                          }}
-                        >
-                          {review.projectTitle}
-                        </h4>
-                        <div>{renderStars(review.rating)}</div>
-                      </div>
-                      <span
-                        style={{
-                          fontFamily: "system-ui, sans-serif",
-                          fontSize: "12px",
-                          color: "rgba(0,0,0,0.4)",
-                        }}
-                      >
-                        {new Date(review.date).toLocaleDateString("es-MX")}
-                      </span>
-                    </div>
-                    <p
-                      style={{
-                        fontFamily: "system-ui, sans-serif",
-                        fontSize: "14px",
-                        color: "rgba(0,0,0,0.6)",
-                        lineHeight: 1.6,
-                      }}
-                    >
-                      "{review.comment}"
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === "insights" && (
-            <div>
-              <h3
-                style={{
-                  fontFamily: "'Times New Roman', serif",
-                  fontSize: "24px",
-                  color: "#000",
-                  marginBottom: "24px",
-                }}
-              >
-                Logros e insights
-              </h3>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-                  gap: "16px",
-                }}
-              >
-                {MOCK_INSIGHTS.map((insight) => (
-                  <div
-                    key={insight.id}
-                    style={{
-                      padding: "32px",
-                      border: "1px solid rgba(0,0,0,0.1)",
-                      borderRadius: "4px",
-                      textAlign: "center",
-                      transition: "border-color 0.3s ease",
-                    }}
-                  >
-                    <div style={{ fontSize: "40px", marginBottom: "12px" }}>{insight.icon}</div>
-                    <h4
-                      style={{
-                        fontFamily: "system-ui, sans-serif",
-                        fontSize: "15px",
-                        fontWeight: 500,
-                        color: "#000",
-                        marginBottom: "4px",
-                      }}
-                    >
-                      {insight.title}
+                    <h4 className="text-lg mb-2" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 600 }}>
+                      {project.title}
                     </h4>
-                    <p
-                      style={{
-                        fontFamily: "system-ui, sans-serif",
-                        fontSize: "12px",
-                        color: "rgba(0,0,0,0.5)",
-                        marginBottom: "12px",
-                      }}
-                    >
-                      {insight.description}
-                    </p>
-                    <span
-                      style={{
-                        fontFamily: "system-ui, sans-serif",
-                        fontSize: "11px",
-                        color: "rgba(0,0,0,0.3)",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.08em",
-                      }}
-                    >
-                      {new Date(insight.unlockedAt).toLocaleDateString("es-MX")}
+                    <div className="flex items-center gap-4 text-xs" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                      <span>{new Date(project.createdAt).toLocaleDateString("es-MX")}</span>
+                      {project.views > 0 && (
+                        <span className="flex items-center gap-1">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                          {project.views.toLocaleString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "calificaciones" && (
+          <div className="max-w-2xl">
+            <div className="nexo-card p-8 mb-8 flex items-center gap-6">
+              <div className="text-6xl font-bold text-blue-600" style={{ fontFamily: "'Sono', sans-serif" }}>
+                5.0
+              </div>
+              <div>
+                <div className="flex text-2xl text-yellow-400 mb-1">★★★★★</div>
+                <p className="text-sm" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                  Basado en 1 reseña
+                </p>
+              </div>
+            </div>
+            <div className="space-y-4">
+              {MOCK_REVIEWS.map((review) => (
+                <div key={review.id} className="nexo-card p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                      {review.projectTitle}
+                    </h4>
+                    <span className="text-xs" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                      {new Date(review.date).toLocaleDateString("es-MX")}
                     </span>
                   </div>
-                ))}
-              </div>
+                  <div className="flex text-yellow-400 mb-3">★★★★★</div>
+                  <p className="text-sm leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif", color: "#666" }}>
+                    "{review.comment}"
+                  </p>
+                </div>
+              ))}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+
+        {activeTab === "resenas" && (
+          <div className="max-w-2xl space-y-4">
+            {MOCK_REVIEWS.map((review) => (
+              <div key={review.id} className="nexo-card p-6">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="font-semibold mb-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                      {review.projectTitle}
+                    </h4>
+                    <div className="flex text-yellow-400">★★★★★</div>
+                  </div>
+                  <span className="text-xs" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                    {new Date(review.date).toLocaleDateString("es-MX")}
+                  </span>
+                </div>
+                <p className="text-sm leading-relaxed mt-3" style={{ fontFamily: "'Montserrat', sans-serif", color: "#666" }}>
+                  "{review.comment}"
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "insights" && (
+          <div>
+            <h3 className="text-2xl mb-8" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 700 }}>
+              Logros Desbloqueados
+            </h3>
+            <div className="grid md:grid-cols-3 gap-6">
+              {MOCK_INSIGHTS.map((insight) => (
+                <div key={insight.id} className="nexo-card p-8 text-center group hover:border-blue-200">
+                  <div className="text-5xl mb-4 transform transition-transform group-hover:scale-110">
+                    {insight.icon}
+                  </div>
+                  <h4 className="text-lg mb-2" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 600 }}>
+                    {insight.title}
+                  </h4>
+                  <p className="text-sm mb-4" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                    {insight.description}
+                  </p>
+                  <span className="text-xs uppercase tracking-wider" style={{ fontFamily: "'Montserrat', sans-serif", color: "#004FCD" }}>
+                    {new Date(insight.unlockedAt).toLocaleDateString("es-MX")}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

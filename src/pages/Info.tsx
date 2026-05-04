@@ -22,52 +22,6 @@ export default function Info() {
         overflowX: "hidden",
       }}
     >
-      {/* Top-left Logo */}
-      {siteConfig.brandName && (
-        <Link
-          to="/"
-          style={{
-            position: "fixed",
-            top: "24px",
-            left: "32px",
-            fontFamily: "'Times New Roman', serif",
-            fontSize: "18px",
-            fontWeight: 400,
-            color: "#000000",
-            letterSpacing: "0.05em",
-            textDecoration: "none",
-            transition: "opacity 0.3s ease",
-            zIndex: 10,
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.6")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-        >
-          {siteConfig.brandName}
-        </Link>
-      )}
-
-      {/* Top-right Back */}
-      {cfg.backLinkLabel && (
-        <Link
-          to="/"
-          style={{
-            position: "fixed",
-            top: "24px",
-            right: "32px",
-            fontFamily: "system-ui, -apple-system, sans-serif",
-            fontSize: "14px",
-            fontWeight: 400,
-            color: "#000000",
-            textDecoration: "none",
-            transition: "opacity 0.3s ease",
-            zIndex: 10,
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.6")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-        >
-          {cfg.backLinkLabel}
-        </Link>
-      )}
 
       <div
         style={{

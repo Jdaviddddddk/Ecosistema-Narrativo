@@ -6,10 +6,12 @@ import Projects from './pages/Projects'
 import ProjectDetail from './pages/ProjectDetail'
 import Profile from './pages/Profile'
 import UploadFlow from "@/pages/upload/UploadFlow";
+import NexoHeader from '@/components/NexoHeader'
 
 export default function App() {
   return (
     <AuthProvider>
+      <NexoHeader />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/info" element={<Info />} />

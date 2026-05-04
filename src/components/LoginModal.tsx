@@ -50,230 +50,125 @@ export default function LoginModal({ open, onClose }: Props) {
 
   const handleClose = () => {
     onClose();
-    // Resetear después de cerrar para la próxima vez
     setTimeout(() => setSuccess(false), 350);
   };
 
   return (
     <div
       onClick={handleClose}
+      className="fixed inset-0 z-[200] flex items-center justify-center transition-opacity duration-300"
       style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(10, 10, 10, 0.85)",
-        backdropFilter: "blur(8px)",
-        zIndex: 200,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        background: "rgba(0, 0, 0, 0.6)",
+        backdropFilter: "blur(16px)",
         opacity: open ? 1 : 0,
         pointerEvents: open ? "auto" : "none",
-        transition: "opacity 0.35s ease",
       }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        className="relative w-[90%] max-w-md bg-white rounded-3xl shadow-2xl transition-transform duration-300 overflow-hidden"
         style={{
-          background: "#ffffff",
-          padding: "48px",
-          maxWidth: "420px",
-          width: "90%",
-          position: "relative",
           transform: open ? "scale(1)" : "scale(0.95)",
-          transition: "transform 0.35s ease",
         }}
       >
-        <button
-          onClick={handleClose}
-          style={{
-            position: "absolute",
-            top: "16px",
-            right: "20px",
-            background: "transparent",
-            border: "none",
-            fontSize: "24px",
-            cursor: "pointer",
-            color: "#000",
-            opacity: 0.5,
-            transition: "opacity 0.2s ease",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
-        >
-          ×
-        </button>
+        {/* Header decorativo NEXO */}
+        <div className="h-1.5 nexo-gradient-bg" />
 
-        {!success ? (
-          <>
-            <p
-              style={{
-                fontFamily: "system-ui, -apple-system, sans-serif",
-                fontSize: "11px",
-                fontWeight: 400,
-                color: "#000",
-                opacity: 0.5,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                margin: "0 0 12px 0",
-              }}
-            >
-              Acceso al Ecosistema
-            </p>
+        <div className="p-8 md:p-10">
+          <button
+            onClick={handleClose}
+            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
 
-            <h2
-              style={{
-                fontFamily: "'Times New Roman', serif",
-                fontSize: "28px",
-                fontWeight: 400,
-                lineHeight: 1.15,
-                margin: "0 0 24px 0",
-                color: "#000",
-              }}
-            >
-              Ingresa con tu correo institucional
-            </h2>
+          {!success ? (
+            <>
+              {/* Logo NEXO */}
+              <div className="flex justify-center mb-6">
+  <img 
+    src="/images/logo-nexo.png" 
+    className="h-16 w-auto"
+  />
+</div>
+              
 
-            <form onSubmit={handleSubmit}>
-              <input
-                ref={inputRef}
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setError("");
-                }}
-                placeholder="usuario@universidadmayor.edu.co"
-                style={{
-                  width: "100%",
-                  padding: "14px 16px",
-                  fontSize: "14px",
-                  fontFamily: "system-ui, -apple-system, sans-serif",
-                  border: error
-                    ? "1.5px solid #ff006e"
-                    : "1.5px solid rgba(0,0,0,0.15)",
-                  outline: "none",
-                  transition: "border-color 0.2s ease",
-                  boxSizing: "border-box",
-                  marginBottom: error ? "8px" : "20px",
-                }}
-                onFocus={(e) => {
-                  if (!error) e.currentTarget.style.borderColor = "rgba(0,0,0,0.4)";
-                }}
-                onBlur={(e) => {
-                  if (!error) e.currentTarget.style.borderColor = "rgba(0,0,0,0.15)";
-                }}
-              />
+              <p className="text-center text-xs uppercase tracking-[0.2em] mb-2 font-montserrat font-medium text-nexo-primary">
+                Acceso al Ecosistema
+              </p>
 
-              {error && (
-                <p
-                  style={{
-                    color: "#ff006e",
-                    fontSize: "12px",
-                    fontFamily: "system-ui, -apple-system, sans-serif",
-                    margin: "0 0 16px 0",
-                  }}
+              <h2 className="text-center text-2xl md:text-3xl mb-2 font-sono font-bold text-nexo-dark">
+                Bienvenido a NEXO
+              </h2>
+
+              <p className="text-center text-sm mb-8 font-montserrat text-gray-500">
+                Ingresa con tu correo institucional para acceder a tu perfil y proyectos.
+              </p>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <input
+                    ref={inputRef}
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setError("");
+                    }}
+                    placeholder="usuario@universidadmayor.edu.co"
+                    className="nexo-input"
+                    style={{
+                      borderColor: error ? "#ef4444" : undefined,
+                    }}
+                  />
+                  {error && (
+                    <p className="mt-2 text-sm text-red-500 flex items-center gap-2 font-montserrat">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 8v4M12 16h.01" />
+                      </svg>
+                      {error}
+                    </p>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full nexo-btn-primary py-4 text-sm font-semibold"
                 >
-                  {error}
-                </p>
-              )}
+                  Acceder
+                </button>
+              </form>
 
+              <p className="mt-6 text-center text-xs font-montserrat text-gray-400">
+                Solo correos con dominio <span className="font-semibold text-nexo-primary">@universidadmayor.edu.co</span> tienen acceso.
+              </p>
+            </>
+          ) : (
+            <div className="text-center py-8 animate-fade-in">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              </div>
+              <h2 className="text-2xl mb-3 font-sono font-bold text-nexo-dark">
+                ¡Acceso concedido!
+              </h2>
+              <p className="text-sm mb-8 font-montserrat text-gray-500">
+                Bienvenido, <span className="font-semibold">{email.split("@")[0].replace(".", " ")}</span>.<br />
+                Ya puedes explorar y compartir tus proyectos.
+              </p>
               <button
-                type="submit"
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  background: "#000",
-                  color: "#fff",
-                  border: "none",
-                  fontSize: "13px",
-                  fontFamily: "system-ui, -apple-system, sans-serif",
-                  fontWeight: 400,
-                  letterSpacing: "0.04em",
-                  cursor: "pointer",
-                  transition: "opacity 0.2s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.8")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                onClick={handleClose}
+                className="nexo-btn-outline px-8"
               >
-                Acceder
+                Continuar
               </button>
-            </form>
-
-            <p
-              style={{
-                fontSize: "12px",
-                fontFamily: "system-ui, -apple-system, sans-serif",
-                color: "rgba(0,0,0,0.4)",
-                marginTop: "16px",
-                lineHeight: 1.5,
-              }}
-            >
-              Solo correos con dominio @universidadmayor.edu.co tienen acceso.
-            </p>
-          </>
-        ) : (
-          <div style={{ textAlign: "center", padding: "24px 0" }}>
-            <div
-              style={{
-                width: "48px",
-                height: "48px",
-                borderRadius: "50%",
-                background: "#38b000",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 auto 20px",
-                color: "#fff",
-                fontSize: "24px",
-              }}
-            >
-              ✓
             </div>
-            <h2
-              style={{
-                fontFamily: "'Times New Roman', serif",
-                fontSize: "24px",
-                fontWeight: 400,
-                margin: "0 0 12px 0",
-                color: "#000",
-              }}
-            >
-              Acceso concedido
-            </h2>
-            <p
-              style={{
-                fontSize: "14px",
-                fontFamily: "system-ui, -apple-system, sans-serif",
-                color: "rgba(0,0,0,0.6)",
-                margin: "0 0 24px 0",
-                lineHeight: 1.5,
-              }}
-            >
-              Bienvenido al ecosistema, {email.split("@")[0].replace(".", " ")}.
-            </p>
-            <button
-              onClick={handleClose}
-              style={{
-                padding: "10px 28px",
-                background: "transparent",
-                color: "#000",
-                border: "1.5px solid rgba(0,0,0,0.2)",
-                fontSize: "13px",
-                fontFamily: "system-ui, -apple-system, sans-serif",
-                cursor: "pointer",
-                transition: "border-color 0.2s ease",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.borderColor = "rgba(0,0,0,0.5)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.borderColor = "rgba(0,0,0,0.2)")
-              }
-            >
-              Continuar
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
