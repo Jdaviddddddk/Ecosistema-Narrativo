@@ -23,51 +23,6 @@ export default function ProjectDetail() {
   return (
     <div style={{ minHeight: "100vh", background: "#ffffff" }}>
       {/* Sticky Header */}
-      <div
-        style={{
-          position: "sticky",
-          top: 0,
-          zIndex: 100,
-          background: "rgba(255,255,255,0.95)",
-          backdropFilter: "blur(10px)",
-          borderBottom: "1px solid rgba(0,0,0,0.08)",
-          padding: "16px 32px",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: "1200px",
-            margin: "0 auto",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Link
-            to="/"
-            style={{
-              fontFamily: "'Times New Roman', serif",
-              fontSize: "18px",
-              color: "#000",
-              textDecoration: "none",
-              letterSpacing: "0.05em",
-            }}
-          >
-            {siteConfig.brandName}
-          </Link>
-          <Link
-            to="/projects"
-            style={{
-              fontFamily: "system-ui, sans-serif",
-              fontSize: "14px",
-              color: "rgba(0,0,0,0.6)",
-              textDecoration: "none",
-            }}
-          >
-            ← Volver a proyectos
-          </Link>
-        </div>
-      </div>
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "48px 32px" }}>
         {/* HEADER CARD */}
