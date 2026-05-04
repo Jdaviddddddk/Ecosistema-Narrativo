@@ -4,7 +4,6 @@ import VortexGallery from "@/lib/VortexGallery";
 import Lenis from "lenis";
 import {
   siteConfig,
-  navigationConfig,
 } from "@/config";
 import ImageDetailOverlay from "@/components/ImageDetailOverlay";
 import LoginModal from "@/components/LoginModal";

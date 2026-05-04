@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+//import { Link } from "react-router";
 import { siteConfig, infoPageConfig } from "@/config";
 
 export default function Info() {

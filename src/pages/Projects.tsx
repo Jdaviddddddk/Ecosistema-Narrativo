@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router";
 import { projects, areas, semesters } from "@/config/projects";
 import type { Project } from "@/config/projects";
-import { siteConfig } from "@/config";
+//import { siteConfig } from "@/config";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Projects() {
