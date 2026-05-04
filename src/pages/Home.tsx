@@ -5,7 +5,7 @@ import Lenis from "lenis";
 import {
   siteConfig,
   navigationConfig,
-  galleryConfig,
+  //galleryConfig,
 } from "@/config";
 import ImageDetailOverlay from "@/components/ImageDetailOverlay";
 import LoginModal from "@/components/LoginModal";
@@ -685,7 +685,7 @@ const hasImages = images.length > 0;
     return totalB - totalA; // Mayor a menor
   })
   .slice(0, 12)
-  .map((project, i) => (
+  .map((project, _i) => (
                 <Link
                   key={project.id}
                   to={`/projects/${project.id}`}
