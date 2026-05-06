@@ -10,6 +10,7 @@ import LoginModal from "@/components/LoginModal";
 import { useMemo } from "react";
 import { projects } from "@/config/projects";
 import { useAuth } from "@/context/AuthContext";
+import NomadaInactividad from '@/components/NomadaInactividad';
 
 export default function Home() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -591,6 +592,7 @@ export default function Home() {
       ))}
     </div>
   </div>
+  <NomadaInactividad />
 </section>
 
       {/* SECCIÓN: ECOSISTEMA */}

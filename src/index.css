@@ -267,3 +267,29 @@
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+/* Animación de entrada */
+@keyframes nomada-entra {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-nomada-entra {
+  animation: nomada-entra 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Animación de progreso */
+@keyframes nomada-progreso {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+.animate-nomada-progreso {
+  animation: nomada-progreso linear forwards;
+}
