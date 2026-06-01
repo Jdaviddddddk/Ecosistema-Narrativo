@@ -106,71 +106,27 @@ export default function NomadaInactividad() {
     <div className="fixed inset-0 pointer-events-none z-50">
       <div
         className={`
-          absolute max-w-xs md:max-w-sm
-          rounded-xl px-4 py-3
-          shadow-2xl
-          pointer-events-auto
+          absolute nomada-card
           animate-nomada-entra
           ${mensajeActivo.posicion}
         `}
-        style={{
-          margin: '0 1rem',
-          background: 'rgba(255,255,255,0.08)',
-          backdropFilter: 'blur(14px)',
-          border: '1px solid rgba(0,79,205,0.15)',
-        }}
       >
-        <div className="flex items-start gap-3">
-          {/* Indicador lateral */}
-          <div
-            className="w-1 min-h-[2rem] rounded-full shrink-0"
-            style={{
-              background: 'linear-gradient(to bottom, var(--nexo-primary-light), transparent)',
-            }}
-          />
+        <p className="nomada-text">
+          {mensajeActivo.texto}
+        </p>
 
-          <div className="flex-1">
-            <p
-              className="text-sm leading-relaxed"
-              style={{
-                color: 'var(--nexo-dark)',
-                fontFamily: 'Montserrat',
-              }}
-            >
-              {mensajeActivo.texto}
-            </p>
-
-            {/* Firma */}
-            <div className="mt-2 pt-2 flex items-center gap-2" style={{ borderTop: '1px solid rgba(0,79,205,0.1)' }}>
-              <div
-                className="w-4 h-4 rounded-full"
-                style={{
-                  background: 'linear-gradient(135deg, var(--nexo-primary-light), transparent)',
-                  border: '1px solid rgba(0,79,205,0.2)',
-                }}
-              />
-              <span
-                className="text-xs uppercase tracking-wider"
-                style={{
-                  color: 'var(--nexo-primary)',
-                  fontFamily: 'Montserrat',
-                  fontWeight: 500,
-                }}
-              >
-                — Nómada
-              </span>
-            </div>
-          </div>
+        <div className="nomada-signature">
+          <div className="nomada-avatar" />
+          <span className="nomada-name">— Nómada</span>
         </div>
 
         {/* Progreso */}
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 rounded-b-xl overflow-hidden">
+        <div className="absolute bottom-0 left-6 right-6 h-0.5 rounded-full overflow-hidden">
           <div
-            className="h-full animate-nomada-progreso"
+            className="h-full animate-nomada-progreso rounded-full"
             style={{
               animationDuration: `${mensajeActivo.duracion}ms`,
-              background: 'var(--nexo-primary-light)',
-              opacity: 0.5,
+              background: 'linear-gradient(90deg, var(--nexo-primary), var(--nexo-primary-light))',
             }}
           />
         </div>

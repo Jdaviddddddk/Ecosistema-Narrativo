@@ -29,11 +29,10 @@ export default function ImageDetailOverlay({ image, onClose }: Props) {
   return (
     <div
       onClick={onClose}
+      className="nexo-overlay"
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(10, 10, 10, 0.94)",
-        backdropFilter: "blur(6px)",
         zIndex: 100,
         display: "flex",
         alignItems: "center",
@@ -41,26 +40,29 @@ export default function ImageDetailOverlay({ image, onClose }: Props) {
         padding: "64px",
         opacity: open ? 1 : 0,
         pointerEvents: open ? "auto" : "none",
-        transition: "opacity 0.35s ease",
+        transition: "opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
       }}
     >
       {image && (
         <div
           onClick={(e) => e.stopPropagation()}
+          className="nexo-overlay-card"
           style={{
             display: "grid",
             gridTemplateColumns: "minmax(0, 1.4fr) minmax(320px, 0.9fr)",
-            gap: "56px",
-            maxWidth: "1520px",
+            gap: "48px",
+            maxWidth: "1400px",
             width: "100%",
             maxHeight: "100%",
             alignItems: "center",
-            transform: open ? "scale(1)" : "scale(0.98)",
-            transition: "transform 0.35s ease",
+            transform: open ? "scale(1) translateY(0)" : "scale(0.96) translateY(20px)",
+            opacity: open ? 1 : 0,
+            transition: "all 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
           }}
         >
           {/* Image */}
           <div
+            className="nexo-overlay-image"
             style={{
               position: "relative",
               display: "flex",
@@ -77,7 +79,6 @@ export default function ImageDetailOverlay({ image, onClose }: Props) {
                 maxWidth: "100%",
                 maxHeight: "calc(100vh - 128px)",
                 objectFit: "contain",
-                boxShadow: "0 40px 100px rgba(0,0,0,0.5)",
               }}
             />
           </div>
@@ -85,87 +86,91 @@ export default function ImageDetailOverlay({ image, onClose }: Props) {
           {/* Text panel */}
           <div
             style={{
-              color: "#ffffff",
-              fontFamily: "system-ui, -apple-system, sans-serif",
               display: "flex",
               flexDirection: "column",
-              gap: "24px",
+              gap: "20px",
               maxHeight: "calc(100vh - 128px)",
               overflow: "auto",
+              padding: "8px 8px 8px 0",
             }}
           >
             {eyebrow && (
-              <p
-                style={{
-                  fontSize: "11px",
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  opacity: 0.55,
-                  margin: 0,
-                }}
-              >
+              <p className="nexo-overlay-eyebrow">
                 {eyebrow}
               </p>
             )}
 
             {image.title && (
-              <h2
-                style={{
-                  fontFamily: "'Times New Roman', serif",
-                  fontSize: "clamp(28px, 2.6vw, 40px)",
-                  fontWeight: 400,
-                  lineHeight: 1.15,
-                  letterSpacing: "-0.01em",
-                  margin: 0,
-                }}
-              >
+              <h2 className="nexo-overlay-title">
                 {image.title}
               </h2>
             )}
 
             {image.description && (
-              <p
-                style={{
-                  fontFamily: "'Times New Roman', serif",
-                  fontSize: "18px",
-                  lineHeight: 1.65,
-                  color: "rgba(255,255,255,0.85)",
-                  margin: 0,
-                }}
-              >
+              <p className="nexo-overlay-description">
                 {image.description}
               </p>
             )}
+
+            {/* Author info */}
+            <div className="nexo-overlay-meta">
+              <div className="nexo-overlay-author">
+                <div
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "50%",
+                    background: "linear-gradient(135deg, var(--nexo-primary), var(--nexo-primary-dark))",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontFamily: "'Sono', sans-serif",
+                    fontSize: "14px",
+                    color: "white",
+                    fontWeight: 700,
+                  }}
+                >
+                  {image.title?.charAt(0).toUpperCase() || "N"}
+                </div>
+                <div>
+                  <p className="nexo-overlay-author-name">Autor del proyecto</p>
+                  <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)", fontFamily: "'Montserrat', sans-serif" }}>
+                    {image.category}
+                  </p>
+                </div>
+              </div>
+            </div>
 
             {(overlayConfig.fileLabel || overlayConfig.seriesLabel) && (
               <div
                 style={{
                   marginTop: "8px",
                   paddingTop: "20px",
-                  borderTop: "1px solid rgba(255,255,255,0.15)",
+                  borderTop: "1px solid rgba(255,255,255,0.1)",
                   display: "grid",
                   gridTemplateColumns: "110px 1fr",
-                  rowGap: "8px",
+                  rowGap: "10px",
                   fontSize: "13px",
-                  opacity: 0.75,
+                  opacity: 0.7,
+                  fontFamily: "'Montserrat', sans-serif",
                 }}
               >
                 {overlayConfig.fileLabel && (
                   <>
-                    <span style={{ opacity: 0.6 }}>
+                    <span style={{ color: "rgba(255,255,255,0.5)" }}>
                       {overlayConfig.fileLabel}
                     </span>
-                    <span style={{ fontFamily: "monospace" }}>
+                    <span style={{ fontFamily: "monospace", color: "rgba(255,255,255,0.8)" }}>
                       {image.src.split("/").pop()}
                     </span>
                   </>
                 )}
                 {overlayConfig.seriesLabel && (
                   <>
-                    <span style={{ opacity: 0.6 }}>
+                    <span style={{ color: "rgba(255,255,255,0.5)" }}>
                       {overlayConfig.seriesLabel}
                     </span>
-                    <span>{image.title.split(" — ")[0]}</span>
+                    <span style={{ color: "rgba(255,255,255,0.8)" }}>{image.title.split(" — ")[0]}</span>
                   </>
                 )}
               </div>
@@ -174,27 +179,8 @@ export default function ImageDetailOverlay({ image, onClose }: Props) {
             {overlayConfig.closeLabel && (
               <button
                 onClick={onClose}
-                style={{
-                  alignSelf: "flex-start",
-                  marginTop: "16px",
-                  background: "transparent",
-                  color: "#fff",
-                  border: "1px solid rgba(255,255,255,0.35)",
-                  padding: "10px 22px",
-                  fontFamily: "system-ui, -apple-system, sans-serif",
-                  fontSize: "13px",
-                  letterSpacing: "0.04em",
-                  cursor: "pointer",
-                  transition: "background 0.2s ease, border-color 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(255,255,255,0.08)";
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.6)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.35)";
-                }}
+                className="nexo-overlay-close"
+                style={{ alignSelf: "flex-start", marginTop: "8px" }}
               >
                 {overlayConfig.closeLabel}
               </button>
@@ -203,26 +189,39 @@ export default function ImageDetailOverlay({ image, onClose }: Props) {
         </div>
       )}
 
-      {/* Close X (always in corner) */}
+      {/* Close X */}
       <button
         onClick={onClose}
         aria-label="Close"
         style={{
           position: "fixed",
-          top: "24px",
-          right: "32px",
-          background: "transparent",
-          border: "none",
+          top: "28px",
+          right: "36px",
+          background: "rgba(255,255,255,0.08)",
+          border: "1px solid rgba(255,255,255,0.15)",
+          borderRadius: "50%",
+          width: "44px",
+          height: "44px",
           color: "#fff",
-          fontSize: "28px",
+          fontSize: "22px",
           lineHeight: 1,
           cursor: "pointer",
-          padding: "8px 12px",
-          opacity: 0.7,
-          transition: "opacity 0.2s ease",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.3s ease",
+          backdropFilter: "blur(8px)",
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-        onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "rgba(0,79,205,0.3)";
+          e.currentTarget.style.borderColor = "var(--nexo-primary-light)";
+          e.currentTarget.style.transform = "rotate(90deg)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+          e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+          e.currentTarget.style.transform = "rotate(0deg)";
+        }}
       >
         ×
       </button>

@@ -2,6 +2,8 @@ export interface Project {
   id: string;
   title: string;
   author: string;
+  authorId: string;        // ← NUEVO: Google sub del autor
+  authorEmail: string;     // ← NUEVO: email del autor
   semester: string;
   subject: string;
   area: string;
@@ -533,3 +535,5 @@ export const areas = [
 ];
 
 export const semesters = ["1°", "2°", "3°", "4°", "5°", "6°", "7°", "8°", "9°", "10°"];
+// Exportar también como "proyectos base" para seed
+export const seedProjects = projects;

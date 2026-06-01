@@ -293,3 +293,371 @@
 .animate-nomada-progreso {
   animation: nomada-progreso linear forwards;
 }
+
+/* ============================================
+   VORTEX CARD STYLES
+   ============================================ */
+
+.vortex-card-container {
+  position: relative;
+  width: 280px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 79, 205, 0.15);
+  border: 1px solid rgba(0, 79, 205, 0.1);
+  backdrop-filter: blur(10px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+}
+
+.vortex-card-container:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 60px rgba(0, 79, 205, 0.25);
+  border-color: rgba(0, 79, 205, 0.2);
+}
+
+.vortex-card-thumbnail {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-bottom: 1px solid rgba(0, 79, 205, 0.08);
+}
+
+.vortex-card-body {
+  padding: 16px;
+}
+
+.vortex-card-title {
+  font-family: 'Sono', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--nexo-dark);
+  line-height: 1.3;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vortex-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.vortex-card-area {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--nexo-primary);
+  background: rgba(0, 79, 205, 0.08);
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+
+.vortex-card-author {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: var(--nexo-gray);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.vortex-card-author-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.vortex-card-description {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: var(--nexo-gray);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Badge de estado en tarjeta */
+.vortex-card-status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  backdrop-filter: blur(8px);
+}
+
+.vortex-card-status--published {
+  background: rgba(34, 197, 94, 0.9);
+  color: white;
+}
+
+.vortex-card-status--review {
+  background: rgba(245, 158, 11, 0.9);
+  color: white;
+}
+
+.vortex-card-status--draft {
+  background: rgba(107, 114, 128, 0.9);
+  color: white;
+}
+
+/* ============================================
+   NOMADA ENHANCED STYLES
+   ============================================ */
+
+.nomada-card {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(0, 79, 205, 0.12) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 8px 32px rgba(0, 79, 205, 0.1), 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+  padding: 20px 24px !important;
+  max-width: 380px !important;
+}
+
+.nomada-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20px;
+  right: 20px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--nexo-primary), var(--nexo-primary-light));
+  border-radius: 0 0 3px 3px;
+  opacity: 0.6;
+}
+
+.nomada-text {
+  font-family: 'Montserrat', sans-serif !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
+  color: var(--nexo-dark) !important;
+  font-weight: 400 !important;
+}
+
+.nomada-signature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 79, 205, 0.08);
+}
+
+.nomada-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--nexo-primary-light), var(--nexo-primary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nomada-avatar::after {
+  content: 'N';
+  color: white;
+  font-family: 'Sono', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.nomada-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--nexo-primary);
+}
+
+/* ============================================
+   OVERLAY NEXO STYLES
+   ============================================ */
+
+.nexo-overlay {
+  background: rgba(10, 15, 30, 0.92) !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+.nexo-overlay-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 79, 205, 0.15);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
+}
+
+.nexo-overlay-image {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.nexo-overlay-eyebrow {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--nexo-primary-light);
+  margin-bottom: 12px;
+}
+
+.nexo-overlay-title {
+  font-family: 'Sono', sans-serif;
+  font-size: clamp(24px, 2.5vw, 36px);
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.nexo-overlay-description {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.nexo-overlay-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nexo-overlay-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nexo-overlay-author-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(0, 79, 205, 0.3);
+}
+
+.nexo-overlay-author-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.nexo-overlay-close {
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 12px 28px;
+  border-radius: 100px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.02em;
+}
+
+.nexo-overlay-close:hover {
+  background: rgba(0, 79, 205, 0.2);
+  border-color: var(--nexo-primary-light);
+}
+
+/* Vortex central card overlay */
+.vortex-center-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateY(85px);
+  z-index: 10;
+  width: 300px;
+  pointer-events: none;
+}
+
+.vortex-center-info__card {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  border-radius: 0 0 20px 20px;
+  padding: 18px 22px;
+  border: 1px solid rgba(0, 79, 205, 0.1);
+  border-top: none;
+  box-shadow: 0 12px 40px rgba(0, 79, 205, 0.15);
+  text-align: center;
+}
+
+.vortex-center-info__area {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 100px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: rgba(0, 79, 205, 0.08);
+  color: var(--nexo-primary);
+  font-family: 'Montserrat', sans-serif;
+  margin-bottom: 8px;
+}
+
+.vortex-center-info__title {
+  font-family: 'Sono', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--nexo-dark);
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.vortex-center-info__author {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.vortex-center-info__author-avatar {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.vortex-center-info__author-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  color: var(--nexo-gray);
+}
+
+.vortex-center-info__desc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  color: #888;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

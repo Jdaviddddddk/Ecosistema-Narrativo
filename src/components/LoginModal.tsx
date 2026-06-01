@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { GoogleLogin } from "@react-oauth/google";
 
 interface Props {
   open: boolean;
@@ -8,18 +9,10 @@ interface Props {
 
 export default function LoginModal({ open, onClose }: Props) {
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (open) {
-      setEmail("");
-      setError("");
-      setSuccess(false);
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
+    if (open) setError("");
   }, [open]);
 
   useEffect(() => {
@@ -30,32 +23,22 @@ export default function LoginModal({ open, onClose }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (!email.trim()) {
-      setError("Ingresa tu correo institucional");
-      return;
+  const handleGoogleSuccess = (credentialResponse: any) => {
+    try {
+      login(credentialResponse.credential);
+      onClose();
+    } catch (err: any) {
+      setError(err.message || "Error al iniciar sesión");
     }
-
-    if (!email.endsWith("@universidadmayor.edu.co")) {
-      setError("Correo institucional requerido (@universidadmayor.edu.co)");
-      return;
-    }
-
-    login(email);
-    setSuccess(true);
   };
 
-  const handleClose = () => {
-    onClose();
-    setTimeout(() => setSuccess(false), 350);
+  const handleGoogleError = () => {
+    setError("No se pudo conectar con Google. Intenta de nuevo.");
   };
 
   return (
     <div
-      onClick={handleClose}
+      onClick={onClose}
       className="fixed inset-0 z-[200] flex items-center justify-center transition-opacity duration-300"
       style={{
         background: "rgba(0, 0, 0, 0.6)",
@@ -71,12 +54,11 @@ export default function LoginModal({ open, onClose }: Props) {
           transform: open ? "scale(1)" : "scale(0.95)",
         }}
       >
-        {/* Header decorativo NEXO */}
         <div className="h-1.5 nexo-gradient-bg" />
 
         <div className="p-8 md:p-10">
           <button
-            onClick={handleClose}
+            onClick={onClose}
             className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -84,90 +66,47 @@ export default function LoginModal({ open, onClose }: Props) {
             </svg>
           </button>
 
-          {!success ? (
-            <>
-              {/* Logo NEXO */}
-              <div className="flex justify-center mb-6">
-  <img 
-    src="/images/logo-nexo.png" 
-    className="h-16 w-auto"
-  />
-</div>
-              
+          <div className="flex justify-center mb-6">
+            <img src="/images/logo-nexo.png" className="h-16 w-auto" alt="NEXO" />
+          </div>
 
-              <p className="text-center text-xs uppercase tracking-[0.2em] mb-2 font-montserrat font-medium text-nexo-primary">
-                Acceso al Ecosistema
-              </p>
+          <p className="text-center text-xs uppercase tracking-[0.2em] mb-2 font-montserrat font-medium text-nexo-primary">
+            Acceso al Ecosistema
+          </p>
 
-              <h2 className="text-center text-2xl md:text-3xl mb-2 font-sono font-bold text-nexo-dark">
-                Bienvenido a NEXO
-              </h2>
+          <h2 className="text-center text-2xl md:text-3xl mb-2 font-sono font-bold text-nexo-dark">
+            Bienvenido a NEXO
+          </h2>
 
-              <p className="text-center text-sm mb-8 font-montserrat text-gray-500">
-                Ingresa con tu correo institucional para acceder a tu perfil y proyectos.
-              </p>
+          <p className="text-center text-sm mb-8 font-montserrat text-gray-500">
+            Ingresa con tu cuenta Google institucional para acceder a tu perfil y proyectos.
+          </p>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <input
-                    ref={inputRef}
-                    type="email"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      setError("");
-                    }}
-                    placeholder="usuario@universidadmayor.edu.co"
-                    className="nexo-input"
-                    style={{
-                      borderColor: error ? "#ef4444" : undefined,
-                    }}
-                  />
-                  {error && (
-                    <p className="mt-2 text-sm text-red-500 flex items-center gap-2 font-montserrat">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="10" />
-                        <path d="M12 8v4M12 16h.01" />
-                      </svg>
-                      {error}
-                    </p>
-                  )}
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full nexo-btn-primary py-4 text-sm font-semibold"
-                >
-                  Acceder
-                </button>
-              </form>
-
-              <p className="mt-6 text-center text-xs font-montserrat text-gray-400">
-                Solo correos con dominio <span className="font-semibold text-nexo-primary">@universidadmayor.edu.co</span> tienen acceso.
-              </p>
-            </>
-          ) : (
-            <div className="text-center py-8 animate-fade-in">
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3">
-                  <path d="M20 6L9 17l-5-5" />
-                </svg>
-              </div>
-              <h2 className="text-2xl mb-3 font-sono font-bold text-nexo-dark">
-                ¡Acceso concedido!
-              </h2>
-              <p className="text-sm mb-8 font-montserrat text-gray-500">
-                Bienvenido, <span className="font-semibold">{email.split("@")[0].replace(".", " ")}</span>.<br />
-                Ya puedes explorar y compartir tus proyectos.
-              </p>
-              <button
-                onClick={handleClose}
-                className="nexo-btn-outline px-8"
-              >
-                Continuar
-              </button>
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2 text-sm text-red-600">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4M12 16h.01" />
+              </svg>
+              {error}
             </div>
           )}
+
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              theme="outline"
+              size="large"
+              text="signin_with"
+              shape="pill"
+              locale="es"
+            />
+          </div>
+
+          <p className="mt-6 text-center text-xs font-montserrat text-gray-400">
+            Solo correos con dominio <span className="font-semibold text-nexo-primary">@universidadmayor.edu.co</span> tienen acceso.
+          </p>
         </div>
       </div>
     </div>

@@ -61,6 +61,7 @@ void main() {
 const instancedFragmentShader = `
 varying vec4 vTextureCoords;
 varying vec2 vUv;
+varying float vAspectRatio;
 
 uniform sampler2D uAtlas;
 
@@ -79,7 +80,7 @@ void main() {
 }
 `;
 
-const centeredVertexShader = `
+const centerVertexShader = `
 varying vec2 vUv;
 
 void main() {
@@ -90,7 +91,7 @@ void main() {
 }
 `;
 
-const centeredFragmentShader = `
+const centerFragmentShader = `
 varying vec2 vUv;
 
 uniform sampler2D uAtlas;
@@ -102,9 +103,34 @@ void main() {
   float yStart = uTextureCoords.z;
   float yEnd = uTextureCoords.w;
 
+  // Dimensiones de la imagen en el atlas
+  float imgWidth = xEnd - xStart;
+  float imgHeight = yStart - yEnd;
+  float imgAspect = imgWidth / imgHeight; // Portrait: < 1.0
+  
+  // El mesh es landscape: 1.0 x 0.625, aspect = 1.6
+  float meshAspect = 1.0 / 0.625;
+  
   vec2 atlasUV;
-  atlasUV.x = mix(xStart, xEnd, vUv.x);
-  atlasUV.y = mix(yStart, yEnd, 1.0 - vUv.y);
+  
+  // La imagen del atlas es portrait (más alta que ancha)
+  // La recortamos al centro para mostrarla en landscape
+  if (imgAspect < meshAspect) {
+    // Imagen más alta que ancha: recortar arriba y abajo
+    // Escalar para que el ancho llene el mesh
+    float scaleY = imgAspect / meshAspect; // Cuánto de la altura usar
+    float offsetY = (1.0 - scaleY) * 0.5; // Centrar verticalmente
+    
+    atlasUV.x = mix(xStart, xEnd, vUv.x);
+    atlasUV.y = mix(yStart, yEnd, 1.0 - (vUv.y * scaleY + offsetY));
+  } else {
+    // Imagen más ancha que alta: recortar lados
+    float scaleX = meshAspect / imgAspect;
+    float offsetX = (1.0 - scaleX) * 0.5;
+    
+    atlasUV.x = mix(xStart, xEnd, vUv.x * scaleX + offsetX);
+    atlasUV.y = mix(yStart, yEnd, 1.0 - vUv.y);
+  }
 
   vec4 color = texture2D(uAtlas, atlasUV);
   gl_FragColor = color;
@@ -182,33 +208,29 @@ export default class VortexGallery {
   }
 
   async loadTextureAtlas(paths: string[]) {
-    // ✅ DESPUÉS — carga las que pueda, ignora las rotas
-const images = await Promise.all(
-  paths.map(
-    (path) =>
-      new Promise<HTMLImageElement | null>((resolve) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => resolve(img);
-        img.onerror = () => {
-          console.warn(`VortexGallery: imagen no cargada, se omite: ${path}`);
-          resolve(null); // ← no rechaza, resuelve con null
-        };
-        img.src = path;
-      })
-  )
-);
+    const images = await Promise.all(
+      paths.map(
+        (path) =>
+          new Promise<HTMLImageElement | null>((resolve) => {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.onload = () => resolve(img);
+            img.onerror = () => {
+              console.warn(`VortexGallery: imagen no cargada, se omite: ${path}`);
+              resolve(null);
+            };
+            img.src = path;
+          })
+      )
+    );
 
-// Filtra las imágenes que no cargaron
-const validImages = images.filter((img): img is HTMLImageElement => img !== null);
+    const validImages = images.filter((img): img is HTMLImageElement => img !== null);
 
-if (validImages.length === 0) {
-  console.error("VortexGallery: no se pudo cargar ninguna imagen");
-  return;
-}
+    if (validImages.length === 0) {
+      console.error("VortexGallery: no se pudo cargar ninguna imagen");
+      return;
+    }
 
-    // Resize each image to fit within the atlas grid while preserving aspect ratio.
-    // Target cell: 256x320 (4:5 portrait). Images are scaled-down copies.
     const CELL_W = 256;
     const CELL_H = 320;
     const cols = Math.ceil(Math.sqrt(validImages.length));
@@ -231,19 +253,16 @@ if (validImages.length === 0) {
       const destX = col * CELL_W;
       const destY = row * CELL_H;
 
-      // Scale to fit inside CELL_W x CELL_H preserving aspect ratio
       const imgAspect = img.width / img.height;
       const cellAspect = CELL_W / CELL_H;
       let drawW: number, drawH: number, offsetX: number, offsetY: number;
 
       if (imgAspect > cellAspect) {
-        // Image is wider relative to cell — fit to width
         drawW = CELL_W;
         drawH = CELL_W / imgAspect;
         offsetX = 0;
         offsetY = (CELL_H - drawH) / 2;
       } else {
-        // Image is taller relative to cell — fit to height
         drawH = CELL_H;
         drawW = CELL_H * imgAspect;
         offsetX = (CELL_W - drawW) / 2;
@@ -254,7 +273,6 @@ if (validImages.length === 0) {
 
       const aspectRatio = img.width / img.height;
 
-      // Tight UVs covering only the actual drawn image area (no cell padding)
       const xStart = (destX + offsetX) / atlasWidth;
       const xEnd = (destX + offsetX + drawW) / atlasWidth;
       const yStart = 1 - (destY + offsetY) / atlasHeight;
@@ -277,7 +295,7 @@ if (validImages.length === 0) {
   }
 
   buildInstancedMesh() {
-    const geometry = new THREE.BoxGeometry(1.5, 1.5, 0.075);
+    const geometry = new THREE.BoxGeometry(1.5, 1.5, 0.04);
 
     const RADIUS = 6;
     const HEIGHT = 120;
@@ -373,11 +391,13 @@ if (validImages.length === 0) {
   }
 
   buildCenterMesh() {
-    const geometry = new THREE.PlaneGeometry(1.7, 2.3);
+    // Mesh central: 1.0 x 0.625 (16:10 landscape, más grande que antes)
+    // La imagen del atlas es portrait, el shader la recorta al centro
+    const geometry = new THREE.PlaneGeometry(1.0, 0.625);
 
     this.centerMaterial = new THREE.ShaderMaterial({
-      vertexShader: centeredVertexShader,
-      fragmentShader: centeredFragmentShader,
+      vertexShader: centerVertexShader,
+      fragmentShader: centerFragmentShader,
       uniforms: {
         uAtlas: { value: this.atlasTexture },
         uTextureCoords: {
@@ -390,6 +410,7 @@ if (validImages.length === 0) {
         },
       },
       transparent: true,
+      side: THREE.DoubleSide,
     });
 
     this.centerMesh = new THREE.Mesh(geometry, this.centerMaterial);
@@ -478,18 +499,10 @@ if (validImages.length === 0) {
     }
   }
 
-  /**
-   * Hit-test a canvas-local click. Returns the index into `imageInfos` of the
-   * image the user clicked on, or null if nothing was hit. Checks the center
-   * mesh first (largest, always in front), then projects every instance's
-   * current world position to screen space and picks the nearest within a
-   * small pixel radius.
-   */
   pickAtScreen(clientX: number, clientY: number, canvasRect: DOMRect): number | null {
     const ndcX = ((clientX - canvasRect.left) / canvasRect.width) * 2 - 1;
     const ndcY = -(((clientY - canvasRect.top) / canvasRect.height) * 2 - 1);
 
-    // 1) Center mesh — raycast
     if (this.centerMesh) {
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(new THREE.Vector2(ndcX, ndcY), this.camera);
@@ -499,7 +512,6 @@ if (validImages.length === 0) {
       }
     }
 
-    // 2) Instanced images — CPU-side position replay
     if (!this.instanceData) return null;
 
     const w = canvasRect.width;
@@ -521,7 +533,6 @@ if (validImages.length === 0) {
 
     for (let i = 0; i < this.instanceCount; i++) {
       let zPos = heights[i] + scrollY;
-      // match shader: mod((zPos - minZ), zRange) + minZ; ensure positive
       const shifted = zPos - minZ;
       zPos = ((shifted % zRange) + zRange) % zRange + minZ;
       const theta = angles[i] + speedY * 0.4 * speeds[i];

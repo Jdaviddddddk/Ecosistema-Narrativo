@@ -72,9 +72,11 @@ export default function NexoHeader() {
                   onClick={() => navigate("/yo")}
                   className="flex items-center gap-2.5 px-4 py-2 rounded-full transition-all duration-300 hover:bg-blue-50"
                 >
-                  <div className="w-8 h-8 rounded-full nexo-gradient-bg flex items-center justify-center text-white text-sm font-bold shadow-md">
-                    {user?.name.charAt(0).toUpperCase()}
-                  </div>
+                  <img 
+  src={user?.avatar || "/images/avatar_default.jpg"} 
+  alt={user?.name}
+  className="w-8 h-8 rounded-full object-cover shadow-md"
+/>
                   <span className="text-sm font-medium font-montserrat text-nexo-dark">
                     {user?.name.split(" ")[0]}
                   </span>

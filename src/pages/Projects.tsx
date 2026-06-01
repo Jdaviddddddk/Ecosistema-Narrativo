@@ -224,19 +224,16 @@ export default function Projects() {
                     onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
                     onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
                   >
-                    <div style={{
-                      width: "24px",
-                      height: "24px",
-                      borderRadius: "50%",
-                      background: "rgba(0,0,0,0.1)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "11px",
-                      fontFamily: "'Sono', sans-serif",
-                    }}>
-                      {user?.name.charAt(0).toUpperCase()}
-                    </div>
+                    <img 
+  src={user?.avatar || "/images/avatar_default.jpg"} 
+  alt={user?.name}
+  style={{
+    width: "24px",
+    height: "24px",
+    borderRadius: "50%",
+    objectFit: "cover",
+  }}
+/>
                     Yo
                   </button>
                   <button

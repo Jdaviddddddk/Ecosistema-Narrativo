@@ -125,16 +125,16 @@ export default function ProjectDetail() {
               {project.title}
             </h1>
 
-            <p
-              style={{
-                fontFamily: "system-ui, sans-serif",
-                fontSize: "16px",
-                color: "rgba(0,0,0,0.6)",
-                marginBottom: "32px",
-              }}
-            >
-              por <strong style={{ color: "#000" }}>{project.author}</strong>
-            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "32px" }}>
+  <img 
+    src={project.authorAvatar || "/images/avatar_default.jpg"} 
+    alt={project.author}
+    style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
+  />
+  <p style={{ fontFamily: "system-ui, sans-serif", fontSize: "16px", color: "rgba(0,0,0,0.6)" }}>
+    por <strong style={{ color: "#000" }}>{project.author}</strong>
+  </p>
+</div>
 
             {/* Reactions */}
             <div style={{ display: "flex", gap: "20px", marginBottom: "32px" }}>

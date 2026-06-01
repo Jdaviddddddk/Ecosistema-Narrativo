@@ -2,9 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import VortexGallery from "@/lib/VortexGallery";
 import Lenis from "lenis";
-import {
-  siteConfig,
-} from "@/config";
+import { siteConfig } from "@/config";
 import ImageDetailOverlay from "@/components/ImageDetailOverlay";
 import LoginModal from "@/components/LoginModal";
 import { useMemo } from "react";
@@ -22,6 +20,7 @@ export default function Home() {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [loginOpen, setLoginOpen] = useState(false);
   const [isNight, setIsNight] = useState(false);
+  const [centerProject, setCenterProject] = useState<typeof projects[0] | null>(null);
 
   const images = useMemo(() => {
     return projects.flatMap((p) =>
@@ -71,6 +70,17 @@ export default function Home() {
     const color = isNight ? 0x001233 : 0xffffff;
     vortexRef.current?.setBackgroundColor(color);
   }, [isNight]);
+
+  // Actualizar proyecto central según el textureIndex del vortex
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (vortexRef.current && projects.length > 0) {
+        const idx = vortexRef.current.textureIndex % projects.length;
+        setCenterProject(projects[idx]);
+      }
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
 
   if (!hasImages) return null;
 
@@ -126,6 +136,138 @@ export default function Home() {
           }}
         />
 
+        {/* OVERLAY: Info del proyecto central - AHORA MÁS GRANDE CON BLUR */}
+{centerProject && (
+  <div
+    style={{
+      position: "absolute",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%) translateY(62px)",
+      zIndex: 5,
+      width: "400px",
+      pointerEvents: "none",
+    }}
+  >
+    <div
+      style={{
+        background: "rgba(255,255,255,0.75)", // Más transparente (antes 0.92)
+        backdropFilter: "blur(16px) saturate(140%)",
+        WebkitBackdropFilter: "blur(16px) saturate(140%)",
+        borderRadius: "0 0 20px 20px",
+        padding: "20px 24px",
+        border: "1px solid rgba(255,255,255,0.4)", // Más transparente
+        borderTop: "none",
+        boxShadow: "0 16px 40px rgba(0,79,205,0.1), 0 4px 12px rgba(0,0,0,0.04)",
+        textAlign: "center",
+        animation: "fadeIn 0.5s ease-out",
+      }}
+    >
+      {/* Area tag */}
+      <span
+        style={{
+          display: "inline-block",
+          padding: "3px 12px",
+          borderRadius: "100px",
+          fontSize: "10px",
+          fontWeight: 600,
+          textTransform: "uppercase",
+          letterSpacing: "0.1em",
+          background: "linear-gradient(135deg, rgba(0,79,205,0.1), rgba(0,79,205,0.05))",
+          color: "#004FCD",
+          fontFamily: "'Montserrat', sans-serif",
+          marginBottom: "8px",
+        }}
+      >
+        {centerProject.area}
+      </span>
+
+      {/* Title */}
+      <h3
+        style={{
+          fontFamily: "'Sono', sans-serif",
+          fontSize: "18px",
+          fontWeight: 700,
+          color: "#1a1a1a",
+          lineHeight: 1.2,
+          marginBottom: "6px",
+        }}
+      >
+        {centerProject.title}
+      </h3>
+
+      {/* Author */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "8px",
+          marginBottom: "8px",
+        }}
+      >
+        {isAuthenticated && user ? (
+          <img
+            src={user.avatar}
+            alt={user.name}
+            style={{
+              width: "20px",
+              height: "20px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              border: "2px solid rgba(0,79,205,0.2)",
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: "20px",
+              height: "20px",
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #004FCD, #0039a8)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "10px",
+              color: "white",
+              fontFamily: "'Sono', sans-serif",
+              fontWeight: 700,
+            }}
+          >
+            {centerProject.author.charAt(0).toUpperCase()}
+          </div>
+        )}
+        <span
+          style={{
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: "12px",
+            color: "#555",
+            fontWeight: 500,
+          }}
+        >
+          {centerProject.author}
+        </span>
+      </div>
+
+      {/* Description */}
+      <p
+        style={{
+          fontFamily: "'Montserrat', sans-serif",
+          fontSize: "12px",
+          color: "#777",
+          lineHeight: 1.6,
+          display: "-webkit-box",
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+        }}
+      >
+        {centerProject.originStory}
+      </p>
+    </div>
+  </div>
+)}
+
         <div
           style={{
             position: "absolute",
@@ -138,130 +280,125 @@ export default function Home() {
           }}
         >
           {/* Top Navigation Bar - NEXO Style */}
-<div
-  style={{
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "20px 32px",
-    pointerEvents: "auto",
-  }}
->
-  {/* Logo NEXO */}
-  <Link to="/" className="flex items-center gap-3 group" style={{ textDecoration: "none" }}>
-  <img 
-    src="/images/logo-nexo.png"
-    className="h-8 w-auto transition-transform duration-300 group-hover:scale-105"
-    style={{ filter: isNight ? "brightness(0) invert(1)" : "none" }}
-  />
-</Link>
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "20px 32px",
+              pointerEvents: "auto",
+            }}
+          >
+            {/* Logo NEXO */}
+            <Link to="/" className="flex items-center gap-3 group" style={{ textDecoration: "none" }}>
+              <img
+                src="/images/logo-nexo.png"
+                className="h-8 w-auto transition-transform duration-300 group-hover:scale-105"
+                style={{ filter: isNight ? "brightness(0) invert(1)" : "none" }}
+              />
+            </Link>
 
-  <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-    <Link
-      to="/info"
-      className="nexo-nav-link"
-      style={{
-        color: textColor,
-        opacity: 0.8,
-        fontSize: "13px",
-      }}
-    >
-      Nosotros
-    </Link>
+            <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+              <Link
+                to="/info"
+                className="nexo-nav-link"
+                style={{
+                  color: textColor,
+                  opacity: 0.8,
+                  fontSize: "13px",
+                }}
+              >
+                Nosotros
+              </Link>
 
-    <Link
-      to="/projects"
-      className="nexo-nav-link"
-      style={{
-        color: textColor,
-        opacity: 0.8,
-        fontSize: "13px",
-      }}
-    >
-      Proyectos
-    </Link>
+              <Link
+                to="/projects"
+                className="nexo-nav-link"
+                style={{
+                  color: textColor,
+                  opacity: 0.8,
+                  fontSize: "13px",
+                }}
+              >
+                Proyectos
+              </Link>
 
-    {isAuthenticated ? (
-      <>
-        <button
-          onClick={() => navigate("/yo")}
-          className="flex items-center gap-2 transition-all duration-300 hover:opacity-100"
-          style={{
-            fontFamily: "'Montserrat', sans-serif",
-            fontSize: "13px",
-            color: textColor,
-            background: "transparent",
-            border: "none",
-            cursor: "pointer",
-            opacity: 0.8,
-          }}
-        >
-          <div style={{
-            width: "28px",
-            height: "28px",
-            borderRadius: "50%",
-            background: "linear-gradient(135deg, #004FCD, #0039a8)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "12px",
-            fontFamily: "'Sono', sans-serif",
-            color: "white",
-            fontWeight: 700,
-          }}>
-            {user?.name.charAt(0).toUpperCase()}
+              {isAuthenticated ? (
+                <>
+                  <button
+                    onClick={() => navigate("/yo")}
+                    className="flex items-center gap-2 transition-all duration-300 hover:opacity-100"
+                    style={{
+                      fontFamily: "'Montserrat', sans-serif",
+                      fontSize: "13px",
+                      color: textColor,
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      opacity: 0.8,
+                    }}
+                  >
+                    <img
+                      src={user?.avatar || "/images/avatar_default.jpg"}
+                      alt={user?.name}
+                      style={{
+                        width: "28px",
+                        height: "28px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
+                    />
+                    Yo
+                  </button>
+                  <button
+                    onClick={logout}
+                    style={{
+                      fontFamily: "'Montserrat', sans-serif",
+                      fontSize: "13px",
+                      color: textColor,
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                      opacity: 0.7,
+                      transition: "opacity 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
+                  >
+                    Salir
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={() => setLoginOpen(true)}
+                  className="nexo-btn-primary"
+                  style={{ fontSize: "12px", padding: "10px 20px" }}
+                >
+                  Acceso
+                </button>
+              )}
+
+              <button
+                onClick={() => setIsNight(!isNight)}
+                className="flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-300"
+                style={{
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: "11px",
+                  color: textColor,
+                  background: isNight ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
+                  border: `1px solid ${borderColor}`,
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {isNight ? "☀️ Día" : "🌙 Noche"}
+              </button>
+            </div>
           </div>
-          Yo
-        </button>
-        <button
-          onClick={logout}
-          style={{
-            fontFamily: "'Montserrat', sans-serif",
-            fontSize: "13px",
-            color: textColor,
-            background: "transparent",
-            border: "none",
-            cursor: "pointer",
-            opacity: 0.7,
-            transition: "opacity 0.3s ease",
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-          onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.7")}
-        >
-          Salir
-        </button>
-      </>
-    ) : (
-      <button
-        onClick={() => setLoginOpen(true)}
-        className="nexo-btn-primary"
-        style={{ fontSize: "12px", padding: "10px 20px" }}
-      >
-        Acceso
-      </button>
-    )}
-
-    <button
-      onClick={() => setIsNight(!isNight)}
-      className="flex items-center gap-2 px-3 py-2 rounded-full transition-all duration-300"
-      style={{
-        fontFamily: "'Montserrat', sans-serif",
-        fontSize: "11px",
-        color: textColor,
-        background: isNight ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)",
-        border: `1px solid ${borderColor}`,
-        letterSpacing: "0.08em",
-        textTransform: "uppercase",
-      }}
-    >
-      {isNight ? "☀️ Día" : "🌙 Noche"}
-    </button>
-  </div>
-</div>
 
           {/* Bottom Info Bar */}
           <div
@@ -297,56 +434,56 @@ export default function Home() {
             </div>
 
             <button
-  onClick={scrollToContent}
-  style={{
-    position: "absolute",
-    bottom: "32px",
-    left: "50%",
-    transform: "translateX(-50%)",
-    fontFamily: "'Montserrat', sans-serif",
-    fontSize: "13px",
-    fontWeight: 600,
-    color: "#ffffff",
-    background: "linear-gradient(135deg, #004FCD, #0039a8)",
-    border: "none",
-    borderRadius: "100px",
-    padding: "16px 36px",
-    cursor: "pointer",
-    letterSpacing: "0.08em",
-    textTransform: "uppercase",
-    pointerEvents: "auto",
-    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-    boxShadow: "0 8px 32px rgba(0, 79, 205, 0.4)",
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  }}
-  onMouseEnter={(e) => {
-    e.currentTarget.style.transform = "translateX(-50%) translateY(-3px)";
-    e.currentTarget.style.boxShadow = "0 12px 40px rgba(0, 79, 205, 0.6)";
-    e.currentTarget.style.background = "linear-gradient(135deg, #0058e6, #0045a0)";
-  }}
-  onMouseLeave={(e) => {
-    e.currentTarget.style.transform = "translateX(-50%) translateY(0)";
-    e.currentTarget.style.boxShadow = "0 8px 32px rgba(0, 79, 205, 0.4)";
-    e.currentTarget.style.background = "linear-gradient(135deg, #004FCD, #0039a8)";
-  }}
->
-  Explorar
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    style={{ transition: "transform 0.3s ease" }}
-  >
-    <path d="M12 5v14M5 12l7 7 7-7" />
-  </svg>
-</button>
+              onClick={scrollToContent}
+              style={{
+                position: "absolute",
+                bottom: "32px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: "13px",
+                fontWeight: 600,
+                color: "#ffffff",
+                background: "linear-gradient(135deg, #004FCD, #0039a8)",
+                border: "none",
+                borderRadius: "100px",
+                padding: "16px 36px",
+                cursor: "pointer",
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                pointerEvents: "auto",
+                transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                boxShadow: "0 8px 32px rgba(0, 79, 205, 0.4)",
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateX(-50%) translateY(-3px)";
+                e.currentTarget.style.boxShadow = "0 12px 40px rgba(0, 79, 205, 0.6)";
+                e.currentTarget.style.background = "linear-gradient(135deg, #0058e6, #0045a0)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateX(-50%) translateY(0)";
+                e.currentTarget.style.boxShadow = "0 8px 32px rgba(0, 79, 205, 0.4)";
+                e.currentTarget.style.background = "linear-gradient(135deg, #004FCD, #0039a8)";
+              }}
+            >
+              Explorar
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{ transition: "transform 0.3s ease" }}
+              >
+                <path d="M12 5v14M5 12l7 7 7-7" />
+              </svg>
+            </button>
 
             <button
               onClick={() => {
@@ -391,209 +528,209 @@ export default function Home() {
       </section>
 
       {/* SECCIÓN: FUNCIONAMIENTO */}
-<section
-  id="como-funciona"
-  style={{
-    position: "relative",
-    zIndex: 20,
-    padding: "120px 32px",
-    background: bgColor,
-    transition: "background 1.2s ease",
-  }}
->
-  <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-    <p
-      style={{
-        fontFamily: "'Montserrat', sans-serif",
-        fontSize: "11px",
-        color: isNight ? "rgba(0,79,205,0.8)" : "#004FCD",
-        letterSpacing: "0.2em",
-        textTransform: "uppercase",
-        marginBottom: "16px",
-        fontWeight: 600,
-      }}
-    >
-      Funcionamiento
-    </p>
-    <h2
-      style={{
-        fontFamily: "'Sono', sans-serif",
-        fontWeight: 700,
-        fontSize: "clamp(32px, 5vw, 56px)",
-        color: textColor,
-        marginBottom: "64px",
-        lineHeight: 1.1,
-        transition: "color 1.2s ease",
-        letterSpacing: "-0.02em",
-      }}
-    >
-      Un ecosistema que potencia<br />cada proyecto
-    </h2>
-
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-        gap: "24px",
-      }}
-    >
-      {[
-        {
-          title: "Narrativa Estructurada",
-          description: "Plantillas que guían la publicación de proyectos con formatos claros y coherentes.",
-          icon: (
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004FCD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <line x1="16" y1="13" x2="8" y2="13" />
-              <line x1="16" y1="17" x2="8" y2="17" />
-              <polyline points="10 9 9 9 8 9" />
-            </svg>
-          ),
-        },
-        {
-          title: "Curaduría Inteligente",
-          description: "Visibilidad dirigida a audiencias relevantes según disciplina e intereses.",
-          icon: (
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004FCD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-              <path d="M11 8v6" />
-              <path d="M8 11h6" />
-            </svg>
-          ),
-        },
-        {
-          title: "Conexiones entre Proyectos",
-          description: "Red de vinculación automática por etiquetas y áreas de conocimiento.",
-          icon: (
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004FCD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="18" cy="5" r="3" />
-              <circle cx="6" cy="12" r="3" />
-              <circle cx="18" cy="19" r="3" />
-              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-            </svg>
-          ),
-        },
-        {
-          title: "Comunidad Activa",
-          description: "Espacios de interacción, retroalimentación y colaboración entre pares.",
-          icon: (
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004FCD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-          ),
-        },
-      ].map((cap, i) => (
-        <div
-          key={i}
-          style={{
-            background: isNight ? "rgba(255,255,255,0.03)" : "white",
-            border: `1px solid ${isNight ? "rgba(0,79,205,0.15)" : "rgba(0,79,205,0.08)"}`,
-            padding: "40px 32px",
-            borderRadius: "16px",
-            cursor: "pointer",
-            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-            position: "relative",
-            overflow: "hidden",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "translateY(-8px)";
-            e.currentTarget.style.boxShadow = isNight
-              ? "0 20px 40px rgba(0,79,205,0.2)"
-              : "0 20px 40px rgba(0,79,205,0.12)";
-            e.currentTarget.style.borderColor = "rgba(0,79,205,0.3)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = "none";
-            e.currentTarget.style.borderColor = isNight ? "rgba(0,79,205,0.15)" : "rgba(0,79,205,0.08)";
-          }}
-        >
-          {/* Número de fondo decorativo */}
-          <div
-            style={{
-              position: "absolute",
-              top: "20px",
-              right: "24px",
-              fontFamily: "'Sono', sans-serif",
-              fontSize: "64px",
-              fontWeight: 700,
-              color: isNight ? "rgba(0,79,205,0.08)" : "rgba(0,79,205,0.06)",
-              lineHeight: 1,
-              userSelect: "none",
-            }}
-          >
-            0{i + 1}
-          </div>
-
-          {/* Icono */}
-          <div
-            style={{
-              width: "56px",
-              height: "56px",
-              borderRadius: "12px",
-              background: isNight ? "rgba(0,79,205,0.15)" : "rgba(0,79,205,0.08)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: "24px",
-              transition: "all 0.3s ease",
-            }}
-          >
-            {cap.icon}
-          </div>
-
-          <h3
-            style={{
-              fontFamily: "'Sono', sans-serif",
-              fontWeight: 700,
-              fontSize: "22px",
-              color: textColor,
-              marginBottom: "12px",
-              transition: "color 1.2s ease",
-              letterSpacing: "-0.01em",
-            }}
-          >
-            {cap.title}
-          </h3>
+      <section
+        id="como-funciona"
+        style={{
+          position: "relative",
+          zIndex: 20,
+          padding: "120px 32px",
+          background: bgColor,
+          transition: "background 1.2s ease",
+        }}
+      >
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <p
             style={{
               fontFamily: "'Montserrat', sans-serif",
-              fontSize: "14px",
-              color: mutedColor,
-              lineHeight: 1.7,
-              fontWeight: 400,
+              fontSize: "11px",
+              color: isNight ? "rgba(0,79,205,0.8)" : "#004FCD",
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              marginBottom: "16px",
+              fontWeight: 600,
             }}
           >
-            {cap.description}
+            Funcionamiento
           </p>
+          <h2
+            style={{
+              fontFamily: "'Sono', sans-serif",
+              fontWeight: 700,
+              fontSize: "clamp(32px, 5vw, 56px)",
+              color: textColor,
+              marginBottom: "64px",
+              lineHeight: 1.1,
+              transition: "color 1.2s ease",
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Un ecosistema que potencia<br />cada proyecto
+          </h2>
 
-          {/* Línea decorativa inferior */}
           <div
             style={{
-              position: "absolute",
-              bottom: 0,
-              left: "32px",
-              right: "32px",
-              height: "3px",
-              background: "linear-gradient(90deg, #004FCD, #3b7de8)",
-              borderRadius: "3px 3px 0 0",
-              opacity: 0,
-              transition: "opacity 0.3s ease",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gap: "24px",
             }}
-            className="card-accent-line"
-          />
+          >
+            {[
+              {
+                title: "Narrativa Estructurada",
+                description: "Plantillas que guían la publicación de proyectos con formatos claros y coherentes.",
+                icon: (
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004FCD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                ),
+              },
+              {
+                title: "Curaduría Inteligente",
+                description: "Visibilidad dirigida a audiencias relevantes según disciplina e intereses.",
+                icon: (
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004FCD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                    <path d="M11 8v6" />
+                    <path d="M8 11h6" />
+                  </svg>
+                ),
+              },
+              {
+                title: "Conexiones entre Proyectos",
+                description: "Red de vinculación automática por etiquetas y áreas de conocimiento.",
+                icon: (
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004FCD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="18" cy="5" r="3" />
+                    <circle cx="6" cy="12" r="3" />
+                    <circle cx="18" cy="19" r="3" />
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+                  </svg>
+                ),
+              },
+              {
+                title: "Comunidad Activa",
+                description: "Espacios de interacción, retroalimentación y colaboración entre pares.",
+                icon: (
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#004FCD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                ),
+              },
+            ].map((cap, i) => (
+              <div
+                key={i}
+                style={{
+                  background: isNight ? "rgba(255,255,255,0.03)" : "white",
+                  border: `1px solid ${isNight ? "rgba(0,79,205,0.15)" : "rgba(0,79,205,0.08)"}`,
+                  padding: "40px 32px",
+                  borderRadius: "16px",
+                  cursor: "pointer",
+                  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-8px)";
+                  e.currentTarget.style.boxShadow = isNight
+                    ? "0 20px 40px rgba(0,79,205,0.2)"
+                    : "0 20px 40px rgba(0,79,205,0.12)";
+                  e.currentTarget.style.borderColor = "rgba(0,79,205,0.3)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.borderColor = isNight ? "rgba(0,79,205,0.15)" : "rgba(0,79,205,0.08)";
+                }}
+              >
+                {/* Número de fondo decorativo */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "20px",
+                    right: "24px",
+                    fontFamily: "'Sono', sans-serif",
+                    fontSize: "64px",
+                    fontWeight: 700,
+                    color: isNight ? "rgba(0,79,205,0.08)" : "rgba(0,79,205,0.06)",
+                    lineHeight: 1,
+                    userSelect: "none",
+                  }}
+                >
+                  0{i + 1}
+                </div>
+
+                {/* Icono */}
+                <div
+                  style={{
+                    width: "56px",
+                    height: "56px",
+                    borderRadius: "12px",
+                    background: isNight ? "rgba(0,79,205,0.15)" : "rgba(0,79,205,0.08)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: "24px",
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  {cap.icon}
+                </div>
+
+                <h3
+                  style={{
+                    fontFamily: "'Sono', sans-serif",
+                    fontWeight: 700,
+                    fontSize: "22px",
+                    color: textColor,
+                    marginBottom: "12px",
+                    transition: "color 1.2s ease",
+                    letterSpacing: "-0.01em",
+                  }}
+                >
+                  {cap.title}
+                </h3>
+                <p
+                  style={{
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: "14px",
+                    color: mutedColor,
+                    lineHeight: 1.7,
+                    fontWeight: 400,
+                  }}
+                >
+                  {cap.description}
+                </p>
+
+                {/* Línea decorativa inferior */}
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: "32px",
+                    right: "32px",
+                    height: "3px",
+                    background: "linear-gradient(90deg, #004FCD, #3b7de8)",
+                    borderRadius: "3px 3px 0 0",
+                    opacity: 0,
+                    transition: "opacity 0.3s ease",
+                  }}
+                  className="card-accent-line"
+                />
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
-  <NomadaInactividad />
-</section>
+        <NomadaInactividad />
+      </section>
 
       {/* SECCIÓN: ECOSISTEMA */}
       <section
@@ -618,23 +755,23 @@ export default function Home() {
             }}
           >
             <video
-  autoPlay
-  muted
-  loop
-  playsInline
-  style={{
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    display: "block",
-  }}
->
-  <source 
-    src="public\videos\ecosistema.mp4" 
-    type="video/mp4" 
-  />
-  Tu navegador no soporta videos HTML5.
-</video>
+              autoPlay
+              muted
+              loop
+              playsInline
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                display: "block",
+              }}
+            >
+              <source
+                src="public\videos\ecosistema.mp4"
+                type="video/mp4"
+              />
+              Tu navegador no soporta videos HTML5.
+            </video>
             <div
               style={{
                 position: "absolute",
@@ -683,15 +820,15 @@ export default function Home() {
             </p>
             <h2
               style={{
-    fontFamily: "'Sono', sans-serif",
-    fontWeight: 700,
-    fontSize: "clamp(32px, 5vw, 56px)",
-    color: textColor,
-    marginBottom: "64px",
-    lineHeight: 1.1,
-    transition: "color 1.2s ease",
-    letterSpacing: "-0.02em",
-  }}
+                fontFamily: "'Sono', sans-serif",
+                fontWeight: 700,
+                fontSize: "clamp(32px, 5vw, 56px)",
+                color: textColor,
+                marginBottom: "64px",
+                lineHeight: 1.1,
+                transition: "color 1.2s ease",
+                letterSpacing: "-0.02em",
+              }}
             >
               Más que un repositorio,<br />una red viva
             </h2>
@@ -738,15 +875,15 @@ export default function Home() {
           </p>
           <h2
             style={{
-    fontFamily: "'Sono', sans-serif",
-    fontWeight: 700,
-    fontSize: "clamp(32px, 5vw, 56px)",
-    color: textColor,
-    marginBottom: "64px",
-    lineHeight: 1.1,
-    transition: "color 1.2s ease",
-    letterSpacing: "-0.02em",
-  }}
+              fontFamily: "'Sono', sans-serif",
+              fontWeight: 700,
+              fontSize: "clamp(32px, 5vw, 56px)",
+              color: textColor,
+              marginBottom: "64px",
+              lineHeight: 1.1,
+              transition: "color 1.2s ease",
+              letterSpacing: "-0.02em",
+            }}
           >
             Proyectos que definen<br />el programa
           </h2>
@@ -880,15 +1017,15 @@ export default function Home() {
           </p>
           <h2
             style={{
-    fontFamily: "'Sono', sans-serif",
-    fontWeight: 700,
-    fontSize: "clamp(32px, 5vw, 56px)",
-    color: textColor,
-    marginBottom: "64px",
-    lineHeight: 1.1,
-    transition: "color 1.2s ease",
-    letterSpacing: "-0.02em",
-  }}
+              fontFamily: "'Sono', sans-serif",
+              fontWeight: 700,
+              fontSize: "clamp(32px, 5vw, 56px)",
+              color: textColor,
+              marginBottom: "64px",
+              lineHeight: 1.1,
+              transition: "color 1.2s ease",
+              letterSpacing: "-0.02em",
+            }}
           >
             Navega por disciplinas<br />y áreas de interés
           </h2>
@@ -1018,15 +1155,15 @@ export default function Home() {
           </p>
           <h2
             style={{
-    fontFamily: "'Sono', sans-serif",
-    fontWeight: 700,
-    fontSize: "clamp(32px, 5vw, 56px)",
-    color: textColor,
-    marginBottom: "64px",
-    lineHeight: 1.1,
-    transition: "color 1.2s ease",
-    letterSpacing: "-0.02em",
-  }}
+              fontFamily: "'Sono', sans-serif",
+              fontWeight: 700,
+              fontSize: "clamp(32px, 5vw, 56px)",
+              color: textColor,
+              marginBottom: "64px",
+              lineHeight: 1.1,
+              transition: "color 1.2s ease",
+              letterSpacing: "-0.02em",
+            }}
           >
             Creadores que construyen<br />el ecosistema
           </h2>

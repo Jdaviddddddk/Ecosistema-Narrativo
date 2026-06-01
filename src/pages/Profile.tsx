@@ -1,16 +1,10 @@
 import { Navigate, Link } from "react-router";
 import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
-
-interface Project {
-  id: string;
-  title: string;
-  category: string;
-  thumbnail: string;
-  status: "published" | "draft" | "archived";
-  createdAt: string;
-  views: number;
-}
+import { useState, useMemo } from "react";
+import { getUserProjects, deleteUserProject } from "@/lib/storage";
+import { seedProjects } from "@/config/projects";
+import type { Project } from "@/config/projects";
+import { LogOut, MapPin, Calendar, Edit2, Check, X, Trash2, Eye } from "lucide-react";
 
 interface Review {
   id: string;
@@ -28,27 +22,6 @@ interface Insight {
   unlockedAt: string;
   icon: string;
 }
-
-const MOCK_PROJECTS: Project[] = [
-  {
-    id: "proj_1",
-    title: "Ecosistema Lumínico",
-    category: "Fotografía",
-    thumbnail: "/images/portrait_01.jpg",
-    status: "published",
-    createdAt: "2025-01-20",
-    views: 1240,
-  },
-  {
-    id: "proj_2",
-    title: "Vórtice Interior",
-    category: "Instalación",
-    thumbnail: "/images/portrait_02.jpg",
-    status: "draft",
-    createdAt: "2025-03-10",
-    views: 0,
-  },
-];
 
 const MOCK_REVIEWS: Review[] = [
   {
@@ -69,10 +42,67 @@ const MOCK_INSIGHTS: Insight[] = [
 type Tab = "info" | "proyectos" | "calificaciones" | "resenas" | "insights";
 
 export default function Profile() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, updateProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("info");
+  const [isEditing, setIsEditing] = useState(false);
+  const [editBio, setEditBio] = useState("");
+  const [editLocation, setEditLocation] = useState("");
+  const [editInterests, setEditInterests] = useState("");
+
+  // Proyectos del usuario: los suyos + seed projects que coincidan con su nombre/email
+  const userProjects = useMemo(() => {
+    if (!user) return [];
+    const saved = getUserProjects(user.id);
+    // También incluir seed projects donde el autor coincida (para demo)
+    const seeded = seedProjects.filter(p => 
+      p.author.toLowerCase().includes(user.name.toLowerCase()) ||
+      p.authorEmail === user.email
+    );
+    // Merge sin duplicados por id
+    const all = [...seeded, ...saved];
+    const unique = all.filter((p, i, arr) => arr.findIndex(t => t.id === p.id) === i);
+    return unique;
+  }, [user]);
+
+  // Stats reales calculadas de los proyectos del usuario
+  const totalViews = userProjects.reduce((sum, p) => sum + (p.reactions?.inspires || 0) + (p.reactions?.learned || 0) + (p.reactions?.professional || 0) + (p.reactions?.inProgress || 0), 0);
+  const publishedCount = userProjects.filter(p => p.status === "Publicado").length;
+
+  const stats = [
+    { label: "Proyectos", value: userProjects.length.toString() },
+    { label: "Publicados", value: publishedCount.toString() },
+    { label: "Interacciones", value: totalViews.toLocaleString() },
+    { label: "Logros", value: MOCK_INSIGHTS.length.toString() },
+    { label: "Calificación", value: "5.0" },
+    { label: "Días activo", value: "45" },
+  ];
 
   if (!isAuthenticated) return <Navigate to="/" replace />;
+
+  const handleEdit = () => {
+    setEditBio(user?.bio || "");
+    setEditLocation(user?.location || "");
+    setEditInterests(user?.interests?.join(", ") || "");
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    updateProfile({
+      bio: editBio,
+      location: editLocation,
+      interests: editInterests.split(",").map(s => s.trim()).filter(Boolean),
+    });
+    setIsEditing(false);
+  };
+
+  const handleDeleteProject = (projectId: string) => {
+    if (!user) return;
+    if (confirm("¿Seguro que quieres eliminar este proyecto?")) {
+      deleteUserProject(user.id, projectId);
+      // Forzar re-render
+      window.location.reload();
+    }
+  };
 
   const tabs: { key: Tab; label: string }[] = [
     { key: "info", label: "Información" },
@@ -82,26 +112,21 @@ export default function Profile() {
     { key: "insights", label: "Logros" },
   ];
 
-  const stats = [
-    { label: "Proyectos", value: "2" },
-    { label: "Vistas", value: "1,240" },
-    { label: "Reseñas", value: "1" },
-    { label: "Logros", value: "3" },
-    { label: "Calificación", value: "5.0" },
-    { label: "Días activo", value: "45" },
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
       {/* Header del perfil */}
       <div className="bg-white border-b border-blue-100">
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-            {/* Avatar */}
+            {/* Avatar real de Google */}
             <div className="relative">
-              <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden shadow-xl shadow-blue-500/20 bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
-  <img src="/images/logo-nexo.png" alt="NEXO" className="w-16 h-16 object-contain opacity-90" />
-</div>
+              <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden shadow-xl shadow-blue-500/20">
+                <img 
+                  src={user?.avatar || "/images/avatar_default.jpg"} 
+                  alt={user?.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white flex items-center justify-center">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
                   <path d="M20 6L9 17l-5-5" />
@@ -117,32 +142,80 @@ export default function Profile() {
               <p className="text-sm mb-1" style={{ fontFamily: "'Montserrat', sans-serif", color: "#004FCD" }}>
                 {user?.email}
               </p>
-              <p className="text-sm mb-4" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
-                {user?.location}
-              </p>
-              <p className="text-base max-w-xl leading-relaxed mb-4" style={{ fontFamily: "'Montserrat', sans-serif", color: "#666" }}>
-                {user?.bio}
-              </p>
+              
+              <div className="flex items-center justify-center md:justify-start gap-2 text-sm mb-4" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                <MapPin size={14} />
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editLocation}
+                    onChange={(e) => setEditLocation(e.target.value)}
+                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                  />
+                ) : (
+                  <span>{user?.location}</span>
+                )}
+              </div>
+
+              {isEditing ? (
+                <textarea
+                  value={editBio}
+                  onChange={(e) => setEditBio(e.target.value)}
+                  className="w-full max-w-xl p-3 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-nexo-primary text-sm mb-4"
+                  rows={3}
+                />
+              ) : (
+                <p className="text-base max-w-xl leading-relaxed mb-4" style={{ fontFamily: "'Montserrat', sans-serif", color: "#666" }}>
+                  {user?.bio}
+                </p>
+              )}
+
               <div className="flex items-center justify-center md:justify-start gap-4 text-xs uppercase tracking-wider" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
-                <span>Miembro desde {new Date(user?.joinedAt || "").toLocaleDateString("es-MX")}</span>
+                <span className="flex items-center gap-1">
+                  <Calendar size={12} />
+                  Miembro desde {new Date(user?.joinedAt || "").toLocaleDateString("es-CO", { year: 'numeric', month: 'long', day: 'numeric' })}
+                </span>
                 <span className="w-1 h-1 rounded-full bg-gray-300" />
                 <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-600 font-medium">
                   {user?.role === "creator" ? "Creador" : "Espectador"}
                 </span>
               </div>
+
+              {isEditing && (
+                <div className="mt-3">
+                  <label className="text-xs text-gray-500 block mb-1">Intereses (separados por coma)</label>
+                  <input
+                    type="text"
+                    value={editInterests}
+                    onChange={(e) => setEditInterests(e.target.value)}
+                    className="w-full max-w-xl p-2 border border-gray-200 rounded-lg text-sm"
+                    placeholder="Diseño Visual, Fotografía, Branding..."
+                  />
+                </div>
+              )}
             </div>
 
             {/* Actions */}
             <div className="flex flex-col gap-3">
-              <button className="nexo-button-primary text-sm">
-                Editar Perfil
-              </button>
-              <button 
-                onClick={logout}
-                className="nexo-button-outline text-sm"
-              >
-                Cerrar Sesión
-              </button>
+              {isEditing ? (
+                <>
+                  <button onClick={handleSave} className="flex items-center justify-center gap-2 px-6 py-2.5 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors text-sm font-medium">
+                    <Check size={16} /> Guardar
+                  </button>
+                  <button onClick={() => setIsEditing(false)} className="flex items-center justify-center gap-2 px-6 py-2.5 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors text-sm">
+                    <X size={16} /> Cancelar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button onClick={handleEdit} className="flex items-center justify-center gap-2 px-6 py-2.5 bg-nexo-primary text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium">
+                    <Edit2 size={16} /> Editar Perfil
+                  </button>
+                  <button onClick={logout} className="flex items-center justify-center gap-2 px-6 py-2.5 border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors text-sm">
+                    <LogOut size={16} /> Cerrar Sesión
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -231,7 +304,11 @@ export default function Profile() {
                   Áreas de interés
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {["Diseño Visual", "Fotografía", "Branding", "UI/UX"].map((tag) => (
+                  {user?.interests?.map((tag) => (
+                    <span key={tag} className="nexo-tag">
+                      {tag}
+                    </span>
+                  )) || ["Diseño Visual", "Fotografía", "Branding", "UI/UX"].map((tag) => (
                     <span key={tag} className="nexo-tag">
                       {tag}
                     </span>
@@ -246,56 +323,80 @@ export default function Profile() {
           <div>
             <div className="flex items-center justify-between mb-8">
               <h3 className="text-2xl" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 700 }}>
-                Mis Proyectos
+                Mis Proyectos ({userProjects.length})
               </h3>
               <Link to="/upload" className="nexo-button-primary text-sm">
                 + Nuevo Proyecto
               </Link>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {MOCK_PROJECTS.map((project) => (
-                <div key={project.id} className="nexo-card overflow-hidden group">
-                  <div className="aspect-video overflow-hidden bg-gray-100">
-                    <img
-                      src={project.thumbnail}
-                      alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs uppercase tracking-wider" style={{ fontFamily: "'Montserrat', sans-serif", color: "#004FCD" }}>
-                        {project.category}
-                      </span>
-                      <span className={`text-xs px-3 py-1 rounded-full font-medium ${
-                        project.status === "published" 
-                          ? "bg-green-100 text-green-700" 
-                          : project.status === "draft"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-gray-100 text-gray-700"
-                      }`}>
-                        {project.status === "published" ? "Publicado" : project.status === "draft" ? "Borrador" : "Archivado"}
-                      </span>
+            
+            {userProjects.length === 0 ? (
+              <div className="nexo-card p-12 text-center">
+                <p className="text-gray-400 font-montserrat mb-4">Aún no has subido proyectos.</p>
+                <Link to="/upload" className="nexo-button-primary text-sm">
+                  Subir mi primer proyecto
+                </Link>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {userProjects.map((project) => (
+                  <div key={project.id} className="nexo-card overflow-hidden group">
+                    <div className="aspect-video overflow-hidden bg-gray-100 relative">
+                      <img
+                        src={project.thumbnail}
+                        alt={project.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Link
+                          to={`/project/${project.id}`}
+                          className="p-2 bg-white/90 rounded-lg hover:bg-white transition-colors"
+                          title="Ver proyecto"
+                        >
+                          <Eye size={14} />
+                        </Link>
+                        <button
+                          onClick={() => handleDeleteProject(project.id)}
+                          className="p-2 bg-red-50/90 rounded-lg hover:bg-red-100 transition-colors text-red-500"
+                          title="Eliminar"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
-                    <h4 className="text-lg mb-2" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 600 }}>
-                      {project.title}
-                    </h4>
-                    <div className="flex items-center gap-4 text-xs" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
-                      <span>{new Date(project.createdAt).toLocaleDateString("es-MX")}</span>
-                      {project.views > 0 && (
+                    <div className="p-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs uppercase tracking-wider" style={{ fontFamily: "'Montserrat', sans-serif", color: "#004FCD" }}>
+                          {project.area}
+                        </span>
+                        <span className={`text-xs px-3 py-1 rounded-full font-medium ${
+                          project.status === "Publicado" 
+                            ? "bg-green-100 text-green-700" 
+                            : project.status === "En revisión"
+                            ? "bg-yellow-100 text-yellow-700"
+                            : "bg-gray-100 text-gray-700"
+                        }`}>
+                          {project.status === "Publicado" ? "Publicado" : project.status === "En revisión" ? "En revisión" : "Borrador"}
+                        </span>
+                      </div>
+                      <h4 className="text-lg mb-2" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 600 }}>
+                        {project.title}
+                      </h4>
+                      <div className="flex items-center gap-4 text-xs" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                        <span>{new Date().toLocaleDateString("es-CO")}</span>
                         <span className="flex items-center gap-1">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                             <circle cx="12" cy="12" r="3" />
                           </svg>
-                          {project.views.toLocaleString()}
+                          {(project.reactions?.inspires || 0) + (project.reactions?.learned || 0) + (project.reactions?.professional || 0) + (project.reactions?.inProgress || 0)}
                         </span>
-                      )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -308,7 +409,7 @@ export default function Profile() {
               <div>
                 <div className="flex text-2xl text-yellow-400 mb-1">★★★★★</div>
                 <p className="text-sm" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
-                  Basado en 1 reseña
+                  Basado en {MOCK_REVIEWS.length} reseña{MOCK_REVIEWS.length !== 1 ? "s" : ""}
                 </p>
               </div>
             </div>
@@ -320,7 +421,7 @@ export default function Profile() {
                       {review.projectTitle}
                     </h4>
                     <span className="text-xs" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
-                      {new Date(review.date).toLocaleDateString("es-MX")}
+                      {new Date(review.date).toLocaleDateString("es-CO")}
                     </span>
                   </div>
                   <div className="flex text-yellow-400 mb-3">★★★★★</div>
@@ -345,7 +446,7 @@ export default function Profile() {
                     <div className="flex text-yellow-400">★★★★★</div>
                   </div>
                   <span className="text-xs" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
-                    {new Date(review.date).toLocaleDateString("es-MX")}
+                    {new Date(review.date).toLocaleDateString("es-CO")}
                   </span>
                 </div>
                 <p className="text-sm leading-relaxed mt-3" style={{ fontFamily: "'Montserrat', sans-serif", color: "#666" }}>
@@ -374,7 +475,7 @@ export default function Profile() {
                     {insight.description}
                   </p>
                   <span className="text-xs uppercase tracking-wider" style={{ fontFamily: "'Montserrat', sans-serif", color: "#004FCD" }}>
-                    {new Date(insight.unlockedAt).toLocaleDateString("es-MX")}
+                    {new Date(insight.unlockedAt).toLocaleDateString("es-CO")}
                   </span>
                 </div>
               ))}
