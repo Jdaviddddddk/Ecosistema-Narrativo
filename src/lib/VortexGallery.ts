@@ -96,6 +96,7 @@ varying vec2 vUv;
 
 uniform sampler2D uAtlas;
 uniform vec4 uTextureCoords;
+uniform float uMeshAspect;
 
 void main() {
   float xStart = uTextureCoords.x;
@@ -106,34 +107,29 @@ void main() {
   // Dimensiones de la imagen en el atlas
   float imgWidth = xEnd - xStart;
   float imgHeight = yStart - yEnd;
-  float imgAspect = imgWidth / imgHeight; // Portrait: < 1.0
-  
-  // El mesh es landscape: 1.0 x 0.625, aspect = 1.6
-  float meshAspect = 1.0 / 0.625;
-  
+  float imgAspect = imgWidth / imgHeight;
+
+  // uMeshAspect se pasa desde JS (width / height del geometry)
+  float meshAspect = uMeshAspect;
+
   vec2 atlasUV;
-  
-  // La imagen del atlas es portrait (más alta que ancha)
-  // La recortamos al centro para mostrarla en landscape
-  if (imgAspect < meshAspect) {
-    // Imagen más alta que ancha: recortar arriba y abajo
-    // Escalar para que el ancho llene el mesh
-    float scaleY = imgAspect / meshAspect; // Cuánto de la altura usar
-    float offsetY = (1.0 - scaleY) * 0.5; // Centrar verticalmente
-    
-    atlasUV.x = mix(xStart, xEnd, vUv.x);
-    atlasUV.y = mix(yStart, yEnd, 1.0 - (vUv.y * scaleY + offsetY));
-  } else {
-    // Imagen más ancha que alta: recortar lados
-    float scaleX = meshAspect / imgAspect;
-    float offsetX = (1.0 - scaleX) * 0.5;
-    
-    atlasUV.x = mix(xStart, xEnd, vUv.x * scaleX + offsetX);
+
+  // Cover: la imagen llena todo el mesh, recortando lo que sobre
+  if (imgAspect > meshAspect) {
+    // Imagen más ancha (landscape) -> recortar lados
+    float scale = meshAspect / imgAspect;
+    float offset = (1.0 - scale) * 0.5;
+    atlasUV.x = mix(xStart, xEnd, vUv.x * scale + offset);
     atlasUV.y = mix(yStart, yEnd, 1.0 - vUv.y);
+  } else {
+    // Imagen más alta (portrait) -> recortar arriba/abajo
+    float scale = imgAspect / meshAspect;
+    float offset = (1.0 - scale) * 0.5;
+    atlasUV.x = mix(xStart, xEnd, vUv.x);
+    atlasUV.y = mix(yStart, yEnd, 1.0 - (vUv.y * scale + offset));
   }
 
-  vec4 color = texture2D(uAtlas, atlasUV);
-  gl_FragColor = color;
+  gl_FragColor = texture2D(uAtlas, atlasUV);
 }
 `;
 
@@ -175,6 +171,10 @@ export default class VortexGallery {
   private uZrange = 0;
 
   private disposed = false;
+
+  // Dimensiones del centerMesh para cálculos
+  centerMeshWidth = 1.6;
+  centerMeshHeight = 1.0;
 
   constructor(canvas: HTMLCanvasElement, imagePaths: string[]) {
     this.scene = new THREE.Scene();
@@ -391,9 +391,11 @@ export default class VortexGallery {
   }
 
   buildCenterMesh() {
-    // Mesh central: 1.0 x 0.625 (16:10 landscape, más grande que antes)
-    // La imagen del atlas es portrait, el shader la recorta al centro
-    const geometry = new THREE.PlaneGeometry(1.0, 0.625);
+    // Solo la imagen, más grande: 1.6 ancho x 1.0 alto
+    this.centerMeshWidth = 1.6;
+    this.centerMeshHeight = 1.0;
+
+    const geometry = new THREE.PlaneGeometry(this.centerMeshWidth, this.centerMeshHeight);
 
     this.centerMaterial = new THREE.ShaderMaterial({
       vertexShader: centerVertexShader,
@@ -408,12 +410,17 @@ export default class VortexGallery {
             this.imageInfos[0].uvs.yEnd
           ),
         },
+        uMeshAspect: { value: this.centerMeshWidth / this.centerMeshHeight },
       },
       transparent: true,
       side: THREE.DoubleSide,
     });
 
     this.centerMesh = new THREE.Mesh(geometry, this.centerMaterial);
+    // Subir el mesh para que el borde inferior quede justo en el centro
+    // La imagen va desde y = +0.5 hasta y = -0.5 (alto 1.0)
+    // Lo movemos para que el borde inferior esté en y = 0
+    this.centerMesh.position.y = this.centerMeshHeight / 2; // y = 0.5
     this.scene.add(this.centerMesh);
   }
 
@@ -441,6 +448,52 @@ export default class VortexGallery {
   addScrollDelta(delta: number) {
     this.scrollY.speedTarget += delta;
     this.scrollY.target += delta;
+  }
+
+  getCenterMeshScreenBounds(canvasRect: DOMRect): { x: number; y: number; width: number; height: number; bottom: number; top: number } | null {
+    if (!this.centerMesh) return null;
+
+    const mesh = this.centerMesh;
+    const geometry = mesh.geometry as THREE.PlaneGeometry;
+
+    // Obtener dimensiones de la geometría
+    const width = (geometry.parameters as any).width * mesh.scale.x;
+    const height = (geometry.parameters as any).height * mesh.scale.y;
+
+    // Las 4 esquinas del mesh en coordenadas locales
+    const corners = [
+      new THREE.Vector3(-width / 2, -height / 2, 0),
+      new THREE.Vector3(width / 2, -height / 2, 0),
+      new THREE.Vector3(width / 2, height / 2, 0),
+      new THREE.Vector3(-width / 2, height / 2, 0),
+    ];
+
+    // Transformar a world space, luego a screen space
+    mesh.updateWorldMatrix(true, false);
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+    for (const corner of corners) {
+      const worldPos = corner.clone().applyMatrix4(mesh.matrixWorld);
+      const screenPos = worldPos.clone().project(this.camera);
+
+      const sx = (screenPos.x + 1) * 0.5 * canvasRect.width;
+      const sy = (1 - screenPos.y) * 0.5 * canvasRect.height;
+
+      minX = Math.min(minX, sx);
+      minY = Math.min(minY, sy);
+      maxX = Math.max(maxX, sx);
+      maxY = Math.max(maxY, sy);
+    }
+
+    return {
+      x: minX,
+      y: minY,
+      width: maxX - minX,
+      height: maxY - minY,
+      bottom: maxY, // coordenada Y del borde inferior del mesh (en px desde top del canvas)
+      top: minY,    // coordenada Y del borde superior del mesh
+    };
   }
 
   render = () => {

@@ -31,7 +31,7 @@ const initialData: UploadData = {
   fullLink: "",
   learnings: "",
   thumbnail: "",
-  images: [],
+  images: [] as string[],
   process: [],
   collections: [],
   visibility: "Público",

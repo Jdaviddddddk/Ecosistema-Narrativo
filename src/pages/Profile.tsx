@@ -1,9 +1,7 @@
 import { Navigate, Link } from "react-router";
 import { useAuth } from "@/context/AuthContext";
-import { useState, useMemo } from "react";
-import { getUserProjects, deleteUserProject } from "@/lib/storage";
-import { seedProjects } from "@/config/projects";
-import type { Project } from "@/config/projects";
+import { useState, useEffect } from "react";
+import { projectsAPI } from "@/lib/api";
 import { LogOut, MapPin, Calendar, Edit2, Check, X, Trash2, Eye } from "lucide-react";
 
 interface Review {
@@ -49,19 +47,13 @@ export default function Profile() {
   const [editLocation, setEditLocation] = useState("");
   const [editInterests, setEditInterests] = useState("");
 
-  // Proyectos del usuario: los suyos + seed projects que coincidan con su nombre/email
-  const userProjects = useMemo(() => {
-    if (!user) return [];
-    const saved = getUserProjects(user.id);
-    // También incluir seed projects donde el autor coincida (para demo)
-    const seeded = seedProjects.filter(p => 
-      p.author.toLowerCase().includes(user.name.toLowerCase()) ||
-      p.authorEmail === user.email
-    );
-    // Merge sin duplicados por id
-    const all = [...seeded, ...saved];
-    const unique = all.filter((p, i, arr) => arr.findIndex(t => t.id === p.id) === i);
-    return unique;
+  const [userProjects, setUserProjects] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    projectsAPI.list().then((all: any[]) => {
+      setUserProjects(all.filter(p => p.authorId === user.id));
+    }).catch(console.error);
   }, [user]);
 
   // Stats reales calculadas de los proyectos del usuario
@@ -95,12 +87,11 @@ export default function Profile() {
     setIsEditing(false);
   };
 
-  const handleDeleteProject = (projectId: string) => {
+  const handleDeleteProject = async (projectId: string) => {
     if (!user) return;
     if (confirm("¿Seguro que quieres eliminar este proyecto?")) {
-      deleteUserProject(user.id, projectId);
-      // Forzar re-render
-      window.location.reload();
+      await projectsAPI.delete(projectId).catch(console.error);
+      setUserProjects(prev => prev.filter(p => p.id !== projectId));
     }
   };
 

@@ -1,16 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router";
 import VortexGallery from "@/lib/VortexGallery";
 import Lenis from "lenis";
 import { siteConfig } from "@/config";
 import ImageDetailOverlay from "@/components/ImageDetailOverlay";
 import LoginModal from "@/components/LoginModal";
-import { useMemo } from "react";
-import { projects } from "@/config/projects";
 import { useAuth } from "@/context/AuthContext";
 import NomadaInactividad from '@/components/NomadaInactividad';
+import { projectsAPI } from '@/lib/api';
 
 export default function Home() {
+  const [centerBounds, setCenterBounds] = useState<{ x: number; y: number; width: number; height: number; bottom: number; top: number } | null>(null);
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -20,18 +20,33 @@ export default function Home() {
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [loginOpen, setLoginOpen] = useState(false);
   const [isNight, setIsNight] = useState(false);
-  const [centerProject, setCenterProject] = useState<typeof projects[0] | null>(null);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [centerProject, setCenterProject] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Cargar proyectos desde el backend
+  useEffect(() => {
+    projectsAPI.list()
+      .then(data => {
+        setProjects(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Error cargando proyectos:', err);
+        setLoading(false);
+      });
+  }, []);
 
   const images = useMemo(() => {
     return projects.flatMap((p) =>
-      (p.images || []).map((img) => ({
+      (p.images || []).map((img: string) => ({
         src: img,
         category: p.area || "General",
         title: p.title || "Sin título",
         description: p.originStory || "",
       }))
     );
-  }, []);
+  }, [projects]);
 
   const hasImages = images.length > 0;
 
@@ -80,9 +95,96 @@ export default function Home() {
       }
     }, 100);
     return () => clearInterval(interval);
+  }, [projects]);
+
+  // Actualizar bounds del centerMesh en cada frame para sincronizar overlay
+  useEffect(() => {
+    let rafId: number;
+
+    const updateBounds = () => {
+      if (vortexRef.current && canvasRef.current) {
+        const rect = canvasRef.current.getBoundingClientRect();
+        const bounds = vortexRef.current.getCenterMeshScreenBounds(rect);
+        if (bounds) {
+          setCenterBounds(bounds);
+        }
+      }
+      rafId = requestAnimationFrame(updateBounds);
+    };
+
+    rafId = requestAnimationFrame(updateBounds);
+    return () => cancelAnimationFrame(rafId);
   }, []);
 
-  if (!hasImages) return null;
+  // ─── ESTADOS DE CARGA ───
+
+  // 1. Mientras carga desde el backend: spinner
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#ffffff' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            width: '48px',
+            height: '48px',
+            border: '3px solid #004FCD',
+            borderTopColor: 'transparent',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 16px'
+          }} />
+          <p style={{ fontFamily: "'Montserrat', sans-serif", color: '#666' }}>Cargando ecosistema...</p>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Si no hay proyectos: mensaje + CTA (condicional según auth)
+  if (!hasImages) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#ffffff', gap: '24px' }}>
+        <div style={{ textAlign: 'center' }}>
+          <h2 style={{ fontFamily: "'Sono', sans-serif", fontSize: '32px', color: '#1a1a1a', marginBottom: '12px' }}>
+            El ecosistema está vacío
+          </h2>
+          <p style={{ fontFamily: "'Montserrat', sans-serif", color: '#666', fontSize: '16px', marginBottom: '32px' }}>
+            No hay proyectos disponibles aún. Sé el primero en publicar.
+          </p>
+          <button
+            onClick={() => {
+              if (isAuthenticated) {
+                navigate('/upload');
+              } else {
+                setLoginOpen(true);
+              }
+            }}
+            style={{
+              fontFamily: "'Montserrat', sans-serif",
+              fontSize: '14px',
+              fontWeight: 600,
+              color: '#ffffff',
+              background: 'linear-gradient(135deg, #004FCD, #0039a8)',
+              border: 'none',
+              borderRadius: '100px',
+              padding: '16px 36px',
+              cursor: 'pointer',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+            }}
+          >
+            🚀 Publicar primer proyecto
+          </button>
+          {!isAuthenticated && (
+            <p style={{ fontFamily: "'Montserrat', sans-serif", color: '#999', fontSize: '13px', marginTop: '16px' }}>
+              Necesitas iniciar sesión para publicar
+            </p>
+          )}
+        </div>
+        {/* LoginModal para el estado vacío */}
+        <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
+      </div>
+    );
+  }
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const vortex = vortexRef.current;
@@ -136,137 +238,137 @@ export default function Home() {
           }}
         />
 
-        {/* OVERLAY: Info del proyecto central - AHORA MÁS GRANDE CON BLUR */}
-{centerProject && (
-  <div
-    style={{
-      position: "absolute",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%) translateY(62px)",
-      zIndex: 5,
-      width: "400px",
-      pointerEvents: "none",
-    }}
-  >
-    <div
-      style={{
-        background: "rgba(255,255,255,0.75)", // Más transparente (antes 0.92)
-        backdropFilter: "blur(16px) saturate(140%)",
-        WebkitBackdropFilter: "blur(16px) saturate(140%)",
-        borderRadius: "0 0 20px 20px",
-        padding: "20px 24px",
-        border: "1px solid rgba(255,255,255,0.4)", // Más transparente
-        borderTop: "none",
-        boxShadow: "0 16px 40px rgba(0,79,205,0.1), 0 4px 12px rgba(0,0,0,0.04)",
-        textAlign: "center",
-        animation: "fadeIn 0.5s ease-out",
-      }}
-    >
-      {/* Area tag */}
-      <span
-        style={{
-          display: "inline-block",
-          padding: "3px 12px",
-          borderRadius: "100px",
-          fontSize: "10px",
-          fontWeight: 600,
-          textTransform: "uppercase",
-          letterSpacing: "0.1em",
-          background: "linear-gradient(135deg, rgba(0,79,205,0.1), rgba(0,79,205,0.05))",
-          color: "#004FCD",
-          fontFamily: "'Montserrat', sans-serif",
-          marginBottom: "8px",
-        }}
-      >
-        {centerProject.area}
-      </span>
-
-      {/* Title */}
-      <h3
-        style={{
-          fontFamily: "'Sono', sans-serif",
-          fontSize: "18px",
-          fontWeight: 700,
-          color: "#1a1a1a",
-          lineHeight: 1.2,
-          marginBottom: "6px",
-        }}
-      >
-        {centerProject.title}
-      </h3>
-
-      {/* Author */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "8px",
-          marginBottom: "8px",
-        }}
-      >
-        {isAuthenticated && user ? (
-          <img
-            src={user.avatar}
-            alt={user.name}
-            style={{
-              width: "20px",
-              height: "20px",
-              borderRadius: "50%",
-              objectFit: "cover",
-              border: "2px solid rgba(0,79,205,0.2)",
-            }}
-          />
-        ) : (
+        {/* OVERLAY: Info del proyecto central - ALINEADO EXACTAMENTE DEBAJO DE LA IMAGEN DEL SHADER */}
+        {centerProject && centerBounds && (
           <div
             style={{
-              width: "20px",
-              height: "20px",
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #004FCD, #0039a8)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "10px",
-              color: "white",
-              fontFamily: "'Sono', sans-serif",
-              fontWeight: 700,
+              position: "absolute",
+              top: `${centerBounds.bottom}px`,
+              left: "50%",
+              transform: "translateX(-50%)",
+              zIndex: 100,
+              width: `${centerBounds.width}px`,
+              pointerEvents: "none",
             }}
           >
-            {centerProject.author.charAt(0).toUpperCase()}
+            <div
+              style={{
+                background: "rgba(255,255,255,0.85)",
+                backdropFilter: "blur(20px) saturate(140%)",
+                WebkitBackdropFilter: "blur(20px) saturate(140%)",
+                borderRadius: "0 0 16px 16px",
+                padding: "20px 24px",
+                border: "1px solid rgba(255,255,255,0.4)",
+                borderTop: "none",
+                boxShadow: "0 16px 40px rgba(0,79,205,0.1), 0 4px 12px rgba(0,0,0,0.04)",
+                textAlign: "center",
+                animation: "fadeIn 0.5s ease-out",
+              }}
+            >
+              {/* Area tag */}
+              <span
+                style={{
+                  display: "inline-block",
+                  padding: "3px 12px",
+                  borderRadius: "100px",
+                  fontSize: "10px",
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.1em",
+                  background: "linear-gradient(135deg, rgba(0,79,205,0.1), rgba(0,79,205,0.05))",
+                  color: "#004FCD",
+                  fontFamily: "'Montserrat', sans-serif",
+                  marginBottom: "8px",
+                }}
+              >
+                {centerProject.area}
+              </span>
+
+              {/* Title */}
+              <h3
+                style={{
+                  fontFamily: "'Sono', sans-serif",
+                  fontSize: "20px",
+                  fontWeight: 700,
+                  color: "#1a1a1a",
+                  lineHeight: 1.2,
+                  marginBottom: "6px",
+                }}
+              >
+                {centerProject.title}
+              </h3>
+
+              {/* Author */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                  marginBottom: "8px",
+                }}
+              >
+                {isAuthenticated && user ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.name}
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      border: "2px solid rgba(0,79,205,0.2)",
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "50%",
+                      background: "linear-gradient(135deg, #004FCD, #0039a8)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "10px",
+                      color: "white",
+                      fontFamily: "'Sono', sans-serif",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {centerProject.author?.charAt(0).toUpperCase() || "?"}
+                  </div>
+                )}
+                <span
+                  style={{
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: "12px",
+                    color: "#555",
+                    fontWeight: 500,
+                  }}
+                >
+                  {centerProject.author}
+                </span>
+              </div>
+
+              {/* Description */}
+              <p
+                style={{
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: "12px",
+                  color: "#777",
+                  lineHeight: 1.6,
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                }}
+              >
+                {centerProject.originStory}
+              </p>
+            </div>
           </div>
         )}
-        <span
-          style={{
-            fontFamily: "'Montserrat', sans-serif",
-            fontSize: "12px",
-            color: "#555",
-            fontWeight: 500,
-          }}
-        >
-          {centerProject.author}
-        </span>
-      </div>
-
-      {/* Description */}
-      <p
-        style={{
-          fontFamily: "'Montserrat', sans-serif",
-          fontSize: "12px",
-          color: "#777",
-          lineHeight: 1.6,
-          display: "-webkit-box",
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: "vertical",
-          overflow: "hidden",
-        }}
-      >
-        {centerProject.originStory}
-      </p>
-    </div>
-  </div>
-)}
 
         <div
           style={{
@@ -541,7 +643,7 @@ export default function Home() {
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           <p
             style={{
-              fontFamily: "'Montserrat', sans-serif",
+              fontFamily: "system-ui, sans-serif",
               fontSize: "11px",
               color: isNight ? "rgba(0,79,205,0.8)" : "#004FCD",
               letterSpacing: "0.2em",
@@ -700,7 +802,7 @@ export default function Home() {
                 </h3>
                 <p
                   style={{
-                    fontFamily: "'Montserrat', sans-serif",
+                    fontFamily: "system-ui, sans-serif",
                     fontSize: "14px",
                     color: mutedColor,
                     lineHeight: 1.7,
@@ -898,8 +1000,8 @@ export default function Home() {
             {projects
               .filter((p) => p.status === "Publicado")
               .sort((a, b) => {
-                const totalA = a.reactions.inspires + a.reactions.learned + a.reactions.professional;
-                const totalB = b.reactions.inspires + b.reactions.learned + b.reactions.professional;
+                const totalA = (a.reactions?.inspires || 0) + (a.reactions?.learned || 0) + (a.reactions?.professional || 0);
+                const totalB = (b.reactions?.inspires || 0) + (b.reactions?.learned || 0) + (b.reactions?.professional || 0);
                 return totalB - totalA;
               })
               .slice(0, 12)
@@ -931,7 +1033,7 @@ export default function Home() {
                     }}
                   >
                     <img
-                      src={project.thumbnail}
+                      src={project.thumbnail || project.images?.[0] || "/images/placeholder.jpg"}
                       alt={project.title}
                       loading="lazy"
                       style={{

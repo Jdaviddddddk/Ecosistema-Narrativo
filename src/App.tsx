@@ -40,7 +40,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/info" element={<Info />} />
             <Route path="/projects" element={<Projects />} />
-            <Route path="/project/:id" element={<ProjectDetail />} />
+            <Route path="/projects/:id" element={<ProjectDetail />} />
             <Route path="/upload" element={<UploadFlowWrapper />} />
             <Route path="/yo" element={<Profile />} />
           </Routes>
