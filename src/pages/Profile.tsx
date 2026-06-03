@@ -1,10 +1,11 @@
 import { Navigate, Link } from "react-router";
 import { useAuth } from "@/context/AuthContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { projectsAPI } from "@/lib/api";
 import { LogOut, MapPin, Calendar, Edit2, Check, X, Trash2, Eye } from "lucide-react";
 import NomadaGuia from "@/components/NomadaGuia";
 import ShareButton from "@/components/ShareButton";
+import { calculateAchievements, RARITY_COLORS, CATEGORY_LABELS, type Achievement } from "@/lib/achievements";
 
 interface Review {
   id: string;
@@ -33,11 +34,6 @@ const MOCK_REVIEWS: Review[] = [
   },
 ];
 
-const MOCK_INSIGHTS: Insight[] = [
-  { id: "ins_1", type: "milestone", title: "Primer Proyecto", description: "Publicaste tu primera obra en NEXO", unlockedAt: "2025-01-20", icon: "🎯" },
-  { id: "ins_2", type: "badge", title: "Creador Visual", description: "Superaste las 1,000 vistas en tus proyectos", unlockedAt: "2025-02-01", icon: "👁" },
-  { id: "ins_3", type: "streak", title: "Constancia", description: "30 días consecutivos de actividad", unlockedAt: "2025-04-01", icon: "🔥" },
-];
 
 type Tab = "info" | "proyectos" | "calificaciones" | "resenas" | "insights";
 
@@ -51,6 +47,7 @@ export default function Profile() {
   const [editContact, setEditContact] = useState({ instagram: "", behance: "", linkedin: "", portfolio: "", email: "" });
 
   const [userProjects, setUserProjects] = useState<any[]>([]);
+  const [newAchievement, setNewAchievement] = useState<Achievement | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -77,13 +74,29 @@ export default function Profile() {
 
   const totalReactions = userProjects.reduce((sum, p) =>
     sum + (p.reactions?.inspires || 0) + (p.reactions?.learned || 0) + (p.reactions?.professional || 0) + (p.reactions?.inProgress || 0), 0);
+
+  // Logros calculados en tiempo real
+  const achievements = useMemo(() => {
+    if (!user || userProjects.length === 0 && !user.bio) return [];
+    const prevUnlocked = new Set(
+      Object.keys(localStorage).filter(k => k.startsWith("achievement_unlock_")).map(k => k.replace("achievement_unlock_",""))
+    );
+    const result = calculateAchievements({ user, projects: userProjects, totalReactionsGiven: 0, totalComments: 0 });
+    // Detectar nuevos desbloqueos
+    const newlyUnlocked = result.find(a => a.unlocked && !prevUnlocked.has(a.id));
+    if (newlyUnlocked) {
+      setNewAchievement(newlyUnlocked);
+      setTimeout(() => setNewAchievement(null), 5000);
+    }
+    return result;
+  }, [user, userProjects]);
   const publishedCount = userProjects.filter(p => p.status === "Publicado").length;
 
   const stats = [
     { label: "Proyectos", value: userProjects.length.toString() },
     { label: "Publicados", value: publishedCount.toString() },
     { label: "Reacciones", value: totalReactions.toLocaleString() },
-    { label: "Logros", value: MOCK_INSIGHTS.length.toString() },
+    { label: "Logros", value: achievements.filter(a => a.unlocked).length.toString() },
     { label: "Calificación", value: "5.0" },
     { label: "Días activo", value: "45" },
   ];
@@ -138,6 +151,40 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
+      {/* Toast de logro desbloqueado */}
+      {newAchievement && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "32px",
+            right: "32px",
+            zIndex: 9999,
+            background: "#fff",
+            border: `2px solid ${RARITY_COLORS[newAchievement.rarity].border}`,
+            borderRadius: "16px",
+            padding: "20px 24px",
+            boxShadow: "0 8px 40px rgba(0,0,0,0.12)",
+            maxWidth: "320px",
+            animation: "slideUp 0.4s ease",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "8px" }}>
+            <span style={{ fontSize: "32px" }}>{newAchievement.icon}</span>
+            <div>
+              <p style={{ fontFamily: "'Montserrat',sans-serif", fontSize: "10px", fontWeight: 700, color: RARITY_COLORS[newAchievement.rarity].color, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "2px" }}>
+                ¡Logro desbloqueado!
+              </p>
+              <p style={{ fontFamily: "'Sono',sans-serif", fontWeight: 700, fontSize: "15px", color: "#0a0a0a" }}>
+                {newAchievement.title}
+              </p>
+            </div>
+          </div>
+          <p style={{ fontFamily: "'Montserrat',sans-serif", fontSize: "12px", color: "#555", lineHeight: 1.5, fontStyle: "italic" }}>
+            "{newAchievement.lore}"
+          </p>
+        </div>
+      )}
+
       {/* Header del perfil */}
       <div className="bg-white border-b border-blue-100">
         <div className="max-w-6xl mx-auto px-6 py-12">
@@ -502,27 +549,93 @@ export default function Profile() {
 
         {activeTab === "insights" && (
           <div>
-            <h3 className="text-2xl mb-8" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 700 }}>
-              Logros Desbloqueados
-            </h3>
-            <div className="grid md:grid-cols-3 gap-6">
-              {MOCK_INSIGHTS.map((insight) => (
-                <div key={insight.id} className="nexo-card p-8 text-center group hover:border-blue-200">
-                  <div className="text-5xl mb-4 transform transition-transform group-hover:scale-110">
-                    {insight.icon}
-                  </div>
-                  <h4 className="text-lg mb-2" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 600 }}>
-                    {insight.title}
-                  </h4>
-                  <p className="text-sm mb-4" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
-                    {insight.description}
-                  </p>
-                  <span className="text-xs uppercase tracking-wider" style={{ fontFamily: "'Montserrat', sans-serif", color: "#004FCD" }}>
-                    {new Date(insight.unlockedAt).toLocaleDateString("es-CO")}
-                  </span>
-                </div>
-              ))}
+            <div className="flex items-center gap-4 mb-8">
+              <div>
+                <h3 className="text-2xl" style={{ fontFamily: "'Sono', sans-serif", fontWeight: 700 }}>Logros</h3>
+                <p className="text-sm mt-1" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                  {achievements.filter(a => a.unlocked).length} de {achievements.length} desbloqueados
+                </p>
+              </div>
+              <div className="ml-auto flex gap-3">
+                {(["común","raro","épico","legendario"] as const).map(r => (
+                  <span key={r} style={{ padding:"3px 10px", borderRadius:"100px", fontFamily:"'Montserrat',sans-serif", fontSize:"11px", fontWeight:600, background: RARITY_COLORS[r].bg, color: RARITY_COLORS[r].color, border:`1px solid ${RARITY_COLORS[r].border}` }}>{r}</span>
+                ))}
+              </div>
             </div>
+
+            {/* Por categoría */}
+            {(["creacion","conexion","comunidad","memoria","maestria"] as const).map(cat => {
+              const catAchievements = achievements.filter(a => a.category === cat);
+              if (catAchievements.length === 0) return null;
+              return (
+                <div key={cat} className="mb-8">
+                  <p style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"11px", fontWeight:700, color:"#aaa", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:"12px" }}>
+                    {CATEGORY_LABELS[cat]}
+                  </p>
+                  <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {catAchievements.map(a => {
+                      const rc = RARITY_COLORS[a.rarity];
+                      return (
+                        <div
+                          key={a.id}
+                          className="nexo-card p-5 relative overflow-hidden"
+                          style={{
+                            opacity: a.unlocked ? 1 : 0.45,
+                            border: a.unlocked ? `1.5px solid ${rc.border}` : "1px solid rgba(0,0,0,0.07)",
+                            background: a.unlocked ? rc.bg : "rgba(0,0,0,0.02)",
+                            filter: a.unlocked ? "none" : "grayscale(1)",
+                            transition: "all 0.3s",
+                          }}
+                        >
+                          {/* Rarity badge */}
+                          <span style={{ position:"absolute", top:"10px", right:"10px", padding:"2px 7px", borderRadius:"100px", fontFamily:"'Montserrat',sans-serif", fontSize:"9px", fontWeight:700, color: rc.color, background: rc.bg, border:`1px solid ${rc.border}`, textTransform:"uppercase", letterSpacing:"0.06em" }}>
+                            {a.rarity}
+                          </span>
+
+                          <div style={{ fontSize:"32px", marginBottom:"10px" }}>{a.icon}</div>
+
+                          <h4 style={{ fontFamily:"'Sono',sans-serif", fontSize:"15px", fontWeight:700, color: a.unlocked ? "#0a0a0a" : "#aaa", marginBottom:"4px" }}>
+                            {a.title}
+                          </h4>
+                          <p style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"11px", color: a.unlocked ? "#555" : "#bbb", marginBottom:"8px", lineHeight:1.5 }}>
+                            {a.description}
+                          </p>
+
+                          {/* Barra de progreso */}
+                          {!a.unlocked && a.progress && (
+                            <div style={{ marginBottom:"8px" }}>
+                              <div style={{ height:"3px", borderRadius:"2px", background:"rgba(0,0,0,0.08)", overflow:"hidden" }}>
+                                <div style={{ height:"100%", borderRadius:"2px", background:"linear-gradient(90deg,#004FCD,#3b7de8)", width:`${(a.progress.current/a.progress.total)*100}%`, transition:"width 0.5s" }} />
+                              </div>
+                              <p style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"10px", color:"#bbb", marginTop:"3px" }}>
+                                {a.progress.current} / {a.progress.total}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Lore de Nómada */}
+                          {a.unlocked && (
+                            <p style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"11px", color: rc.color, fontStyle:"italic", lineHeight:1.5, borderTop:`1px solid ${rc.border}`, paddingTop:"8px", marginTop:"4px" }}>
+                              "{a.lore}"
+                            </p>
+                          )}
+
+                          {a.unlocked && a.unlockedAt && (
+                            <p style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"10px", color:"#aaa", marginTop:"6px" }}>
+                              {new Date(a.unlockedAt).toLocaleDateString("es-CO")}
+                            </p>
+                          )}
+
+                          {!a.unlocked && (
+                            <p style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"10px", color:"#ccc", marginTop:"4px" }}>🔒 Bloqueado</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
