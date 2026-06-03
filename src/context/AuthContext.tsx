@@ -33,6 +33,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isCommunityMember: boolean;
+  isAdmin: boolean;
   login: (googleCredential: string) => void;
   logout: () => void;
   updateProfile: (updates: Partial<Omit<User, 'id' | 'email' | 'googleData'>>) => void;
@@ -41,6 +42,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const STORAGE_KEY = "nexo_auth_user";
 const UNIVERSITY_DOMAIN = "@universidadmayor.edu.co";
+const ADMIN_EMAILS = ["jdarenas@universidadmayor.edu.co"];
 
 function isCommunity(email: string) {
   return email.endsWith(UNIVERSITY_DOMAIN);
@@ -60,6 +62,7 @@ function createUserFromGoogle(googleUser: GoogleUser): User {
     googleData: googleUser,
     interests: savedProfile?.interests || ["Diseño Visual", "Fotografía"],
     isCommunityMember: isCommunity(googleUser.email),
+    isAdmin: ADMIN_EMAILS.includes(googleUser.email),
     contact: savedProfile?.contact || {},
   };
 }
@@ -143,6 +146,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       isAuthenticated: !!user,
       isCommunityMember: !!user?.isCommunityMember,
+      isAdmin: !!(user && ADMIN_EMAILS.includes(user.email)),
       login,
       logout,
       updateProfile,

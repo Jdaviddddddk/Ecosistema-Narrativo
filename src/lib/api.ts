@@ -78,6 +78,29 @@ export const usersAPI = {
     fetchAPI(`/api/users/${id}`),
 };
 
+const ADMIN_EMAIL = 'jdarenas@universidadmayor.edu.co';
+const adminHeaders = { 'x-admin-email': ADMIN_EMAIL };
+
+export const adminAPI = {
+  getProjects: () => fetchAPI('/api/admin/projects', { headers: adminHeaders }),
+  updateProject: (id: string, data: any) =>
+    fetchAPI(`/api/admin/projects/${id}`, { method: 'PUT', body: JSON.stringify(data), headers: adminHeaders }),
+  deleteProject: (id: string) =>
+    fetchAPI(`/api/admin/projects/${id}`, { method: 'DELETE', headers: adminHeaders }),
+  getComments: () => fetchAPI('/api/admin/comments', { headers: adminHeaders }),
+  deleteComment: (projectId: string, commentId: string) =>
+    fetchAPI(`/api/projects/${projectId}/comments/${commentId}`, { method: 'DELETE' }),
+  getUsers: () => fetchAPI('/api/admin/users', { headers: adminHeaders }),
+  deleteUser: (id: string) =>
+    fetchAPI(`/api/admin/users/${id}`, { method: 'DELETE', headers: adminHeaders }),
+  curateProject: (project: any) =>
+    fetch('/api/curate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ project }),
+    }).then(r => r.json()),
+};
+
 export const commentsAPI = {
   list: (projectId: string) =>
     fetchAPI(`/api/projects/${projectId}/comments`),

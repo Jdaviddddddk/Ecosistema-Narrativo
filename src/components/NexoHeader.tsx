@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 
 export default function NexoHeader() {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -60,6 +60,15 @@ export default function NexoHeader() {
                 className={`nexo-nav-link ${isActive("/upload") ? 'text-nexo-primary after:w-full' : ''}`}
               >
                 Subir
+              </Link>
+            )}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className={`nexo-nav-link ${isActive("/admin") ? 'text-nexo-primary after:w-full' : ''}`}
+                style={{ color: "#004FCD", fontWeight: 700 }}
+              >
+                ⚙ Admin
               </Link>
             )}
           </nav>

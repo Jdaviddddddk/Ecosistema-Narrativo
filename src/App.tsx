@@ -8,6 +8,7 @@ import Projects from './pages/Projects'
 import ProjectDetail from './pages/ProjectDetail'
 import Profile from './pages/Profile'
 import PublicProfile from './pages/PublicProfile'
+import Admin from './pages/Admin'
 import UploadFlowWrapper from "@/pages/upload/UploadFlow";
 import NexoHeader from '@/components/NexoHeader'
 import PortadaNomada from './components/PortadaNomada'
@@ -51,6 +52,7 @@ function AppContent() {
           <Route path="/upload" element={<UploadFlowWrapper />} />
           <Route path="/yo" element={<Profile />} />
           <Route path="/profile/:id" element={<PublicProfile />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </div>
     </>
