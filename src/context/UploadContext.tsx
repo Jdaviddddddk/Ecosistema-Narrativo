@@ -11,6 +11,7 @@ interface UploadData {
   tools: string[];
   format: string;
   fullLink: string;
+  prototypeLink: string;
   learnings: string;
   thumbnail: string;
   images: string[];
@@ -18,6 +19,7 @@ interface UploadData {
   collections: string[];
   visibility: "Público" | "Privado" | "Solo comunidad";
   status: "Publicado" | "En revisión" | "Borrador";
+  productionStatus: "Ideación" | "En desarrollo" | "Prototipo" | "En producción" | "Finalizado" | "Archivado";
 }
 
 const initialData: UploadData = {
@@ -29,6 +31,7 @@ const initialData: UploadData = {
   tools: [],
   format: "",
   fullLink: "",
+  prototypeLink: "",
   learnings: "",
   thumbnail: "",
   images: [] as string[],
@@ -36,6 +39,7 @@ const initialData: UploadData = {
   collections: [],
   visibility: "Público",
   status: "En revisión",
+  productionStatus: "En desarrollo",
 };
 
 interface UploadContextType {

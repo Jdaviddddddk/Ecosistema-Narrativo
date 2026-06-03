@@ -8,6 +8,7 @@ export interface Project {
   subject: string;
   area: string;
   status: "Publicado" | "En revisión" | "Borrador";
+  productionStatus?: "Ideación" | "En desarrollo" | "Prototipo" | "En producción" | "Finalizado" | "Archivado";
   visibility: "Público" | "Privado" | "Solo comunidad";
   originStory: string;
   tools: string[];

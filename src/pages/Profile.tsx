@@ -56,14 +56,14 @@ export default function Profile() {
     }).catch(console.error);
   }, [user]);
 
-  // Stats reales calculadas de los proyectos del usuario
-  const totalViews = userProjects.reduce((sum, p) => sum + (p.reactions?.inspires || 0) + (p.reactions?.learned || 0) + (p.reactions?.professional || 0) + (p.reactions?.inProgress || 0), 0);
+  const totalReactions = userProjects.reduce((sum, p) =>
+    sum + (p.reactions?.inspires || 0) + (p.reactions?.learned || 0) + (p.reactions?.professional || 0) + (p.reactions?.inProgress || 0), 0);
   const publishedCount = userProjects.filter(p => p.status === "Publicado").length;
 
   const stats = [
     { label: "Proyectos", value: userProjects.length.toString() },
     { label: "Publicados", value: publishedCount.toString() },
-    { label: "Interacciones", value: totalViews.toLocaleString() },
+    { label: "Reacciones", value: totalReactions.toLocaleString() },
     { label: "Logros", value: MOCK_INSIGHTS.length.toString() },
     { label: "Calificación", value: "5.0" },
     { label: "Días activo", value: "45" },
@@ -375,12 +375,10 @@ export default function Profile() {
                       </h4>
                       <div className="flex items-center gap-4 text-xs" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
                         <span>{new Date().toLocaleDateString("es-CO")}</span>
-                        <span className="flex items-center gap-1">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                            <circle cx="12" cy="12" r="3" />
-                          </svg>
-                          {(project.reactions?.inspires || 0) + (project.reactions?.learned || 0) + (project.reactions?.professional || 0) + (project.reactions?.inProgress || 0)}
+                        <span className="flex items-center gap-1" title="Total reacciones">
+                          <span>💡{project.reactions?.inspires || 0}</span>
+                          <span>📚{project.reactions?.learned || 0}</span>
+                          <span>⭐{project.reactions?.professional || 0}</span>
                         </span>
                       </div>
                     </div>

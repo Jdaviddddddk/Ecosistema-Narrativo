@@ -1,19 +1,70 @@
 import { useParams, Link } from "react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { projectsAPI } from "@/lib/api";
+
+type ReactionType = "inspires" | "learned" | "professional" | "inProgress";
+
+function getUserReactions(projectId: string): Set<ReactionType> {
+  try {
+    const raw = localStorage.getItem(`reactions_${projectId}`);
+    return new Set((raw ? JSON.parse(raw) : []) as ReactionType[]);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveUserReactions(projectId: string, reactions: Set<ReactionType>) {
+  localStorage.setItem(`reactions_${projectId}`, JSON.stringify([...reactions]));
+}
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const [project, setProject] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [userReactions, setUserReactions] = useState<Set<ReactionType>>(new Set());
+  const [reactingTo, setReactingTo] = useState<ReactionType | null>(null);
 
   useEffect(() => {
     if (!id) return;
     projectsAPI.get(id)
-      .then(setProject)
+      .then((p) => {
+        setProject(p);
+        setUserReactions(getUserReactions(id));
+      })
       .catch(() => setProject(null))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const handleReact = useCallback(async (type: ReactionType) => {
+    if (!id || !project || reactingTo) return;
+    setReactingTo(type);
+    try {
+      const alreadyReacted = userReactions.has(type);
+      await projectsAPI.react(id, type);
+
+      const newReactions = new Set(userReactions);
+      if (alreadyReacted) {
+        newReactions.delete(type);
+      } else {
+        newReactions.add(type);
+      }
+      setUserReactions(newReactions);
+      saveUserReactions(id, newReactions);
+
+      // Update local count optimistically
+      setProject((prev: any) => ({
+        ...prev,
+        reactions: {
+          ...prev.reactions,
+          [type]: (prev.reactions?.[type] || 0) + (alreadyReacted ? -1 : 1),
+        },
+      }));
+    } catch {
+      // silently fail — count stays as-is
+    } finally {
+      setReactingTo(null);
+    }
+  }, [id, project, userReactions, reactingTo]);
 
   if (loading) {
     return (
@@ -62,11 +113,16 @@ export default function ProjectDetail() {
           {/* Meta */}
           <div>
             <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
-              {[project.area, `${project.semester} sem.`].map(tag => tag && (
+              {[project.area, project.semester && `${project.semester} sem.`].map(tag => tag && (
                 <span key={tag} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "11px", padding: "6px 14px", borderRadius: "100px", background: "rgba(0,0,0,0.05)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                   {tag}
                 </span>
               ))}
+              {project.productionStatus && (
+                <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "11px", padding: "6px 14px", borderRadius: "100px", background: "#eff6ff", color: "#1d4ed8", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 500 }}>
+                  {project.productionStatus}
+                </span>
+              )}
               <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "11px", padding: "6px 14px", borderRadius: "100px", background: project.status === "Publicado" ? "#dcfce7" : project.status === "En revisión" ? "#fef3c7" : "#f3f4f6", color: project.status === "Publicado" ? "#166534" : project.status === "En revisión" ? "#92400e" : "#374151", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 500 }}>
                 {project.status}
               </span>
@@ -82,17 +138,36 @@ export default function ProjectDetail() {
 
             {/* Reactions */}
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-              {[
-                { emoji: "💡", count: project.reactions?.inspires || 0, label: "Me inspira" },
-                { emoji: "📚", count: project.reactions?.learned || 0, label: "Aprendí" },
-                { emoji: "⭐", count: project.reactions?.professional || 0, label: "Profesional" },
-                { emoji: "🚧", count: project.reactions?.inProgress || 0, label: "En proceso" },
-              ].map((r) => (
-                <button key={r.label} title={r.label} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 16px", borderRadius: "100px", border: "1px solid rgba(0,0,0,0.1)", background: "transparent", cursor: "pointer", fontFamily: "'Montserrat', sans-serif", fontSize: "14px" }}>
-                  <span>{r.emoji}</span>
-                  <span style={{ fontWeight: 500 }}>{r.count}</span>
-                </button>
-              ))}
+              {([
+                { type: "inspires" as ReactionType, emoji: "💡", label: "Me inspira" },
+                { type: "learned" as ReactionType, emoji: "📚", label: "Aprendí" },
+                { type: "professional" as ReactionType, emoji: "⭐", label: "Profesional" },
+                { type: "inProgress" as ReactionType, emoji: "🚧", label: "En proceso" },
+              ]).map((r) => {
+                const reacted = userReactions.has(r.type);
+                const count = project.reactions?.[r.type] || 0;
+                return (
+                  <button
+                    key={r.type}
+                    onClick={() => handleReact(r.type)}
+                    disabled={reactingTo !== null}
+                    title={reacted ? `Quitar reacción: ${r.label}` : r.label}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "6px",
+                      padding: "8px 16px", borderRadius: "100px",
+                      border: reacted ? "1.5px solid #004FCD" : "1px solid rgba(0,0,0,0.1)",
+                      background: reacted ? "rgba(0,79,205,0.07)" : "transparent",
+                      cursor: reactingTo ? "wait" : "pointer",
+                      fontFamily: "'Montserrat', sans-serif", fontSize: "14px",
+                      transition: "all 0.15s ease",
+                      transform: reactingTo === r.type ? "scale(0.95)" : "scale(1)",
+                    }}
+                  >
+                    <span>{r.emoji}</span>
+                    <span style={{ fontWeight: reacted ? 700 : 500, color: reacted ? "#004FCD" : "inherit" }}>{count}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

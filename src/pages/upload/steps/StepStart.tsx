@@ -35,7 +35,26 @@ export default function StepStart() {
           className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-nexo-primary"
         >
           <option value="">Selecciona un área</option>
-          {["Branding", "Tipografía", "UX/UI", "Arquitectura", "Fotografía", "Ilustración", "Data Viz", "Moda", "XR", "Motion", "Diseño Gráfico", "Señalética"].map(a => (
+          {[
+            "Diseño análogo",
+            "Diseño de interfaces",
+            "Diseño web",
+            "Fotografía",
+            "Cortometraje",
+            "Largometraje",
+            "Diseño de experiencias",
+            "Diseño tipográfico",
+            "Diseño de marca",
+            "Investigación",
+            "Motion Graphics",
+            "Animación",
+            "Ilustración digital",
+            "Diseño editorial",
+            "Diseño de empaque",
+            "Señalética",
+            "Diseño sonoro",
+            "Realidad extendida (XR)",
+          ].map(a => (
             <option key={a} value={a}>{a}</option>
           ))}
         </select>

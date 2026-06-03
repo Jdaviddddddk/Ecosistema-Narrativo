@@ -36,6 +36,25 @@ export default function StepIdentity() {
       </div>
 
       <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Estado del producto</label>
+        <div className="grid grid-cols-3 gap-2">
+          {(["Ideación", "En desarrollo", "Prototipo", "En producción", "Finalizado", "Archivado"] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => updateField("productionStatus", s)}
+              className={`py-2 px-3 rounded-xl text-sm font-medium transition-all text-left ${
+                data.productionStatus === s
+                  ? "bg-nexo-primary text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Visibilidad</label>
         <div className="flex gap-3">
           {(["Público", "Privado", "Solo comunidad"] as const).map((v) => (

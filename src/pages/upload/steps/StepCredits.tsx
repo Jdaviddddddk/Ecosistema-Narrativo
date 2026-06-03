@@ -11,13 +11,27 @@ export default function StepCredits() {
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Enlace al proyecto completo
+          Link de prototipo o previsualización <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          value={data.prototypeLink}
+          onChange={(e) => updateField("prototypeLink", e.target.value)}
+          placeholder="figma.com/proto/..., youtube.com/watch?v=..., etc."
+          className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-nexo-primary"
+        />
+        <p className="text-xs text-gray-400 mt-1">Figma, YouTube, Vimeo, Wix, GitHub Pages, etc. (obligatorio)</p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Enlace adicional (opcional)
         </label>
         <input
           type="text"
           value={data.fullLink}
           onChange={(e) => updateField("fullLink", e.target.value)}
-          placeholder="behance.net/tuusuario/proyecto"
+          placeholder="behance.net/tuusuario/proyecto, github.com/..."
           className="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-nexo-primary"
         />
         <p className="text-xs text-gray-400 mt-1">Behance, Dribbble, GitHub, etc.</p>

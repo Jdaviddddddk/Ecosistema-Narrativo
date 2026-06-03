@@ -29,16 +29,17 @@ function UploadFlow() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
-  // Referencia para almacenar los File objects de las imágenes
   const imageFilesRef = useRef<File[]>([]);
+  const pdfFileRef = useRef<File | null>(null);
 
   const stepComponents = [
     <StepStart key="start" />,
     <StepIdentity key="identity" />,
     <StepNarrative key="narrative" />,
-    <StepMedia 
-      key="media" 
-      onFilesChange={(files) => { imageFilesRef.current = files; }} 
+    <StepMedia
+      key="media"
+      onFilesChange={(files) => { imageFilesRef.current = files; }}
+      onPdfChange={(file) => { pdfFileRef.current = file; }}
     />,
     <StepProcess key="process" />,
     <StepCredits key="credits" />,
@@ -70,7 +71,12 @@ function UploadFlow() {
     setSubmitError("");
 
     try {
-      // Preparar datos del proyecto
+      if (imageFilesRef.current.length === 0) {
+        setSubmitError("Debes subir al menos una imagen del proyecto");
+        setIsSubmitting(false);
+        return;
+      }
+
       const projectData = {
         title: data.title || "Sin título",
         author: user.name,
@@ -78,32 +84,31 @@ function UploadFlow() {
         authorEmail: user.email,
         semester: data.semester || "1°",
         subject: data.subject || "Sin materia",
-        area: data.area || "Diseño Gráfico",
+        area: data.area || "Diseño análogo",
         status: data.status || "En revisión",
         visibility: data.visibility || "Público",
         originStory: data.originStory || "",
         tools: data.tools || [],
         format: data.format || "Digital",
         fullLink: data.fullLink || "",
+        prototypeLink: data.prototypeLink || "",
         learnings: data.learnings || "",
         recognitions: "",
         process: data.process.length > 0 ? data.process : ["Inicio", "Desarrollo", "Final"],
         collections: data.collections || [],
         relatedProjects: [],
-        prototypeLink: undefined,
+        productionStatus: data.productionStatus || "En desarrollo",
       };
 
-      // Obtener archivos reales
       const files = imageFilesRef.current;
-
-      // Crear FormData
       const formData = new FormData();
       formData.append("data", JSON.stringify(projectData));
-
-      // Agregar archivos al FormData
       files.forEach((file) => {
         formData.append("images", file);
       });
+      if (pdfFileRef.current) {
+        formData.append("pdf", pdfFileRef.current);
+      }
 
       console.log('Enviando proyecto con', files.length, 'imágenes');
 
@@ -112,9 +117,9 @@ function UploadFlow() {
 
       console.log('Proyecto creado:', created);
 
-      // Limpiar
       reset();
       imageFilesRef.current = [];
+      pdfFileRef.current = null;
 
       // Redirigir
       navigate(`/projects/${created.id}`);
