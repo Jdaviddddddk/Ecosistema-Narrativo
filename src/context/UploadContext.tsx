@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import type { ReactNode } from "react";
-import type { Project } from "@/config/projects";
 
 interface UploadData {
   title: string;

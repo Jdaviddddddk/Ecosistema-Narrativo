@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import type { ReactNode } from "react";
 import { jwtDecode } from "jwt-decode";
-import { getUserProfile, saveUserProfile, type UserProfileData } from "@/lib/storage";
+import { getUserProfile, saveUserProfile } from "@/lib/storage";
 
 export interface GoogleUser {
   sub: string;
