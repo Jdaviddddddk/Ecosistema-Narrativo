@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { projectsAPI } from "@/lib/api";
 import { LogOut, MapPin, Calendar, Edit2, Check, X, Trash2, Eye } from "lucide-react";
 import NomadaGuia from "@/components/NomadaGuia";
-import { ShareButton } from "@/pages/PublicProfile";
+import ShareButton from "@/components/ShareButton";
 
 interface Review {
   id: string;

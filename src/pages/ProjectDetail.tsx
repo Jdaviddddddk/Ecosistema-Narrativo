@@ -4,7 +4,7 @@ import { projectsAPI } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import NomadaGuia from "@/components/NomadaGuia";
 import ComentariosSeccion from "@/components/ComentariosSeccion";
-import { ShareButton } from "@/pages/PublicProfile";
+import ShareButton from "@/components/ShareButton";
 
 type ReactionType = "inspires" | "learned" | "professional" | "inProgress";
 
