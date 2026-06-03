@@ -49,7 +49,6 @@ export default function Profile() {
   const [editLocation, setEditLocation] = useState("");
   const [editInterests, setEditInterests] = useState("");
   const [editContact, setEditContact] = useState({ instagram: "", behance: "", linkedin: "", portfolio: "", email: "" });
-  const [shareMsg, setShareMsg] = useState("");
 
   const [userProjects, setUserProjects] = useState<any[]>([]);
 
@@ -119,17 +118,6 @@ export default function Profile() {
       },
     });
     setIsEditing(false);
-  };
-
-  const handleShare = async () => {
-    const url = `${window.location.origin}/profile/${user?.id}`;
-    if (navigator.share) {
-      await navigator.share({ title: `Perfil de ${user?.name} en NEXO`, url }).catch(() => {});
-    } else {
-      await navigator.clipboard.writeText(url);
-      setShareMsg("¡Enlace copiado!");
-      setTimeout(() => setShareMsg(""), 2000);
-    }
   };
 
   const handleDeleteProject = async (projectId: string) => {
