@@ -94,11 +94,7 @@ export const adminAPI = {
   deleteUser: (id: string) =>
     fetchAPI(`/api/admin/users/${id}`, { method: 'DELETE', headers: adminHeaders }),
   curateProject: (project: any) =>
-    fetch('/api/curate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ project }),
-    }).then(r => r.json()),
+    fetchAPI('/api/curate', { method: 'POST', body: JSON.stringify({ project }) }),
 };
 
 export const commentsAPI = {
