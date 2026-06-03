@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { UploadProvider, useUpload } from "@/context/UploadContext";
 import { useAuth } from "@/context/AuthContext";
 import { projectsAPI } from '@/lib/api';
+import NomadaGuia from "@/components/NomadaGuia";
 import StepStart from "./steps/StepStart";
 import StepIdentity from "./steps/StepIdentity";
 import StepNarrative from "./steps/StepNarrative";
@@ -270,6 +271,7 @@ function UploadFlow() {
         </div>
 
       </div>
+      <NomadaGuia escena="primer-proyecto" onAccion={() => setStep(3)} />
     </div>
   );
 }

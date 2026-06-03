@@ -7,6 +7,7 @@ import ImageDetailOverlay from "@/components/ImageDetailOverlay";
 import LoginModal from "@/components/LoginModal";
 import { useAuth } from "@/context/AuthContext";
 import NomadaInactividad from '@/components/NomadaInactividad';
+import NomadaGuia from '@/components/NomadaGuia';
 import { projectsAPI } from '@/lib/api';
 
 export default function Home() {
@@ -1589,6 +1590,7 @@ export default function Home() {
       />
 
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
+      <NomadaGuia escena="bienvenida" onAccion={() => navigate('/projects')} />
     </div>
   );
 }

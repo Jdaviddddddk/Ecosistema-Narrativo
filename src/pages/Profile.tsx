@@ -3,6 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import { projectsAPI } from "@/lib/api";
 import { LogOut, MapPin, Calendar, Edit2, Check, X, Trash2, Eye } from "lucide-react";
+import NomadaGuia from "@/components/NomadaGuia";
 
 interface Review {
   id: string;
@@ -471,7 +472,7 @@ export default function Profile() {
             </div>
           </div>
         )}
-      </div>
+      <NomadaGuia escena="perfil" onAccion={() => window.location.href = '/upload'} />
     </div>
   );
 }

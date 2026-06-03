@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { projectsAPI } from "@/lib/api";
 import { areas, semesters } from "@/config/projects";
 import { useAuth } from "@/context/AuthContext";
+import NomadaGuia from "@/components/NomadaGuia";
 
 export default function Projects() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -208,6 +209,7 @@ export default function Projects() {
           ))}
         </div>
       )}
+      <NomadaGuia escena="explorar" onAccion={() => navigate('/upload')} />
     </div>
   );
 }

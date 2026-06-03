@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router";
 import { useState, useEffect, useCallback } from "react";
 import { projectsAPI } from "@/lib/api";
+import NomadaGuia from "@/components/NomadaGuia";
 
 type ReactionType = "inspires" | "learned" | "professional" | "inProgress";
 
@@ -295,6 +296,7 @@ export default function ProjectDetail() {
         )}
 
       </div>
+      <NomadaGuia escena="interaccion" />
     </div>
   );
 }
