@@ -231,8 +231,8 @@ export default class VortexGallery {
       return;
     }
 
-    const CELL_W = 256;
-    const CELL_H = 320;
+    const CELL_W = 512;
+    const CELL_H = 512;
     const cols = Math.ceil(Math.sqrt(validImages.length));
     const rows = Math.ceil(validImages.length / cols);
 
@@ -292,6 +292,11 @@ export default class VortexGallery {
     this.atlasTexture.minFilter = THREE.LinearMipmapLinearFilter;
     this.atlasTexture.magFilter = THREE.LinearFilter;
     this.atlasTexture.colorSpace = THREE.SRGBColorSpace;
+    // Anisotropía máxima para mejor calidad en ángulo
+    if (this.renderer) {
+      const maxAniso = this.renderer.capabilities.getMaxAnisotropy();
+      this.atlasTexture.anisotropy = maxAniso;
+    }
   }
 
   buildInstancedMesh() {
