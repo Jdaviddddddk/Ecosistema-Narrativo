@@ -7,7 +7,7 @@ export interface Achievement {
   lore: string;                 // Voz de Nómada
   icon: string;
   category: "memoria" | "comunidad" | "creacion" | "conexion" | "maestria";
-  rarity: "común" | "raro" | "épico" | "legendario";
+  rarity: "fragmento" | "rastro" | "memoria" | "legado";
   unlockedAt?: string;
   unlocked: boolean;
   progress?: { current: number; total: number };
@@ -31,7 +31,7 @@ const DEFS = [
     lore: "Algo que casi no existía, ahora existe. Eso es todo lo que necesitaba pasar.",
     icon: "🧩",
     category: "creacion",
-    rarity: "común",
+    rarity: "fragmento",
     check: ({ projects }: AchievementInput) => projects.length >= 1,
     progress: ({ projects }: AchievementInput) => ({ current: Math.min(projects.length, 1), total: 1 }),
   },
@@ -42,7 +42,7 @@ const DEFS = [
     lore: "No eres un visitante. Eres parte del ecosistema.",
     icon: "📁",
     category: "creacion",
-    rarity: "común",
+    rarity: "fragmento",
     check: ({ projects }: AchievementInput) => projects.length >= 3,
     progress: ({ projects }: AchievementInput) => ({ current: Math.min(projects.length, 3), total: 3 }),
   },
@@ -53,7 +53,7 @@ const DEFS = [
     lore: "Cada proyecto tuyo es un punto de luz. Ya puedo trazar una figura.",
     icon: "✦",
     category: "creacion",
-    rarity: "raro",
+    rarity: "rastro",
     check: ({ projects }: AchievementInput) => projects.length >= 5,
     progress: ({ projects }: AchievementInput) => ({ current: Math.min(projects.length, 5), total: 5 }),
   },
@@ -64,7 +64,7 @@ const DEFS = [
     lore: "Exploraste territorios distintos. Eso es raro. Eso vale.",
     icon: "🗺️",
     category: "creacion",
-    rarity: "raro",
+    rarity: "rastro",
     check: ({ projects }: AchievementInput) => {
       const areas = new Set(projects.map(p => p.area).filter(Boolean));
       return areas.size >= 3;
@@ -81,7 +81,7 @@ const DEFS = [
     lore: "Diez fragmentos. Diez veces que decidiste no dejar que se perdiera.",
     icon: "🔟",
     category: "creacion",
-    rarity: "épico",
+    rarity: "memoria",
     check: ({ projects }: AchievementInput) => projects.length >= 10,
     progress: ({ projects }: AchievementInput) => ({ current: Math.min(projects.length, 10), total: 10 }),
   },
@@ -94,7 +94,7 @@ const DEFS = [
     lore: "Alguien lo vio. No lo ignoró. Eso es una señal.",
     icon: "〜",
     category: "conexion",
-    rarity: "común",
+    rarity: "fragmento",
     check: ({ projects }: AchievementInput) => {
       return projects.some(p =>
         (p.reactions?.inspires || 0) + (p.reactions?.learned || 0) +
@@ -115,7 +115,7 @@ const DEFS = [
     lore: "Diez personas se detuvieron frente a lo que hiciste. Diez momentos reales.",
     icon: "◎",
     category: "conexion",
-    rarity: "común",
+    rarity: "fragmento",
     check: ({ projects }: AchievementInput) => {
       const total = projects.reduce((s, p) =>
         s + (p.reactions?.inspires || 0) + (p.reactions?.learned || 0) +
@@ -136,7 +136,7 @@ const DEFS = [
     lore: "Ya no es un eco aislado. Es una frecuencia que otros sienten.",
     icon: "📡",
     category: "conexion",
-    rarity: "raro",
+    rarity: "rastro",
     check: ({ projects }: AchievementInput) => {
       const total = projects.reduce((s, p) =>
         s + (p.reactions?.inspires || 0) + (p.reactions?.learned || 0) +
@@ -157,7 +157,7 @@ const DEFS = [
     lore: "Cien personas encontraron algo en tu trabajo. Eso ya no se puede ignorar.",
     icon: "⭐",
     category: "conexion",
-    rarity: "épico",
+    rarity: "memoria",
     check: ({ projects }: AchievementInput) => {
       const total = projects.reduce((s, p) =>
         s + (p.reactions?.inspires || 0) + (p.reactions?.learned || 0) +
@@ -180,7 +180,7 @@ const DEFS = [
     lore: "Ver el trabajo ajeno no es poco. Es reconocer que existió.",
     icon: "👁",
     category: "comunidad",
-    rarity: "común",
+    rarity: "fragmento",
     check: ({ totalReactionsGiven }: AchievementInput) => totalReactionsGiven >= 1,
     progress: ({ totalReactionsGiven }: AchievementInput) => ({ current: Math.min(totalReactionsGiven, 1), total: 1 }),
   },
@@ -191,7 +191,7 @@ const DEFS = [
     lore: "Guardas memoria de lo que otros hacen. Eso te hace parte del ecosistema.",
     icon: "🧠",
     category: "comunidad",
-    rarity: "raro",
+    rarity: "rastro",
     check: ({ totalReactionsGiven }: AchievementInput) => totalReactionsGiven >= 10,
     progress: ({ totalReactionsGiven }: AchievementInput) => ({ current: Math.min(totalReactionsGiven, 10), total: 10 }),
   },
@@ -202,7 +202,7 @@ const DEFS = [
     lore: "Comentar es dejar huella. Cinco veces dijiste algo que valía la pena decir.",
     icon: "📖",
     category: "comunidad",
-    rarity: "raro",
+    rarity: "rastro",
     check: ({ totalComments }: AchievementInput) => totalComments >= 5,
     progress: ({ totalComments }: AchievementInput) => ({ current: Math.min(totalComments, 5), total: 5 }),
   },
@@ -215,7 +215,7 @@ const DEFS = [
     lore: "Llevas el dominio. Eso no es un privilegio, es una responsabilidad.",
     icon: "🛡️",
     category: "memoria",
-    rarity: "raro",
+    rarity: "rastro",
     check: ({ user }: AchievementInput) => !!user.isCommunityMember,
     progress: ({ user }: AchievementInput) => ({ current: user.isCommunityMember ? 1 : 0, total: 1 }),
   },
@@ -226,7 +226,7 @@ const DEFS = [
     lore: "Ya no eres anónimo en el ecosistema. Dejaste señales de que existes.",
     icon: "📍",
     category: "memoria",
-    rarity: "común",
+    rarity: "fragmento",
     check: ({ user }: AchievementInput) =>
       !!(user.bio && user.bio.length > 20 && user.location && user.interests?.length > 0),
     progress: ({ user }: AchievementInput) => {
@@ -247,7 +247,7 @@ const DEFS = [
     lore: "Encontré todo lo que necesitaba guardar de ti. Ahora ya nada se pierde.",
     icon: "💎",
     category: "maestria",
-    rarity: "legendario",
+    rarity: "legado",
     check: ({ projects }: AchievementInput) => {
       const count = projects.length >= 10;
       const reactions = projects.reduce((s, p) =>
@@ -298,7 +298,7 @@ export function calculateAchievements(input: AchievementInput): Achievement[] {
       lore: def.lore,
       icon: def.icon,
       category: def.category as Achievement["category"],
-      rarity: def.rarity as Achievement["rarity"],
+      rarity: def.rarity,
       unlocked,
       unlockedAt,
       progress,
@@ -307,10 +307,10 @@ export function calculateAchievements(input: AchievementInput): Achievement[] {
 }
 
 export const RARITY_COLORS: Record<Achievement["rarity"], { color: string; bg: string; border: string }> = {
-  "común":      { color: "#555",    bg: "#f3f4f6",              border: "rgba(0,0,0,0.08)" },
-  "raro":       { color: "#1d4ed8", bg: "rgba(59,130,246,0.08)", border: "rgba(59,130,246,0.2)" },
-  "épico":      { color: "#7c3aed", bg: "rgba(124,58,237,0.08)", border: "rgba(124,58,237,0.2)" },
-  "legendario": { color: "#b45309", bg: "rgba(251,191,36,0.1)",  border: "rgba(251,191,36,0.35)" },
+  "fragmento": { color: "#555",    bg: "#f3f4f6",               border: "rgba(0,0,0,0.08)" },
+  "rastro":    { color: "#1d4ed8", bg: "rgba(59,130,246,0.08)", border: "rgba(59,130,246,0.2)" },
+  "memoria":   { color: "#7c3aed", bg: "rgba(124,58,237,0.08)", border: "rgba(124,58,237,0.2)" },
+  "legado":    { color: "#b45309", bg: "rgba(251,191,36,0.1)",  border: "rgba(251,191,36,0.35)" },
 };
 
 export const CATEGORY_LABELS: Record<Achievement["category"], string> = {

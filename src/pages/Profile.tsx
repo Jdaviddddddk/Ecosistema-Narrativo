@@ -595,7 +595,7 @@ export default function Profile() {
                 </p>
               </div>
               <div className="ml-auto flex gap-3">
-                {(["común","raro","épico","legendario"] as const).map(r => (
+                {(["fragmento","rastro","memoria","legado"] as const).map(r => (
                   <span key={r} style={{ padding:"3px 10px", borderRadius:"100px", fontFamily:"'Montserrat',sans-serif", fontSize:"11px", fontWeight:600, background: RARITY_COLORS[r].bg, color: RARITY_COLORS[r].color, border:`1px solid ${RARITY_COLORS[r].border}` }}>{r}</span>
                 ))}
               </div>
