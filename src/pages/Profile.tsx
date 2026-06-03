@@ -15,14 +15,6 @@ interface Review {
   date: string;
 }
 
-interface Insight {
-  id: string;
-  type: "milestone" | "badge" | "streak";
-  title: string;
-  description: string;
-  unlockedAt: string;
-  icon: string;
-}
 
 const MOCK_REVIEWS: Review[] = [
   {
