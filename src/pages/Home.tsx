@@ -676,7 +676,9 @@ export default function Home() {
           >
             <video
               src="/videos/funcionamiento.mp4"
-              controls
+              autoPlay
+              loop
+              muted
               playsInline
               style={{
                 width: "100%",
@@ -864,67 +866,6 @@ export default function Home() {
         }}
       >
         <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <div
-            style={{
-              width: "100%",
-              aspectRatio: "21/9",
-              borderRadius: "8px",
-              overflow: "hidden",
-              position: "relative",
-              marginBottom: "48px",
-            }}
-          >
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                display: "block",
-              }}
-            >
-              <source
-                src="public\videos\ecosistema.mp4"
-                type="video/mp4"
-              />
-              Tu navegador no soporta videos HTML5.
-            </video>
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: isNight
-                  ? "linear-gradient(135deg, #001233 0%, #0a1628 100%)"
-                  : "linear-gradient(135deg, #e8e8e8 0%, #f5f5f5 100%)",
-              }}
-            />
-            <div style={{ position: "relative", zIndex: 2, textAlign: "center" }}>
-              <div
-                style={{
-                  width: "64px",
-                  height: "64px",
-                  borderRadius: "50%",
-                  border: `2px solid ${mutedColor}`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 16px",
-                  cursor: "pointer",
-                }}
-              >
-                <svg width="20" height="24" viewBox="0 0 20 24" fill="none">
-                  <path d="M20 12L0 24V0L20 12Z" fill={textColor} />
-                </svg>
-              </div>
-              <p style={{ fontFamily: "system-ui, sans-serif", fontSize: "13px", color: mutedColor }}>
-                Video cinemático del ecosistema
-              </p>
-            </div>
-          </div>
-
           <div style={{ maxWidth: "800px" }}>
             <p
               style={{
