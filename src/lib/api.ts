@@ -93,8 +93,25 @@ export const adminAPI = {
   getUsers: () => fetchAPI('/api/admin/users', { headers: adminHeaders }),
   deleteUser: (id: string) =>
     fetchAPI(`/api/admin/users/${id}`, { method: 'DELETE', headers: adminHeaders }),
-  curateProject: (project: any) =>
-    fetchAPI('/api/curate', { method: 'POST', body: JSON.stringify({ project }) }),
+  curateProject: async (project: any) => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
+    try {
+      const response = await fetch(`${API_URL}/api/curate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ project }),
+        signal: controller.signal,
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: 'Error desconocido' }));
+        throw new Error(err.error || `HTTP ${response.status}`);
+      }
+      return response.json();
+    } finally {
+      clearTimeout(timeout);
+    }
+  },
 };
 
 export const commentsAPI = {

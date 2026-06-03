@@ -4,12 +4,6 @@
   functions = "netlify/functions"
 
 [[redirects]]
-  from   = "/api/curate"
-  to     = "/.netlify/functions/curate"
-  status = 200
-  force  = true
-
-[[redirects]]
   from   = "/api/*"
   to     = "http://138.199.196.128:3001/api/:splat"
   status = 200
