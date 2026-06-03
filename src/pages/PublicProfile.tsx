@@ -42,19 +42,40 @@ export default function PublicProfile() {
 
   useEffect(() => {
     if (!id) return;
-    Promise.all([
-      usersAPI.get(id),
-      projectsAPI.list(),
-    ]).then(([userData, allProjects]) => {
-      setProfile(userData);
-      const userProjects = allProjects.filter((p: any) => {
-        if (p.authorId !== id) return false;
-        if (p.visibility === "Privado") return false;
-        if (p.visibility === "Solo comunidad" && !isCommunityMember) return false;
-        return true;
-      });
-      setProjects(userProjects);
-    }).catch(() => setProfile(null))
+    projectsAPI.list()
+      .then((allProjects: any[]) => {
+        const userProjects = allProjects.filter((p: any) => {
+          if (p.authorId !== id) return false;
+          if (p.visibility === "Privado") return false;
+          if (p.visibility === "Solo comunidad" && !isCommunityMember) return false;
+          return true;
+        });
+        setProjects(userProjects);
+
+        // Intentar cargar perfil del backend; si no existe, construirlo desde proyectos
+        return usersAPI.get(id)
+          .then(setProfile)
+          .catch(() => {
+            // Fallback: construir perfil mínimo desde los datos del proyecto
+            const firstProject = allProjects.find((p: any) => p.authorId === id);
+            if (firstProject) {
+              setProfile({
+                id,
+                name: firstProject.author,
+                email: firstProject.authorEmail || "",
+                avatar: "",
+                bio: "",
+                location: "",
+                interests: [],
+                isCommunityMember: firstProject.authorEmail?.endsWith("@universidadmayor.edu.co") ?? false,
+                contact: {},
+              });
+            } else {
+              setProfile(null);
+            }
+          });
+      })
+      .catch(() => setProfile(null))
       .finally(() => setLoading(false));
   }, [id, isCommunityMember]);
 

@@ -57,6 +57,22 @@ export default function Profile() {
     projectsAPI.list().then((all: any[]) => {
       setUserProjects(all.filter(p => p.authorId === user.id));
     }).catch(console.error);
+
+    // Sincronizar perfil con backend (por si nunca se guardó)
+    import("@/lib/api").then(({ usersAPI }) => {
+      usersAPI.save({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        bio: user.bio,
+        location: user.location,
+        interests: user.interests,
+        isCommunityMember: user.isCommunityMember,
+        joinedAt: user.joinedAt,
+        contact: user.contact || {},
+      }).catch(() => {});
+    });
   }, [user]);
 
   const totalReactions = userProjects.reduce((sum, p) =>
