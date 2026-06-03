@@ -5,9 +5,11 @@ import { GoogleLogin } from "@react-oauth/google";
 interface Props {
   open: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
+  onLoginSuccess?: (user: any) => void;
 }
 
-export default function LoginModal({ open, onClose }: Props) {
+export default function LoginModal({ open, onClose, onSuccess, onLoginSuccess }: Props) {
   const { login } = useAuth();
   const [error, setError] = useState("");
 
@@ -24,15 +26,20 @@ export default function LoginModal({ open, onClose }: Props) {
   }, [open, onClose]);
 
   const handleGoogleSuccess = (credentialResponse: any) => {
-  try {
-    login(credentialResponse.credential);
-    onClose();
-    // Redirigir a upload después de login exitoso
-    window.location.href = '/upload';  // O usa navigate si tienes acceso a él
-  } catch (err: any) {
-    setError(err.message || "Error al iniciar sesión");
-  }
-};
+    try {
+      const loggedUser = login(credentialResponse.credential);
+      onClose();
+      if (onLoginSuccess) {
+        onLoginSuccess(loggedUser);
+      } else if (onSuccess) {
+        onSuccess();
+      } else {
+        window.location.href = '/upload';
+      }
+    } catch (err: any) {
+      setError(err.message || "Error al iniciar sesión");
+    }
+  };
 
   const handleGoogleError = () => {
     setError("No se pudo conectar con Google. Intenta de nuevo.");

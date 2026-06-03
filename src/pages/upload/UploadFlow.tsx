@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { projectsAPI } from '@/lib/api';
 import NomadaGuia from "@/components/NomadaGuia";
 import NomadaLoader from "@/components/NomadaLoader";
+import LoginModal from "@/components/LoginModal";
 
 function NomadaSpinner() {
   return <NomadaLoader mensaje="" fullScreen={false} size={24} fps={10} />;
@@ -46,6 +47,8 @@ function UploadFlow() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [loginOpen, setLoginOpen] = useState(false);
+  const pendingPublish = useRef(false);
 
   const imageFilesRef = useRef<File[]>([]);
   const pdfFileRef = useRef<File | null>(null);
@@ -69,8 +72,12 @@ function UploadFlow() {
   const handleNext = () => { if (step < stepComponents.length - 1) setStep(s => s + 1); };
   const handleBack = () => { if (step > 0) setStep(s => s - 1); };
 
-  const handlePublish = async () => {
-    if (!user) { setSubmitError("Debes iniciar sesión para publicar"); return; }
+  const handlePublish = async (publishUser = user) => {
+    if (!publishUser) {
+      pendingPublish.current = true;
+      setLoginOpen(true);
+      return;
+    }
     if (imageFilesRef.current.length === 0) {
       setSubmitError("Debes subir al menos una imagen del proyecto");
       return;
@@ -82,10 +89,10 @@ function UploadFlow() {
     try {
       const projectData = {
         title: data.title || "Sin título",
-        author: user.name,
-        authorId: user.id,
-        authorEmail: user.email,
-        authorAvatar: user.avatar,
+        author: publishUser.name,
+        authorId: publishUser.id,
+        authorEmail: publishUser.email,
+        authorAvatar: publishUser.avatar,
         semester: data.semester || "1°",
         subject: data.subject || "Sin materia",
         area: data.area || "Diseño análogo",
@@ -283,6 +290,18 @@ function UploadFlow() {
 
       </div>
       <NomadaGuia escena="primer-proyecto" onAccion={() => setStep(3)} />
+
+      <LoginModal
+        open={loginOpen}
+        onClose={() => { setLoginOpen(false); pendingPublish.current = false; }}
+        onLoginSuccess={(loggedUser) => {
+          setLoginOpen(false);
+          if (pendingPublish.current) {
+            pendingPublish.current = false;
+            handlePublish(loggedUser);
+          }
+        }}
+      />
     </div>
   );
 }

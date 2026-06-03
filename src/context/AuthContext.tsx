@@ -102,6 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         joinedAt: newUser.joinedAt,
         contact: newUser.contact || {},
       }).catch(console.error);
+      return newUser;
     } catch (error) {
       console.error("Error en login:", error);
       throw error;

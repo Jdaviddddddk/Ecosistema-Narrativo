@@ -1,5 +1,7 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import type { ReactNode } from "react";
+
+const DRAFT_KEY = "nexo_upload_draft";
 
 interface UploadData {
   title: string;
@@ -50,8 +52,31 @@ interface UploadContextType {
 
 const UploadContext = createContext<UploadContextType | undefined>(undefined);
 
+function loadDraft(): UploadData {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return initialData;
+    return { ...initialData, ...JSON.parse(raw) };
+  } catch {
+    return initialData;
+  }
+}
+
+function saveDraft(data: UploadData) {
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+  } catch {
+    // quota exceeded — silently ignore
+  }
+}
+
 export function UploadProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<UploadData>(initialData);
+  const [data, setData] = useState<UploadData>(loadDraft);
+
+  // Persist every change to localStorage
+  useEffect(() => {
+    saveDraft(data);
+  }, [data]);
 
   const updateField = useCallback(<K extends keyof UploadData>(field: K, value: UploadData[K]) => {
     setData(prev => ({ ...prev, [field]: value }));
@@ -62,6 +87,7 @@ export function UploadProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const reset = useCallback(() => {
+    localStorage.removeItem(DRAFT_KEY);
     setData(initialData);
   }, []);
 
