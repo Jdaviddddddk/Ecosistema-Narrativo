@@ -4,6 +4,7 @@ import { projectsAPI } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import NomadaGuia from "@/components/NomadaGuia";
 import ComentariosSeccion from "@/components/ComentariosSeccion";
+import { ShareButton } from "@/pages/PublicProfile";
 
 type ReactionType = "inspires" | "learned" | "professional" | "inProgress";
 
@@ -18,34 +19,6 @@ function saveUserReactions(projectId: string, reactions: Set<ReactionType>) {
   localStorage.setItem(`reactions_${projectId}`, JSON.stringify([...reactions]));
 }
 
-function ShareButton({ title }: { title: string }) {
-  const [copied, setCopied] = useState(false);
-  const handleShare = async () => {
-    const url = window.location.href;
-    if (navigator.share) {
-      await navigator.share({ title, url }).catch(() => {});
-    } else {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-  return (
-    <button
-      onClick={handleShare}
-      style={{
-        display: "flex", alignItems: "center", gap: "6px",
-        padding: "8px 16px", borderRadius: "100px",
-        border: "1px solid rgba(0,0,0,0.12)", background: copied ? "rgba(34,197,94,0.07)" : "white",
-        borderColor: copied ? "rgba(34,197,94,0.3)" : "rgba(0,0,0,0.12)",
-        fontFamily: "'Montserrat', sans-serif", fontSize: "12px",
-        color: copied ? "#166534" : "#555", cursor: "pointer", transition: "all 0.2s",
-      }}
-    >
-      {copied ? "✓ Copiado" : "🔗 Compartir"}
-    </button>
-  );
-}
 
 export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
@@ -120,7 +93,7 @@ export default function ProjectDetail() {
         <Link to="/projects" style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.5)", textDecoration: "none" }}>
           ← Volver a proyectos
         </Link>
-        <ShareButton title={project.title} />
+        <ShareButton url={window.location.href} label={project.title} />
       </div>
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 32px 80px" }}>
@@ -173,8 +146,8 @@ export default function ProjectDetail() {
               </p>
             </div>
 
-            {/* Reactions */}
-            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "24px" }}>
+            {/* Reactions + Share */}
+            <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "24px", alignItems: "center" }}>
               {([
                 { type: "inspires" as ReactionType, emoji: "💡", label: "Me inspira" },
                 { type: "learned" as ReactionType, emoji: "📚", label: "Aprendí" },
@@ -205,6 +178,9 @@ export default function ProjectDetail() {
                   </button>
                 );
               })}
+              {/* Separador + compartir */}
+              <div style={{ width: "1px", height: "32px", background: "rgba(0,0,0,0.1)", margin: "0 4px" }} />
+              <ShareButton url={window.location.href} label={project.title} style={{ fontSize: "13px", padding: "8px 18px" }} />
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { projectsAPI } from "@/lib/api";
 import { LogOut, MapPin, Calendar, Edit2, Check, X, Trash2, Eye } from "lucide-react";
 import NomadaGuia from "@/components/NomadaGuia";
+import { ShareButton } from "@/pages/PublicProfile";
 
 interface Review {
   id: string;
@@ -260,9 +261,10 @@ export default function Profile() {
                 </>
               ) : (
                 <>
-                  <button onClick={handleShare} className="flex items-center justify-center gap-2 px-6 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-sm text-gray-600">
-                    🔗 {shareMsg || "Compartir perfil"}
-                  </button>
+                  <ShareButton
+                    url={`${window.location.origin}/profile/${user?.id}`}
+                    label={`Perfil de ${user?.name} en NEXO`}
+                  />
                   <button onClick={handleEdit} className="flex items-center justify-center gap-2 px-6 py-2.5 bg-nexo-primary text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium">
                     <Edit2 size={16} /> Editar Perfil
                   </button>
