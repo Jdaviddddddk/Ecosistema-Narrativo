@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://138.199.196.128:3001';
+// En producción (Netlify) usamos rutas relativas — Netlify proxy reenvía al VPS.
+// En local apuntamos directo al VPS.
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://138.199.196.128:3001');
 
 async function fetchAPI(endpoint: string, options?: RequestInit) {
   const response = await fetch(`${API_URL}${endpoint}`, {
@@ -36,6 +38,7 @@ async function fetchFormData(endpoint: string, formData: FormData) {
 function fixImageUrls(project: any) {
   const fix = (url: string) =>
     url && url.startsWith('/uploads/') ? `${API_URL}${url}` : url;
+  // API_URL es "" en producción, así que /uploads/... ya es una ruta relativa válida
   return {
     ...project,
     thumbnail: fix(project.thumbnail),
