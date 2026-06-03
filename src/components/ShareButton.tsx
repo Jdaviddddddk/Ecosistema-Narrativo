@@ -42,7 +42,12 @@ export default function ShareButton({ url, label, style }: ShareButtonProps) {
         ...style,
       }}
     >
-      {state === "copied" ? "✓ Enlace copiado" : "🔗 Compartir"}
+      <img
+        src={state === "copied" ? "/images/icons/guardado.png" : "/images/icons/compartir.png"}
+        alt="compartir"
+        style={{ width: "16px", height: "16px", imageRendering: "pixelated" }}
+      />
+      {state === "copied" ? "Enlace copiado" : "Compartir"}
     </button>
   );
 }

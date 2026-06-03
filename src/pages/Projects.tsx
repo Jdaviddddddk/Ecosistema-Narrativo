@@ -174,7 +174,7 @@ export default function Projects() {
           {/* Badge comunidad */}
           {!isCommunityMember && (
             <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "6px", padding: "6px 12px", borderRadius: "100px", background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)" }}>
-              <span style={{ fontSize: "12px" }}>🔒</span>
+              <img src="/images/icons/comunidad.png" alt="comunidad" style={{ width: "16px", height: "16px", imageRendering: "pixelated" }} />
               <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "11px", color: "#92400e" }}>Algunos proyectos son solo para la comunidad universitaria</span>
             </div>
           )}
@@ -224,8 +224,9 @@ export default function Projects() {
                   {/* Badges */}
                   <div style={{ position: "absolute", top: "10px", left: "10px", display: "flex", gap: "6px" }}>
                     {project.visibility === "Solo comunidad" && (
-                      <span style={{ padding: "3px 10px", borderRadius: "100px", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, background: "rgba(245,158,11,0.9)", color: "#fff" }}>
-                        🏫 Comunidad
+                      <span style={{ padding: "3px 10px", borderRadius: "100px", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, background: "rgba(245,158,11,0.9)", color: "#fff", display: "flex", alignItems: "center", gap: "4px" }}>
+                        <img src="/images/icons/universidad.png" alt="" style={{ width: "12px", height: "12px", imageRendering: "pixelated" }} />
+                        Comunidad
                       </span>
                     )}
                     {project.productionStatus && (

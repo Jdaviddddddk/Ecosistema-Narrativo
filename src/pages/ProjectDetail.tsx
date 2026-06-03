@@ -86,8 +86,9 @@ export default function ProjectDetail() {
     <div style={{ minHeight: "100vh", background: "#ffffff" }}>
       {/* Barra superior */}
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px 32px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Link to="/projects" style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.5)", textDecoration: "none" }}>
-          ← Volver a proyectos
+        <Link to="/projects" style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.5)", textDecoration: "none", display: "flex", alignItems: "center", gap: "6px" }}>
+          <img src="/images/icons/volver.png" alt="volver" style={{ width: "16px", height: "16px", imageRendering: "pixelated", opacity: 0.5 }} />
+          Volver a proyectos
         </Link>
         <ShareButton url={window.location.href} label={project.title} />
       </div>
@@ -145,10 +146,10 @@ export default function ProjectDetail() {
             {/* Reactions + Share */}
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "24px", alignItems: "center" }}>
               {([
-                { type: "inspires" as ReactionType, emoji: "💡", label: "Me inspira" },
-                { type: "learned" as ReactionType, emoji: "📚", label: "Aprendí" },
-                { type: "professional" as ReactionType, emoji: "⭐", label: "Profesional" },
-                { type: "inProgress" as ReactionType, emoji: "🚧", label: "En proceso" },
+                { type: "inspires" as ReactionType, icon: "/images/icons/inspira.png", label: "Me inspira" },
+                { type: "learned" as ReactionType, icon: "/images/icons/aprendí.png", label: "Aprendí" },
+                { type: "professional" as ReactionType, icon: "/images/icons/profesional.png", label: "Profesional" },
+                { type: "inProgress" as ReactionType, icon: "/images/icons/proceso.png", label: "En proceso" },
               ]).map(r => {
                 const reacted = userReactions.has(r.type);
                 return (
@@ -167,7 +168,7 @@ export default function ProjectDetail() {
                       transition: "all 0.15s",
                     }}
                   >
-                    <span>{r.emoji}</span>
+                    <img src={r.icon} alt={r.label} style={{ width: "20px", height: "20px", imageRendering: "pixelated" }} />
                     <span style={{ fontWeight: reacted ? 700 : 500, color: reacted ? "#004FCD" : "inherit" }}>
                       {project.reactions?.[r.type] || 0}
                     </span>

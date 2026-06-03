@@ -249,10 +249,15 @@ function UploadFlow() {
             >
               {isSubmitting ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <img src="/images/nomada-loading.gif" alt="" style={{ width: "20px", height: "20px", imageRendering: "pixelated" }} />
                   Guardando...
                 </>
-              ) : "🚀 Publicar Proyecto"}
+              ) : (
+                <>
+                  <img src="/images/icons/publicar.png" alt="" style={{ width: "20px", height: "20px", imageRendering: "pixelated" }} />
+                  Publicar Proyecto
+                </>
+              )}
             </button>
           ) : (
             <button
