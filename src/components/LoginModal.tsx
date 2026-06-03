@@ -102,7 +102,7 @@ export default function LoginModal({ open, onClose }: Props) {
               size="large"
               text="signin_with"
               shape="pill"
-              locale="es"
+
             />
           </div>
 

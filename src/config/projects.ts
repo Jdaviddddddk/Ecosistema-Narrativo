@@ -2,8 +2,8 @@ export interface Project {
   id: string;
   title: string;
   author: string;
-  authorId: string;        // ← NUEVO: Google sub del autor
-  authorEmail: string;     // ← NUEVO: email del autor
+  authorId?: string;
+  authorEmail?: string;
   semester: string;
   subject: string;
   area: string;
