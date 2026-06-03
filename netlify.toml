@@ -1,0 +1,20 @@
+[build]
+  command   = "npm run build"
+  publish   = "dist"
+
+[[redirects]]
+  from   = "/api/*"
+  to     = "http://138.199.196.128:3001/api/:splat"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/uploads/*"
+  to     = "http://138.199.196.128:3001/uploads/:splat"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
