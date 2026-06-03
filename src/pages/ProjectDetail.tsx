@@ -87,7 +87,7 @@ export default function ProjectDetail() {
       {/* Barra superior */}
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px 32px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Link to="/projects" style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.5)", textDecoration: "none", display: "flex", alignItems: "center", gap: "6px" }}>
-          <img src="/images/icons/volver.png" alt="volver" style={{ width: "16px", height: "16px", imageRendering: "pixelated", opacity: 0.5 }} />
+          <img src="/images/icons/icon-volver.png" alt="volver" style={{ width: "16px", height: "16px", imageRendering: "pixelated", opacity: 0.5 }} />
           Volver a proyectos
         </Link>
         <ShareButton url={window.location.href} label={project.title} />
@@ -146,10 +146,10 @@ export default function ProjectDetail() {
             {/* Reactions + Share */}
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "24px", alignItems: "center" }}>
               {([
-                { type: "inspires" as ReactionType, icon: "/images/icons/inspira.png", label: "Me inspira" },
-                { type: "learned" as ReactionType, icon: "/images/icons/aprendí.png", label: "Aprendí" },
-                { type: "professional" as ReactionType, icon: "/images/icons/profesional.png", label: "Profesional" },
-                { type: "inProgress" as ReactionType, icon: "/images/icons/proceso.png", label: "En proceso" },
+                { type: "inspires" as ReactionType, icon: "/images/icons/icon-inspira.png", label: "Me inspira" },
+                { type: "learned" as ReactionType, icon: "/images/icons/icon-aprendi.png", label: "Aprendí" },
+                { type: "professional" as ReactionType, icon: "/images/icons/icon-profesional.png", label: "Profesional" },
+                { type: "inProgress" as ReactionType, icon: "/images/icons/icon-proceso.png", label: "En proceso" },
               ]).map(r => {
                 const reacted = userReactions.has(r.type);
                 return (

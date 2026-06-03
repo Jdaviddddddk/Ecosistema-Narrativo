@@ -254,7 +254,7 @@ function UploadFlow() {
                 </>
               ) : (
                 <>
-                  <img src="/images/icons/publicar.png" alt="" style={{ width: "20px", height: "20px", imageRendering: "pixelated" }} />
+                  <img src="/images/icons/icon-publicar.png" alt="" style={{ width: "20px", height: "20px", imageRendering: "pixelated" }} />
                   Publicar Proyecto
                 </>
               )}

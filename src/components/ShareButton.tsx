@@ -43,7 +43,7 @@ export default function ShareButton({ url, label, style }: ShareButtonProps) {
       }}
     >
       <img
-        src={state === "copied" ? "/images/icons/guardado.png" : "/images/icons/compartir.png"}
+        src={state === "copied" ? "/images/icons/icon-guardado.png" : "/images/icons/icon-compartir.png"}
         alt="compartir"
         style={{ width: "16px", height: "16px", imageRendering: "pixelated" }}
       />
