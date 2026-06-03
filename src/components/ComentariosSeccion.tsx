@@ -28,6 +28,19 @@ interface ComentarioConReplies extends Comentario {
   replies: Comentario[];
 }
 
+// Clave localStorage para guardar relaciones parentId que el backend puede no persistir
+function replyKey(projectId: string) { return `nexo_replies_${projectId}`; }
+
+function saveReplyRelation(projectId: string, commentId: string, parentId: string) {
+  const map: Record<string, string> = JSON.parse(localStorage.getItem(replyKey(projectId)) || "{}");
+  map[commentId] = parentId;
+  localStorage.setItem(replyKey(projectId), JSON.stringify(map));
+}
+
+function getReplyMap(projectId: string): Record<string, string> {
+  return JSON.parse(localStorage.getItem(replyKey(projectId)) || "{}");
+}
+
 interface Props {
   projectId: string;
 }
@@ -166,15 +179,23 @@ export default function ComentariosSeccion({ projectId }: Props) {
   useEffect(() => {
     commentsAPI.list(projectId)
       .then((all: Comentario[]) => {
-        // Separar raíz de respuestas y anidar
-        const roots = all.filter(c => !c.parentId);
-        const replies = all.filter(c => !!c.parentId);
+        // Combinar parentId del backend con el mapa local (por si el backend no lo guardó)
+        const localMap = getReplyMap(projectId);
+        const enriched = all.map(c => ({
+          ...c,
+          parentId: c.parentId || localMap[c.id],
+        }));
+        const roots = enriched.filter(c => !c.parentId);
+        const replies = enriched.filter(c => !!c.parentId);
         setComentarios(
-          roots.map(r => ({
-            ...r,
-            replies: replies.filter(rep => rep.parentId === r.id)
-              .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()),
-          }))
+          roots
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+            .map(r => ({
+              ...r,
+              replies: replies
+                .filter(rep => rep.parentId === r.id)
+                .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()),
+            }))
         );
       })
       .catch(() => setComentarios([]))
@@ -201,13 +222,14 @@ export default function ComentariosSeccion({ projectId }: Props) {
       text,
       parentId,
     });
+    // Guardar relación localmente por si el backend no persiste parentId
+    saveReplyRelation(projectId, nueva.id, parentId);
     setComentarios(prev => prev.map(c =>
       c.id === parentId
-        ? { ...c, replies: [...c.replies, nueva] }
+        ? { ...c, replies: [...c.replies, { ...nueva, parentId }] }
         : c
     ));
     setReplyingTo(null);
-    // Expandir respuestas del padre automáticamente
     setExpandedReplies(prev => new Set([...prev, parentId]));
   }, [user, projectId]);
 
