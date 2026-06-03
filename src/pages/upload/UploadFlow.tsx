@@ -72,8 +72,9 @@ function UploadFlow() {
   const handleNext = () => { if (step < stepComponents.length - 1) setStep(s => s + 1); };
   const handleBack = () => { if (step > 0) setStep(s => s - 1); };
 
-  const handlePublish = async (publishUser = user) => {
-    if (!publishUser) {
+  const handlePublish = async (publishUser?: typeof user) => {
+    const u = publishUser ?? user;
+    if (!u) {
       pendingPublish.current = true;
       setLoginOpen(true);
       return;
@@ -89,10 +90,10 @@ function UploadFlow() {
     try {
       const projectData = {
         title: data.title || "Sin título",
-        author: publishUser.name,
-        authorId: publishUser.id,
-        authorEmail: publishUser.email,
-        authorAvatar: publishUser.avatar,
+        author: u.name,
+        authorId: u.id,
+        authorEmail: u.email,
+        authorAvatar: u.avatar,
         semester: data.semester || "1°",
         subject: data.subject || "Sin materia",
         area: data.area || "Diseño análogo",
@@ -245,7 +246,7 @@ function UploadFlow() {
 
           {isLastStep ? (
             <button
-              onClick={handlePublish}
+              onClick={() => handlePublish()}
               disabled={isSubmitting}
               className="flex items-center gap-2 px-8 py-3 rounded-2xl text-sm font-semibold transition-all"
               style={{
