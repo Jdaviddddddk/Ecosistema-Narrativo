@@ -8,6 +8,11 @@ import LoginModal from "@/components/LoginModal";
 import { useAuth } from "@/context/AuthContext";
 import NomadaInactividad from '@/components/NomadaInactividad';
 import NomadaGuia from '@/components/NomadaGuia';
+import NomadaLoader from '@/components/NomadaLoader';
+
+function NomadaLoaderInline({ mensaje }: { mensaje: string }) {
+  return <NomadaLoader mensaje={mensaje} fullScreen={false} size={80} />;
+}
 import { projectsAPI } from '@/lib/api';
 
 export default function Home() {
@@ -124,8 +129,7 @@ export default function Home() {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#ffffff' }}>
         <div style={{ textAlign: 'center' }}>
-          <img src="/images/nomada-loading.gif" alt="Cargando..." style={{ width: '80px', height: '80px', imageRendering: 'pixelated', marginBottom: '12px' }} />
-          <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: 'rgba(0,0,0,0.4)' }}>Cargando ecosistema...</p>
+          <NomadaLoaderInline mensaje="Cargando ecosistema..." />
         </div>
       </div>
     );

@@ -4,6 +4,11 @@ import { UploadProvider, useUpload } from "@/context/UploadContext";
 import { useAuth } from "@/context/AuthContext";
 import { projectsAPI } from '@/lib/api';
 import NomadaGuia from "@/components/NomadaGuia";
+import NomadaLoader from "@/components/NomadaLoader";
+
+function NomadaSpinner() {
+  return <NomadaLoader mensaje="" fullScreen={false} size={24} fps={10} />;
+}
 import StepStart from "./steps/StepStart";
 import StepIdentity from "./steps/StepIdentity";
 import StepNarrative from "./steps/StepNarrative";
@@ -249,7 +254,7 @@ function UploadFlow() {
             >
               {isSubmitting ? (
                 <>
-                  <img src="/images/nomada-loading.gif" alt="" style={{ width: "20px", height: "20px", imageRendering: "pixelated" }} />
+                  <NomadaSpinner />
                   Guardando...
                 </>
               ) : (
