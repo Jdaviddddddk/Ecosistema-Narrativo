@@ -104,7 +104,7 @@ export const adminAPI = {
 export const commentsAPI = {
   list: (projectId: string) =>
     fetchAPI(`/api/projects/${projectId}/comments`),
-  add: (projectId: string, comment: { authorId: string; authorName: string; authorAvatar: string; text: string }) =>
+  add: (projectId: string, comment: { authorId: string; authorName: string; authorAvatar: string; text: string; parentId?: string }) =>
     fetchAPI(`/api/projects/${projectId}/comments`, { method: 'POST', body: JSON.stringify(comment) }),
   delete: (projectId: string, commentId: string) =>
     fetchAPI(`/api/projects/${projectId}/comments/${commentId}`, { method: 'DELETE' }),
