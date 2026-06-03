@@ -30,45 +30,78 @@ export default function StepTools() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-nexo-dark" style={{ fontFamily: "'Sono', sans-serif" }}>
-        Herramientas utilizadas
-      </h2>
-      <p className="text-sm text-gray-500">
-        Selecciona las herramientas que usaste en este proyecto.
-      </p>
-
-      <div className="flex flex-wrap gap-2">
-        {COMMON_TOOLS.map((tool) => (
-          <button
-            key={tool}
-            onClick={() => toggleTool(tool)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-              data.tools.includes(tool)
-                ? "bg-nexo-primary text-white shadow-md shadow-blue-500/20"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            {tool}
-          </button>
-        ))}
+      <div>
+        <h2 style={{ fontFamily: "'Sono', sans-serif", fontSize: "22px", fontWeight: 700, color: "#0a0a0a", marginBottom: "6px" }}>
+          Herramientas utilizadas
+        </h2>
+        <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "13px", color: "#888" }}>
+          Selecciona las herramientas que usaste en este proyecto.
+        </p>
       </div>
 
-      <div className="pt-4 border-t border-gray-100">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+        {COMMON_TOOLS.map((tool) => {
+          const selected = data.tools.includes(tool);
+          return (
+            <button
+              key={tool}
+              onClick={() => toggleTool(tool)}
+              type="button"
+              style={{
+                padding: "8px 16px",
+                borderRadius: "100px",
+                border: selected ? "1.5px solid #004FCD" : "1.5px solid rgba(0,0,0,0.08)",
+                background: selected ? "rgba(0,79,205,0.08)" : "rgba(0,0,0,0.02)",
+                color: selected ? "#004FCD" : "#555",
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: "12px", fontWeight: selected ? 600 : 500,
+                cursor: "pointer",
+                transition: "all 0.15s",
+                boxShadow: selected ? "0 2px 8px rgba(0,79,205,0.18)" : "none",
+              }}
+            >
+              {selected && <span style={{ marginRight: "4px" }}>✓</span>}
+              {tool}
+            </button>
+          );
+        })}
+      </div>
+
+      <div style={{ paddingTop: "8px", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+        <label style={{ display: "block", fontFamily: "'Montserrat', sans-serif", fontSize: "12px", fontWeight: 600, color: "#555", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "8px" }}>
           Otra herramienta
         </label>
-        <div className="flex gap-2">
+        <div style={{ display: "flex", gap: "8px" }}>
           <input
             type="text"
             value={customTool}
             onChange={(e) => setCustomTool(e.target.value)}
             placeholder="Nombre de la herramienta"
-            className="flex-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-nexo-primary"
             onKeyDown={(e) => e.key === "Enter" && addCustomTool()}
+            style={{
+              flex: 1, padding: "11px 16px",
+              border: "1.5px solid rgba(0,0,0,0.08)",
+              borderRadius: "14px",
+              background: "rgba(0,0,0,0.02)",
+              fontFamily: "'Montserrat', sans-serif",
+              fontSize: "14px", outline: "none",
+            }}
+            onFocus={e => { e.target.style.borderColor = "#004FCD"; e.target.style.boxShadow = "0 0 0 3px rgba(0,79,205,0.1)"; }}
+            onBlur={e => { e.target.style.borderColor = "rgba(0,0,0,0.08)"; e.target.style.boxShadow = "none"; }}
           />
           <button
             onClick={addCustomTool}
-            className="px-5 py-3 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors font-medium"
+            type="button"
+            style={{
+              padding: "11px 18px",
+              borderRadius: "14px",
+              border: "1.5px solid rgba(0,0,0,0.1)",
+              background: "rgba(0,0,0,0.03)",
+              color: "#333",
+              fontFamily: "'Montserrat', sans-serif",
+              fontSize: "13px", fontWeight: 600,
+              cursor: "pointer", whiteSpace: "nowrap",
+            }}
           >
             Agregar
           </button>
@@ -76,21 +109,31 @@ export default function StepTools() {
       </div>
 
       {data.tools.length > 0 && (
-        <div className="pt-2">
-          <p className="text-xs text-gray-400 mb-2">Seleccionadas ({data.tools.length}):</p>
-          <div className="flex flex-wrap gap-2">
+        <div>
+          <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "11px", color: "#999", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px" }}>
+            Seleccionadas ({data.tools.length})
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
             {data.tools.map((tool) => (
               <span
                 key={tool}
-                className="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-nexo-primary rounded-full text-sm"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: "6px",
+                  padding: "6px 12px",
+                  borderRadius: "100px",
+                  background: "rgba(0,79,205,0.07)",
+                  border: "1px solid rgba(0,79,205,0.15)",
+                  color: "#004FCD",
+                  fontFamily: "'Montserrat', sans-serif",
+                  fontSize: "12px", fontWeight: 500,
+                }}
               >
                 {tool}
                 <button
                   onClick={() => toggleTool(tool)}
-                  className="ml-1 hover:text-red-500 transition-colors"
-                >
-                  ×
-                </button>
+                  type="button"
+                  style={{ border: "none", background: "transparent", cursor: "pointer", color: "#004FCD", fontSize: "14px", lineHeight: 1, padding: 0, opacity: 0.6 }}
+                >×</button>
               </span>
             ))}
           </div>

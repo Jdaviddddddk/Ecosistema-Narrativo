@@ -26,70 +26,111 @@ export default function StepProcess() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-nexo-dark" style={{ fontFamily: "'Sono', sans-serif" }}>
-        Proceso creativo
-      </h2>
-      <p className="text-sm text-gray-500" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-        Describe las etapas por las que pasó tu proyecto.
-      </p>
+      <div>
+        <h2 style={{ fontFamily: "'Sono', sans-serif", fontSize: "22px", fontWeight: 700, color: "#0a0a0a", marginBottom: "6px" }}>
+          Proceso creativo
+        </h2>
+        <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "13px", color: "#888" }}>
+          Describe las etapas por las que pasó tu proyecto.
+        </p>
+      </div>
 
-      <div className="flex gap-2">
+      <div style={{ display: "flex", gap: "8px" }}>
         <input
           type="text"
           value={newStep}
           onChange={(e) => setNewStep(e.target.value)}
           placeholder="Ej: Investigación de campo"
-          className="flex-1 p-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-nexo-primary"
           onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+          style={{
+            flex: 1, padding: "12px 16px",
+            border: "1.5px solid rgba(0,0,0,0.08)",
+            borderRadius: "14px",
+            background: "rgba(0,0,0,0.02)",
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: "14px", outline: "none",
+          }}
+          onFocus={e => { e.target.style.borderColor = "#004FCD"; e.target.style.boxShadow = "0 0 0 3px rgba(0,79,205,0.1)"; }}
+          onBlur={e => { e.target.style.borderColor = "rgba(0,0,0,0.08)"; e.target.style.boxShadow = "none"; }}
         />
         <button
           onClick={handleAdd}
-          className="px-5 py-3 bg-nexo-primary text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+          type="button"
+          style={{
+            padding: "12px 20px",
+            borderRadius: "14px",
+            background: "linear-gradient(135deg, #004FCD, #3b7de8)",
+            color: "#fff",
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: "13px", fontWeight: 600,
+            border: "none", cursor: "pointer",
+            boxShadow: "0 4px 14px rgba(0,79,205,0.3)",
+            whiteSpace: "nowrap",
+          }}
         >
-          Agregar
+          + Agregar
         </button>
       </div>
 
-      <div className="space-y-2">
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         {data.process.map((step, i) => (
           <div
             key={i}
-            className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl group"
+            style={{
+              display: "flex", alignItems: "center", gap: "12px",
+              padding: "14px 16px",
+              borderRadius: "14px",
+              background: "rgba(0,0,0,0.02)",
+              border: "1.5px solid rgba(0,0,0,0.06)",
+              transition: "border-color 0.2s",
+            }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(0,79,205,0.2)")}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.06)")}
           >
-            <span className="w-8 h-8 rounded-full bg-nexo-primary text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+            <div style={{
+              width: "28px", height: "28px", borderRadius: "50%",
+              background: "linear-gradient(135deg, #004FCD, #3b7de8)",
+              color: "#fff", display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "'Sono', sans-serif", fontSize: "12px", fontWeight: 700, flexShrink: 0,
+            }}>
               {i + 1}
+            </div>
+            <span style={{ flex: 1, fontFamily: "'Montserrat', sans-serif", fontSize: "14px", color: "#333" }}>
+              {step}
             </span>
-            <span className="flex-1 text-sm text-gray-700">{step}</span>
-            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div style={{ display: "flex", gap: "4px" }}>
               <button
                 onClick={() => handleMove(i, -1)}
                 disabled={i === 0}
-                className="p-1.5 hover:bg-gray-200 rounded-lg disabled:opacity-30 transition-colors"
-              >
-                ↑
-              </button>
+                type="button"
+                style={{ padding: "4px 8px", borderRadius: "8px", border: "none", background: "transparent", cursor: i === 0 ? "not-allowed" : "pointer", color: i === 0 ? "#ccc" : "#666", fontSize: "14px" }}
+              >↑</button>
               <button
                 onClick={() => handleMove(i, 1)}
                 disabled={i === data.process.length - 1}
-                className="p-1.5 hover:bg-gray-200 rounded-lg disabled:opacity-30 transition-colors"
-              >
-                ↓
-              </button>
+                type="button"
+                style={{ padding: "4px 8px", borderRadius: "8px", border: "none", background: "transparent", cursor: i === data.process.length - 1 ? "not-allowed" : "pointer", color: i === data.process.length - 1 ? "#ccc" : "#666", fontSize: "14px" }}
+              >↓</button>
               <button
                 onClick={() => handleRemove(i)}
-                className="p-1.5 hover:bg-red-100 text-red-500 rounded-lg transition-colors"
-              >
-                ×
-              </button>
+                type="button"
+                style={{ padding: "4px 8px", borderRadius: "8px", border: "none", background: "rgba(239,68,68,0.06)", cursor: "pointer", color: "#ef4444", fontSize: "16px", lineHeight: 1 }}
+              >×</button>
             </div>
           </div>
         ))}
       </div>
 
       {data.process.length === 0 && (
-        <p className="text-center text-sm text-gray-400 py-8">
-          Aún no has agregado pasos. Empieza con el primero.
-        </p>
+        <div style={{
+          padding: "32px", textAlign: "center",
+          borderRadius: "16px",
+          border: "1.5px dashed rgba(0,0,0,0.1)",
+        }}>
+          <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "13px", color: "#aaa" }}>
+            Aún no has agregado pasos. Empieza con el primero.
+          </p>
+        </div>
       )}
     </div>
   );
