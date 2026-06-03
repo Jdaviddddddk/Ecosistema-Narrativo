@@ -472,6 +472,7 @@ export default function Profile() {
             </div>
           </div>
         )}
+      </div>
       <NomadaGuia escena="perfil" onAccion={() => window.location.href = '/upload'} />
     </div>
   );
