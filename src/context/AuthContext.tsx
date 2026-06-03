@@ -62,7 +62,6 @@ function createUserFromGoogle(googleUser: GoogleUser): User {
     googleData: googleUser,
     interests: savedProfile?.interests || ["Diseño Visual", "Fotografía"],
     isCommunityMember: isCommunity(googleUser.email),
-    isAdmin: ADMIN_EMAILS.includes(googleUser.email),
     contact: savedProfile?.contact || {},
   };
 }

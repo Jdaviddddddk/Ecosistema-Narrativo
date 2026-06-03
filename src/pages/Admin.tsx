@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Navigate, Link } from "react-router";
 import { useAuth } from "@/context/AuthContext";
-import { adminAPI, commentsAPI } from "@/lib/api";
+import { adminAPI } from "@/lib/api";
 import NomadaLoader from "@/components/NomadaLoader";
 
 type Tab = "cola" | "proyectos" | "comentarios" | "usuarios";
