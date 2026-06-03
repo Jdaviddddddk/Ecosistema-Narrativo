@@ -588,44 +588,39 @@ export default function Home() {
               </svg>
             </button>
 
-            <button
-              onClick={() => {
-                const vortex = vortexRef.current;
-                if (vortex) {
-                  const idx = vortex.textureIndex ?? 0;
-                  setSelectedIdx(idx);
-                }
-              }}
-              style={{
-                fontFamily: "system-ui, -apple-system, sans-serif",
-                fontSize: "12px",
-                fontWeight: 400,
-                color: textColor,
-                background: "transparent",
-                border: `1.5px solid ${borderColor}`,
-                padding: "10px 20px",
-                cursor: "pointer",
-                letterSpacing: "0.04em",
-                pointerEvents: "auto",
-                transition: "all 0.3s ease, color 1.2s ease, border-color 1.2s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = isNight
-                  ? "rgba(255,255,255,0.08)"
-                  : "rgba(0,0,0,0.05)";
-                e.currentTarget.style.borderColor = isNight
-                  ? "rgba(255,255,255,0.5)"
-                  : "rgba(0,0,0,0.3)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.borderColor = isNight
-                  ? "rgba(255,255,255,0.25)"
-                  : "rgba(0,0,0,0.15)";
-              }}
-            >
-              Ver Proyecto
-            </button>
+            <div style={{ display: "flex", gap: "10px", pointerEvents: "auto" }}>
+              <button
+                onClick={() => {
+                  const vortex = vortexRef.current;
+                  if (vortex) { const idx = vortex.textureIndex ?? 0; setSelectedIdx(idx); }
+                }}
+                style={{
+                  fontFamily: "system-ui, -apple-system, sans-serif", fontSize: "12px",
+                  color: textColor, background: "transparent", border: `1.5px solid ${borderColor}`,
+                  padding: "10px 20px", cursor: "pointer", letterSpacing: "0.04em",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = isNight ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "transparent"; }}
+              >
+                Vista rápida
+              </button>
+              {centerProject && (
+                <button
+                  onClick={() => navigate(`/projects/${centerProject.id}`)}
+                  style={{
+                    fontFamily: "system-ui, -apple-system, sans-serif", fontSize: "12px", fontWeight: 600,
+                    color: "#fff", background: "linear-gradient(135deg, #004FCD, #3b7de8)",
+                    border: "none", padding: "10px 20px", cursor: "pointer", letterSpacing: "0.04em",
+                    boxShadow: "0 4px 14px rgba(0,79,205,0.35)", transition: "all 0.3s ease",
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 20px rgba(0,79,205,0.5)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 4px 14px rgba(0,79,205,0.35)"; }}
+                >
+                  Ver proyecto →
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </section>

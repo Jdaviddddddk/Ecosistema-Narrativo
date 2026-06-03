@@ -47,6 +47,8 @@ export default function Profile() {
   const [editBio, setEditBio] = useState("");
   const [editLocation, setEditLocation] = useState("");
   const [editInterests, setEditInterests] = useState("");
+  const [editContact, setEditContact] = useState({ instagram: "", behance: "", linkedin: "", portfolio: "", email: "" });
+  const [shareMsg, setShareMsg] = useState("");
 
   const [userProjects, setUserProjects] = useState<any[]>([]);
 
@@ -76,6 +78,13 @@ export default function Profile() {
     setEditBio(user?.bio || "");
     setEditLocation(user?.location || "");
     setEditInterests(user?.interests?.join(", ") || "");
+    setEditContact({
+      instagram: user?.contact?.instagram || "",
+      behance: user?.contact?.behance || "",
+      linkedin: user?.contact?.linkedin || "",
+      portfolio: user?.contact?.portfolio || "",
+      email: user?.contact?.email || "",
+    });
     setIsEditing(true);
   };
 
@@ -84,8 +93,26 @@ export default function Profile() {
       bio: editBio,
       location: editLocation,
       interests: editInterests.split(",").map(s => s.trim()).filter(Boolean),
+      contact: {
+        instagram: editContact.instagram || undefined,
+        behance: editContact.behance || undefined,
+        linkedin: editContact.linkedin || undefined,
+        portfolio: editContact.portfolio || undefined,
+        email: editContact.email || undefined,
+      },
     });
     setIsEditing(false);
+  };
+
+  const handleShare = async () => {
+    const url = `${window.location.origin}/profile/${user?.id}`;
+    if (navigator.share) {
+      await navigator.share({ title: `Perfil de ${user?.name} en NEXO`, url }).catch(() => {});
+    } else {
+      await navigator.clipboard.writeText(url);
+      setShareMsg("¡Enlace copiado!");
+      setTimeout(() => setShareMsg(""), 2000);
+    }
   };
 
   const handleDeleteProject = async (projectId: string) => {
@@ -174,15 +201,32 @@ export default function Profile() {
               </div>
 
               {isEditing && (
-                <div className="mt-3">
-                  <label className="text-xs text-gray-500 block mb-1">Intereses (separados por coma)</label>
-                  <input
-                    type="text"
-                    value={editInterests}
-                    onChange={(e) => setEditInterests(e.target.value)}
-                    className="w-full max-w-xl p-2 border border-gray-200 rounded-lg text-sm"
-                    placeholder="Diseño Visual, Fotografía, Branding..."
-                  />
+                <div className="mt-3 space-y-3 max-w-xl">
+                  <div>
+                    <label className="text-xs text-gray-500 block mb-1">Intereses (separados por coma)</label>
+                    <input type="text" value={editInterests} onChange={(e) => setEditInterests(e.target.value)} className="w-full p-2 border border-gray-200 rounded-lg text-sm" placeholder="Diseño Visual, Fotografía, Branding..." />
+                  </div>
+                  <div className="pt-2 border-t border-gray-100">
+                    <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">Información de contacto</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { key: "instagram", placeholder: "Instagram (@usuario)" },
+                        { key: "behance", placeholder: "Behance (usuario)" },
+                        { key: "linkedin", placeholder: "LinkedIn (usuario)" },
+                        { key: "portfolio", placeholder: "Portfolio (URL)" },
+                        { key: "email", placeholder: "Email de contacto" },
+                      ].map(({ key, placeholder }) => (
+                        <input
+                          key={key}
+                          type="text"
+                          value={(editContact as any)[key]}
+                          onChange={(e) => setEditContact(prev => ({ ...prev, [key]: e.target.value }))}
+                          placeholder={placeholder}
+                          className="p-2 border border-gray-200 rounded-lg text-sm"
+                        />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -200,6 +244,9 @@ export default function Profile() {
                 </>
               ) : (
                 <>
+                  <button onClick={handleShare} className="flex items-center justify-center gap-2 px-6 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-sm text-gray-600">
+                    🔗 {shareMsg || "Compartir perfil"}
+                  </button>
                   <button onClick={handleEdit} className="flex items-center justify-center gap-2 px-6 py-2.5 bg-nexo-primary text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium">
                     <Edit2 size={16} /> Editar Perfil
                   </button>

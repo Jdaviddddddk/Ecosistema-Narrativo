@@ -13,7 +13,6 @@ export function getUserProjects(authorId: string): Project[] {
 export function saveUserProject(authorId: string, project: Project): void {
   const all = JSON.parse(localStorage.getItem(PROJECTS_KEY) || "{}");
   if (!all[authorId]) all[authorId] = [];
-  // Evitar duplicados por id
   all[authorId] = all[authorId].filter((p: Project) => p.id !== project.id);
   all[authorId].push(project);
   localStorage.setItem(PROJECTS_KEY, JSON.stringify(all));
@@ -29,10 +28,19 @@ export function deleteUserProject(authorId: string, projectId: string): void {
 
 // ─── Perfiles editables por usuario ───
 
+export interface ContactInfo {
+  instagram?: string;
+  behance?: string;
+  linkedin?: string;
+  portfolio?: string;
+  email?: string;
+}
+
 export interface UserProfileData {
   bio: string;
   location: string;
   interests: string[];
+  contact?: ContactInfo;
 }
 
 export function getUserProfile(googleSub: string): UserProfileData | null {

@@ -72,8 +72,17 @@ export const projectsAPI = {
 };
 
 export const usersAPI = {
-  save: (user: any) => 
+  save: (user: any) =>
     fetchAPI('/api/users', { method: 'POST', body: JSON.stringify(user) }),
-  get: (id: string) => 
+  get: (id: string) =>
     fetchAPI(`/api/users/${id}`),
+};
+
+export const commentsAPI = {
+  list: (projectId: string) =>
+    fetchAPI(`/api/projects/${projectId}/comments`),
+  add: (projectId: string, comment: { authorId: string; authorName: string; authorAvatar: string; text: string }) =>
+    fetchAPI(`/api/projects/${projectId}/comments`, { method: 'POST', body: JSON.stringify(comment) }),
+  delete: (projectId: string, commentId: string) =>
+    fetchAPI(`/api/projects/${projectId}/comments/${commentId}`, { method: 'DELETE' }),
 };

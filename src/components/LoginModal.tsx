@@ -81,7 +81,7 @@ export default function LoginModal({ open, onClose }: Props) {
           </h2>
 
           <p className="text-center text-sm mb-8 font-montserrat text-gray-500">
-            Ingresa con tu cuenta Google institucional para acceder a tu perfil y proyectos.
+            Ingresa con cualquier cuenta Google para acceder al ecosistema.
           </p>
 
           {error && (
@@ -107,7 +107,9 @@ export default function LoginModal({ open, onClose }: Props) {
           </div>
 
           <p className="mt-6 text-center text-xs font-montserrat text-gray-400">
-            Solo correos con dominio <span className="font-semibold text-nexo-primary">@universidadmayor.edu.co</span> tienen acceso.
+            Cualquier cuenta Google puede acceder. Los usuarios con correo{" "}
+            <span className="font-semibold text-nexo-primary">@universidadmayor.edu.co</span>{" "}
+            tienen acceso a contenido exclusivo de la comunidad.
           </p>
         </div>
       </div>
