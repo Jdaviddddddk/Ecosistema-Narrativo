@@ -1,30 +1,25 @@
 import { Navigate, Link } from "react-router";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect, useMemo } from "react";
-import { projectsAPI } from "@/lib/api";
+import { projectsAPI, commentsAPI } from "@/lib/api";
 import { LogOut, MapPin, Calendar, Edit2, Check, X, Trash2, Eye } from "lucide-react";
 import NomadaGuia from "@/components/NomadaGuia";
 import ShareButton from "@/components/ShareButton";
 import { calculateAchievements, RARITY_COLORS, CATEGORY_LABELS, type Achievement } from "@/lib/achievements";
 
-interface Review {
+interface ReviewComment {
   id: string;
+  projectId: string;
   projectTitle: string;
-  rating: number;
-  comment: string;
-  date: string;
+  projectThumbnail: string;
+  reactions: { inspires: number; learned: number; professional: number; inProgress: number };
+  authorId: string;
+  authorName: string;
+  authorAvatar: string;
+  text: string;
+  createdAt: string;
 }
 
-
-const MOCK_REVIEWS: Review[] = [
-  {
-    id: "rev_1",
-    projectTitle: "Ecosistema Lumínico",
-    rating: 5,
-    comment: "Una narrativa visual impresionante. La composición transmite movimiento y quietud simultáneamente.",
-    date: "2025-02-15",
-  },
-];
 
 
 type Tab = "info" | "proyectos" | "calificaciones" | "resenas" | "insights";
@@ -39,12 +34,31 @@ export default function Profile() {
   const [editContact, setEditContact] = useState({ instagram: "", behance: "", linkedin: "", portfolio: "", email: "" });
 
   const [userProjects, setUserProjects] = useState<any[]>([]);
+  const [reviewComments, setReviewComments] = useState<ReviewComment[]>([]);
   const [newAchievement, setNewAchievement] = useState<Achievement | null>(null);
 
   useEffect(() => {
     if (!user) return;
-    projectsAPI.list().then((all: any[]) => {
-      setUserProjects(all.filter(p => p.authorId === user.id));
+    projectsAPI.list().then(async (all: any[]) => {
+      const mine = all.filter(p => p.authorId === user.id);
+      setUserProjects(mine);
+      // Cargar comentarios de todos los proyectos del usuario en paralelo
+      const commentsByProject = await Promise.all(
+        mine.map(p =>
+          commentsAPI.list(p.id)
+            .then((cs: any[]) => cs.map(c => ({
+              ...c,
+              projectId: p.id,
+              projectTitle: p.title,
+              projectThumbnail: p.thumbnail,
+              reactions: p.reactions || { inspires: 0, learned: 0, professional: 0, inProgress: 0 },
+            })))
+            .catch(() => [])
+        )
+      );
+      setReviewComments(commentsByProject.flat().sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ));
     }).catch(console.error);
 
     // Sincronizar perfil con backend (por si nunca se guardó)
@@ -485,30 +499,46 @@ export default function Profile() {
         {activeTab === "calificaciones" && (
           <div className="max-w-2xl">
             <div className="nexo-card p-8 mb-8 flex items-center gap-6">
-              <div className="text-6xl font-bold text-blue-600" style={{ fontFamily: "'Sono', sans-serif" }}>
-                5.0
-              </div>
               <div>
-                <div className="flex text-2xl text-yellow-400 mb-1">★★★★★</div>
-                <p className="text-sm" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
-                  Basado en {MOCK_REVIEWS.length} reseña{MOCK_REVIEWS.length !== 1 ? "s" : ""}
+                <div className="flex gap-4 text-2xl mb-1">
+                  <span title="Inspira">💡 {userProjects.reduce((s, p) => s + (p.reactions?.inspires || 0), 0)}</span>
+                  <span title="Aprendí algo">📚 {userProjects.reduce((s, p) => s + (p.reactions?.learned || 0), 0)}</span>
+                  <span title="Nivel profesional">⭐ {userProjects.reduce((s, p) => s + (p.reactions?.professional || 0), 0)}</span>
+                  <span title="En progreso">🔧 {userProjects.reduce((s, p) => s + (p.reactions?.inProgress || 0), 0)}</span>
+                </div>
+                <p className="text-sm mt-2" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                  {reviewComments.length} comentario{reviewComments.length !== 1 ? "s" : ""} en {userProjects.length} proyecto{userProjects.length !== 1 ? "s" : ""}
                 </p>
               </div>
             </div>
             <div className="space-y-4">
-              {MOCK_REVIEWS.map((review) => (
-                <div key={review.id} className="nexo-card p-6">
+              {reviewComments.length === 0 ? (
+                <p className="text-center text-gray-400 font-montserrat py-8">Aún no hay comentarios en tus proyectos.</p>
+              ) : reviewComments.map((c) => (
+                <div key={c.id} className="nexo-card p-6">
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-semibold" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                      {review.projectTitle}
-                    </h4>
+                    <div className="flex items-center gap-2">
+                      <img src={c.projectThumbnail} alt={c.projectTitle} className="w-8 h-8 rounded-lg object-cover" />
+                      <h4 className="font-semibold text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                        {c.projectTitle}
+                      </h4>
+                    </div>
                     <span className="text-xs" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
-                      {new Date(review.date).toLocaleDateString("es-CO")}
+                      {new Date(c.createdAt).toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" })}
                     </span>
                   </div>
-                  <div className="flex text-yellow-400 mb-3">★★★★★</div>
+                  <div className="flex gap-3 text-sm mb-3">
+                    <span title="Inspira">💡 {c.reactions.inspires}</span>
+                    <span title="Aprendí algo">📚 {c.reactions.learned}</span>
+                    <span title="Nivel profesional">⭐ {c.reactions.professional}</span>
+                    <span title="En progreso">🔧 {c.reactions.inProgress}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <img src={c.authorAvatar || "/images/avatar_default.jpg"} alt={c.authorName} className="w-6 h-6 rounded-full object-cover" />
+                    <span className="text-xs font-semibold" style={{ fontFamily: "'Montserrat', sans-serif", color: "#555" }}>{c.authorName}</span>
+                  </div>
                   <p className="text-sm leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif", color: "#666" }}>
-                    "{review.comment}"
+                    "{c.text}"
                   </p>
                 </div>
               ))}
@@ -518,21 +548,37 @@ export default function Profile() {
 
         {activeTab === "resenas" && (
           <div className="max-w-2xl space-y-4">
-            {MOCK_REVIEWS.map((review) => (
-              <div key={review.id} className="nexo-card p-6">
+            {reviewComments.length === 0 ? (
+              <div className="nexo-card p-12 text-center">
+                <p className="text-gray-400 font-montserrat">Aún no hay comentarios en tus proyectos.</p>
+              </div>
+            ) : reviewComments.map((c) => (
+              <div key={c.id} className="nexo-card p-6">
                 <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h4 className="font-semibold mb-1" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                      {review.projectTitle}
-                    </h4>
-                    <div className="flex text-yellow-400">★★★★★</div>
+                  <div className="flex items-center gap-3">
+                    <img src={c.projectThumbnail} alt={c.projectTitle} className="w-10 h-10 rounded-xl object-cover flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-sm" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                        {c.projectTitle}
+                      </h4>
+                      <div className="flex gap-3 text-xs mt-1" style={{ color: "#888" }}>
+                        <span title="Inspira">💡 {c.reactions.inspires}</span>
+                        <span title="Aprendí algo">📚 {c.reactions.learned}</span>
+                        <span title="Nivel profesional">⭐ {c.reactions.professional}</span>
+                        <span title="En progreso">🔧 {c.reactions.inProgress}</span>
+                      </div>
+                    </div>
                   </div>
-                  <span className="text-xs" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
-                    {new Date(review.date).toLocaleDateString("es-CO")}
+                  <span className="text-xs flex-shrink-0 ml-4" style={{ fontFamily: "'Montserrat', sans-serif", color: "#999" }}>
+                    {new Date(c.createdAt).toLocaleDateString("es-CO", { day: "numeric", month: "short", year: "numeric" })}
                   </span>
                 </div>
-                <p className="text-sm leading-relaxed mt-3" style={{ fontFamily: "'Montserrat', sans-serif", color: "#666" }}>
-                  "{review.comment}"
+                <div className="flex items-center gap-2 mb-2">
+                  <img src={c.authorAvatar || "/images/avatar_default.jpg"} alt={c.authorName} className="w-6 h-6 rounded-full object-cover" />
+                  <span className="text-xs font-semibold" style={{ fontFamily: "'Montserrat', sans-serif", color: "#555" }}>{c.authorName}</span>
+                </div>
+                <p className="text-sm leading-relaxed" style={{ fontFamily: "'Montserrat', sans-serif", color: "#666" }}>
+                  "{c.text}"
                 </p>
               </div>
             ))}
