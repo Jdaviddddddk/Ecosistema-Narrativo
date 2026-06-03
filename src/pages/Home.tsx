@@ -651,7 +651,7 @@ export default function Home() {
               fontWeight: 700,
               fontSize: "clamp(32px, 5vw, 56px)",
               color: textColor,
-              marginBottom: "64px",
+              marginBottom: "48px",
               lineHeight: 1.1,
               transition: "color 1.2s ease",
               letterSpacing: "-0.02em",
@@ -659,6 +659,33 @@ export default function Home() {
           >
             Un ecosistema que potencia<br />cada proyecto
           </h2>
+
+          {/* Video de funcionamiento */}
+          <div
+            style={{
+              borderRadius: "20px",
+              overflow: "hidden",
+              marginBottom: "64px",
+              border: `1px solid ${isNight ? "rgba(0,79,205,0.2)" : "rgba(0,79,205,0.1)"}`,
+              boxShadow: isNight
+                ? "0 24px 64px rgba(0,0,0,0.4)"
+                : "0 24px 64px rgba(0,79,205,0.1)",
+              position: "relative",
+              background: "#000",
+            }}
+          >
+            <video
+              src="/videos/funcionamiento.mp4"
+              controls
+              playsInline
+              style={{
+                width: "100%",
+                display: "block",
+                maxHeight: "560px",
+                objectFit: "contain",
+              }}
+            />
+          </div>
 
           <div
             style={{
