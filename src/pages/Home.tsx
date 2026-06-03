@@ -124,17 +124,8 @@ export default function Home() {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#ffffff' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{
-            width: '48px',
-            height: '48px',
-            border: '3px solid #004FCD',
-            borderTopColor: 'transparent',
-            borderRadius: '50%',
-            animation: 'spin 1s linear infinite',
-            margin: '0 auto 16px'
-          }} />
-          <p style={{ fontFamily: "'Montserrat', sans-serif", color: '#666' }}>Cargando ecosistema...</p>
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          <img src="/images/nomada-loading.gif" alt="Cargando..." style={{ width: '80px', height: '80px', imageRendering: 'pixelated', marginBottom: '12px' }} />
+          <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: 'rgba(0,0,0,0.4)' }}>Cargando ecosistema...</p>
         </div>
       </div>
     );
@@ -309,10 +300,10 @@ export default function Home() {
                   marginBottom: "8px",
                 }}
               >
-                {isAuthenticated && user ? (
+                {centerProject.authorAvatar ? (
                   <img
-                    src={user.avatar}
-                    alt={user.name}
+                    src={centerProject.authorAvatar}
+                    alt={centerProject.author}
                     style={{
                       width: "20px",
                       height: "20px",
@@ -1128,102 +1119,77 @@ export default function Home() {
             Navega por disciplinas<br />y áreas de interés
           </h2>
 
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "12px",
-              marginBottom: "80px",
-              justifyContent: "center",
-            }}
-          >
-            {[
-              "Diseño Gráfico", "Branding", "Tipografía", "UI/UX", "Arquitectura",
-              "Fotografía", "Motion", "Sostenibilidad", "Ilustración", "Data Viz",
-              "Moda", "XR", "Editorial", "Señalética", "Packaging"
-            ].map((tag) => (
-              <button
-                key={tag}
-                style={{
-                  fontFamily: "system-ui, sans-serif",
-                  fontSize: "14px",
-                  padding: "10px 20px",
-                  borderRadius: "100px",
-                  border: `1.5px solid ${borderColor}`,
-                  background: "transparent",
-                  color: textColor,
-                  cursor: "pointer",
-                  transition: "all 0.3s ease, color 1.2s ease",
-                }}
-              >
-                {tag}
-              </button>
-            ))}
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-              gap: "24px",
-            }}
-          >
-            {[
-              { name: "Diseño Visual", count: 124, color: "#e63946" },
-              { name: "Diseño Digital", count: 98, color: "#457b9d" },
-              { name: "Diseño Espacial y de Objetos", count: 76, color: "#2a9d8f" },
-            ].map((cat, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: "48px 36px",
-                  borderRadius: "8px",
-                  border: `1px solid ${borderColor}`,
-                  background: cardBg,
-                  cursor: "pointer",
-                  transition: "transform 0.4s ease, box-shadow 0.4s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-4px)";
-                  e.currentTarget.style.boxShadow = `0 12px 32px ${cat.color}20`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                <div
-                  style={{
-                    width: "48px",
-                    height: "4px",
-                    background: cat.color,
-                    marginBottom: "24px",
-                    borderRadius: "2px",
-                  }}
-                />
-                <h3
-                  style={{
-                    fontFamily: "'Times New Roman', serif",
-                    fontSize: "28px",
-                    color: textColor,
-                    marginBottom: "8px",
-                    transition: "color 1.2s ease",
-                  }}
-                >
-                  {cat.name}
-                </h3>
-                <p
-                  style={{
-                    fontFamily: "system-ui, sans-serif",
-                    fontSize: "14px",
-                    color: mutedColor,
-                  }}
-                >
-                  {cat.count} proyectos
-                </p>
+          {/* Tags de áreas reales */}
+          {(() => {
+            const areas = [...new Set(projects.map(p => p.area).filter(Boolean))];
+            return (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "64px", justifyContent: "center" }}>
+                {areas.map((area) => (
+                  <button
+                    key={area}
+                    onClick={() => navigate(`/projects`)}
+                    style={{
+                      fontFamily: "'Montserrat', sans-serif", fontSize: "13px",
+                      padding: "9px 20px", borderRadius: "100px",
+                      border: `1.5px solid ${borderColor}`,
+                      background: "transparent", color: textColor,
+                      cursor: "pointer", transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = "#004FCD"; e.currentTarget.style.color = "#004FCD"; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = borderColor; e.currentTarget.style.color = textColor; }}
+                  >
+                    {area}
+                  </button>
+                ))}
+                {areas.length === 0 && (
+                  <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "13px", color: mutedColor }}>
+                    Aún no hay proyectos publicados.
+                  </p>
+                )}
               </div>
-            ))}
-          </div>
+            );
+          })()}
+
+          {/* Tarjetas de áreas con conteo real */}
+          {(() => {
+            const AREA_COLORS = ["#004FCD","#e63946","#2a9d8f","#f4a261","#7c3aed","#0891b2"];
+            const areaCounts = projects.reduce((acc: Record<string, number>, p) => {
+              if (p.area) acc[p.area] = (acc[p.area] || 0) + 1;
+              return acc;
+            }, {});
+            const topAreas = Object.entries(areaCounts)
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 6);
+            if (topAreas.length === 0) return null;
+            return (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "20px" }}>
+                {topAreas.map(([area, count], i) => {
+                  const color = AREA_COLORS[i % AREA_COLORS.length];
+                  return (
+                    <div
+                      key={area}
+                      onClick={() => navigate("/projects")}
+                      style={{
+                        padding: "40px 32px", borderRadius: "12px",
+                        border: `1px solid ${borderColor}`, background: cardBg,
+                        cursor: "pointer", transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = `0 12px 32px ${color}25`; }}
+                      onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
+                    >
+                      <div style={{ width: "40px", height: "3px", background: color, borderRadius: "2px", marginBottom: "20px" }} />
+                      <h3 style={{ fontFamily: "'Sono', sans-serif", fontSize: "22px", color: textColor, marginBottom: "8px", letterSpacing: "-0.01em", transition: "color 1.2s ease" }}>
+                        {area}
+                      </h3>
+                      <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "13px", color: mutedColor }}>
+                        {count} proyecto{count !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
         </div>
       </section>
 
@@ -1273,133 +1239,88 @@ export default function Home() {
               gap: "24px",
             }}
           >
-            {[
-              { name: "Mariana Torres", role: "Diseñadora Visual", tags: ["Branding", "Tipografía"], projects: 12, connections: 34, avatar: "MT" },
-              { name: "Carlos Ríos", role: "UX Researcher", tags: ["UX/UI", "Data Viz"], projects: 8, connections: 28, avatar: "CR" },
-              { name: "Valentina Soto", role: "Ilustradora", tags: ["Ilustración", "Editorial"], projects: 15, connections: 42, avatar: "VS" },
-              { name: "Andrés Méndez", role: "Arquitecto", tags: ["Arquitectura", "Sostenibilidad"], projects: 6, connections: 19, avatar: "AM" },
-            ].map((creator, i) => (
-              <div
-                key={i}
-                style={{
-                  padding: "36px",
-                  borderRadius: "8px",
-                  border: `1px solid ${borderColor}`,
-                  background: cardBg,
-                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-4px)";
-                  e.currentTarget.style.boxShadow = isNight
-                    ? "0 16px 32px rgba(0,0,0,0.3)"
-                    : "0 16px 32px rgba(0,0,0,0.06)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                <div
-                  style={{
-                    width: "64px",
-                    height: "64px",
-                    borderRadius: "50%",
-                    background: isNight
-                      ? "linear-gradient(135deg, #1a3a5c, #0d2137)"
-                      : "linear-gradient(135deg, #e0e0e0, #c0c0c0)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontFamily: "'Times New Roman', serif",
-                    fontSize: "24px",
-                    color: textColor,
-                    marginBottom: "20px",
-                  }}
-                >
-                  {creator.avatar}
-                </div>
+            {(() => {
+              // Agrupar proyectos por autor
+              const creatorsMap = new Map<string, {
+                id: string; name: string; avatar: string;
+                areas: Set<string>; projectCount: number; totalReactions: number;
+              }>();
+              projects.filter(p => p.visibility !== "Privado").forEach(p => {
+                const key = p.authorId || p.author;
+                if (!creatorsMap.has(key)) {
+                  creatorsMap.set(key, { id: p.authorId || "", name: p.author, avatar: p.authorAvatar || "", areas: new Set(), projectCount: 0, totalReactions: 0 });
+                }
+                const c = creatorsMap.get(key)!;
+                c.projectCount++;
+                if (p.area) c.areas.add(p.area);
+                c.totalReactions += (p.reactions?.inspires || 0) + (p.reactions?.learned || 0) + (p.reactions?.professional || 0) + (p.reactions?.inProgress || 0);
+              });
 
-                <h3
-                  style={{
-                    fontFamily: "'Times New Roman', serif",
-                    fontSize: "22px",
-                    color: textColor,
-                    marginBottom: "4px",
-                    transition: "color 1.2s ease",
-                  }}
-                >
-                  {creator.name}
-                </h3>
-                <p
-                  style={{
-                    fontFamily: "system-ui, sans-serif",
-                    fontSize: "13px",
-                    color: mutedColor,
-                    marginBottom: "16px",
-                  }}
-                >
-                  {creator.role}
+              const creators = [...creatorsMap.values()]
+                .sort((a, b) => b.totalReactions - a.totalReactions)
+                .slice(0, 8);
+
+              if (creators.length === 0) return (
+                <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "14px", color: mutedColor, gridColumn: "1/-1", textAlign: "center" }}>
+                  Aún no hay creadores registrados.
                 </p>
+              );
 
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "20px" }}>
-                  {creator.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      style={{
-                        fontFamily: "system-ui, sans-serif",
-                        fontSize: "11px",
-                        color: mutedColor,
-                        padding: "4px 10px",
-                        borderRadius: "100px",
-                        border: `1px solid ${borderColor}`,
-                      }}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+              return creators.map((creator) => {
+                const initials = creator.name.split(" ").map((n: string) => n[0]).slice(0, 2).join("").toUpperCase();
+                const areas = [...creator.areas].slice(0, 3);
+                return (
+                  <div
+                    key={creator.id || creator.name}
+                    onClick={() => creator.id && navigate(`/profile/${creator.id}`)}
+                    style={{
+                      padding: "32px", borderRadius: "12px",
+                      border: `1px solid ${borderColor}`, background: cardBg,
+                      cursor: creator.id ? "pointer" : "default",
+                      transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = isNight ? "0 16px 32px rgba(0,0,0,0.3)" : "0 16px 32px rgba(0,0,0,0.06)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
+                  >
+                    {/* Avatar */}
+                    {creator.avatar ? (
+                      <img src={creator.avatar} alt={creator.name} style={{ width: "56px", height: "56px", borderRadius: "12px", objectFit: "cover", marginBottom: "16px", border: "2px solid rgba(0,79,205,0.15)" }} />
+                    ) : (
+                      <div style={{ width: "56px", height: "56px", borderRadius: "12px", background: "linear-gradient(135deg, #004FCD, #3b7de8)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Sono', sans-serif", fontSize: "20px", fontWeight: 700, color: "#fff", marginBottom: "16px" }}>
+                        {initials}
+                      </div>
+                    )}
 
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "24px",
-                    paddingTop: "16px",
-                    borderTop: `1px solid ${borderColor}`,
-                  }}
-                >
-                  <div>
-                    <p
-                      style={{
-                        fontFamily: "'Times New Roman', serif",
-                        fontSize: "24px",
-                        color: textColor,
-                        transition: "color 1.2s ease",
-                      }}
-                    >
-                      {creator.projects}
+                    <h3 style={{ fontFamily: "'Sono', sans-serif", fontSize: "18px", color: textColor, marginBottom: "4px", transition: "color 1.2s ease", letterSpacing: "-0.01em" }}>
+                      {creator.name}
+                    </h3>
+                    <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "11px", color: mutedColor, marginBottom: "14px" }}>
+                      {areas[0] || "Diseño Digital y Multimedia"}
                     </p>
-                    <p style={{ fontFamily: "system-ui, sans-serif", fontSize: "11px", color: mutedColor }}>
-                      Proyectos
-                    </p>
+
+                    {/* Áreas como tags */}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "16px" }}>
+                      {areas.map(tag => (
+                        <span key={tag} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "10px", color: mutedColor, padding: "3px 10px", borderRadius: "100px", border: `1px solid ${borderColor}` }}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div style={{ display: "flex", gap: "20px", paddingTop: "14px", borderTop: `1px solid ${borderColor}` }}>
+                      <div>
+                        <p style={{ fontFamily: "'Sono', sans-serif", fontSize: "22px", color: textColor, transition: "color 1.2s ease" }}>{creator.projectCount}</p>
+                        <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "10px", color: mutedColor, textTransform: "uppercase", letterSpacing: "0.06em" }}>Proyectos</p>
+                      </div>
+                      <div>
+                        <p style={{ fontFamily: "'Sono', sans-serif", fontSize: "22px", color: textColor, transition: "color 1.2s ease" }}>{creator.totalReactions}</p>
+                        <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "10px", color: mutedColor, textTransform: "uppercase", letterSpacing: "0.06em" }}>Reacciones</p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p
-                      style={{
-                        fontFamily: "'Times New Roman', serif",
-                        fontSize: "24px",
-                        color: textColor,
-                        transition: "color 1.2s ease",
-                      }}
-                    >
-                      {creator.connections}
-                    </p>
-                    <p style={{ fontFamily: "system-ui, sans-serif", fontSize: "11px", color: mutedColor }}>
-                      Conexiones
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
+                );
+              });
+            })()}
           </div>
         </div>
       </section>

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { projectsAPI } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import NomadaGuia from "@/components/NomadaGuia";
+import NomadaLoader from "@/components/NomadaLoader";
 
 const DDM_AREAS = [
   "Diseño análogo", "Diseño de interfaces", "Diseño web", "Fotografía",
@@ -190,10 +191,7 @@ export default function Projects() {
 
       {/* ── Grid ──────────────────────────────────────────────────────────── */}
       {loading ? (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "400px" }}>
-          <div style={{ width: "36px", height: "36px", border: "3px solid #004FCD", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        </div>
+        <NomadaLoader mensaje="Buscando proyectos..." fullScreen={false} />
       ) : filteredProjects.length === 0 ? (
         <div style={{ maxWidth: "600px", margin: "80px auto", textAlign: "center", padding: "0 32px" }}>
           <p style={{ fontFamily: "'Sono', sans-serif", fontSize: "24px", color: "#1a1a1a", marginBottom: "8px" }}>

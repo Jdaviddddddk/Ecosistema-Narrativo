@@ -80,6 +80,7 @@ function UploadFlow() {
         author: user.name,
         authorId: user.id,
         authorEmail: user.email,
+        authorAvatar: user.avatar,
         semester: data.semester || "1°",
         subject: data.subject || "Sin materia",
         area: data.area || "Diseño análogo",

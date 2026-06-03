@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { usersAPI, projectsAPI } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import ShareButton from "@/components/ShareButton";
+import NomadaLoader from "@/components/NomadaLoader";
 
 export default function PublicProfile() {
   const { id } = useParams<{ id: string }>();
@@ -55,12 +56,7 @@ export default function PublicProfile() {
       .finally(() => setLoading(false));
   }, [id, isCommunityMember]);
 
-  if (loading) return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "80vh" }}>
-      <div style={{ width: "36px", height: "36px", border: "3px solid #004FCD", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-    </div>
-  );
+  if (loading) return <NomadaLoader mensaje="Cargando perfil..." />;
 
   if (!profile) return (
     <div style={{ minHeight: "80vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px" }}>

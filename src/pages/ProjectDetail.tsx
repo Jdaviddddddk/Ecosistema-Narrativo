@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import NomadaGuia from "@/components/NomadaGuia";
 import ComentariosSeccion from "@/components/ComentariosSeccion";
 import ShareButton from "@/components/ShareButton";
+import NomadaLoader from "@/components/NomadaLoader";
 
 type ReactionType = "inspires" | "learned" | "professional" | "inProgress";
 
@@ -54,12 +55,7 @@ export default function ProjectDetail() {
     finally { setReactingTo(null); }
   }, [id, project, userReactions, reactingTo]);
 
-  if (loading) return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
-      <div style={{ width: "40px", height: "40px", border: "3px solid #004FCD", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-    </div>
-  );
+  if (loading) return <NomadaLoader mensaje="Cargando proyecto..." />;
 
   if (!project) return (
     <div style={{ padding: "80px 32px", textAlign: "center" }}>
