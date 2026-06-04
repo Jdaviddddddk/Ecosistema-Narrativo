@@ -38,10 +38,12 @@ async function fetchFormData(endpoint: string, formData: FormData) {
 function fixImageUrls(project: any) {
   const fix = (url: string) => {
     if (!url) return url;
-    // En producción siempre rutas relativas — Netlify proxy reenvía al VPS
-    // En local usamos la IP directa
-    if (url.startsWith('/uploads/')) {
-      return import.meta.env.PROD ? url : `${API_URL}${url}`;
+    // Extraer solo el path /uploads/... sin importar qué dominio/IP traiga
+    const match = url.match(/(\/uploads\/.+)/);
+    if (match) {
+      // Producción: ruta relativa → Netlify proxy → VPS
+      // Desarrollo: IP directa
+      return import.meta.env.PROD ? match[1] : `http://138.199.196.128:3001${match[1]}`;
     }
     return url;
   };
