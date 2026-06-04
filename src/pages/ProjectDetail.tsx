@@ -83,9 +83,9 @@ export default function ProjectDetail() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#ffffff" }}>
+    <div style={{ minHeight: "100vh", background: "#ffffff", paddingTop: "72px" }}>
       {/* Barra superior */}
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px 32px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 32px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <Link to="/projects" style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "13px", color: "rgba(0,0,0,0.5)", textDecoration: "none", display: "flex", alignItems: "center", gap: "6px" }}>
           <img src="/images/icons/icon-volver.png" alt="volver" style={{ width: "16px", height: "16px", imageRendering: "pixelated", opacity: 0.5 }} />
           Volver a proyectos
@@ -93,10 +93,10 @@ export default function ProjectDetail() {
         <ShareButton url={window.location.href} label={project.title} />
       </div>
 
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 32px 80px" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "24px 16px 80px" }}>
 
         {/* HEADER */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "48px", marginBottom: "64px", alignItems: "start" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "32px", marginBottom: "48px", alignItems: "start" }}>
           {/* Thumbnail */}
           <div style={{ borderRadius: "12px", overflow: "hidden", background: "#f3f4f6" }}>
             {project.thumbnail
@@ -191,7 +191,7 @@ export default function ProjectDetail() {
         )}
 
         {/* GALERÍA + PROCESO */}
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "48px", marginBottom: "48px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "32px", marginBottom: "48px" }}>
           {project.images?.length > 0 && (
             <div>
               <h2 style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.15em", color: "rgba(0,0,0,0.5)", marginBottom: "24px" }}>Galería</h2>

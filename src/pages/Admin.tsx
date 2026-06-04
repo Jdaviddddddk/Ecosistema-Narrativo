@@ -206,28 +206,25 @@ export default function Admin() {
   } as React.CSSProperties);
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f8faff" }}>
+    <div style={{ minHeight:"100vh", background:"#f8faff", paddingTop:"72px" }}>
       {/* Header */}
-      <div style={{ background:"#fff", borderBottom:"1px solid rgba(0,0,0,0.08)", padding:"16px 32px", display:"flex", alignItems:"center", gap:"16px" }}>
-        <Link to="/" style={{ textDecoration:"none" }}>
-          <img src="/images/logo-nexo.png" alt="NEXO" style={{ height:"28px" }} />
-        </Link>
-        <div style={{ flex:1 }}>
+      <div style={{ background:"#fff", borderBottom:"1px solid rgba(0,0,0,0.08)", padding:"16px 20px", display:"flex", alignItems:"center", gap:"12px" }}>
+        <div style={{ flex:1, minWidth:0 }}>
           <p style={{ fontFamily:"'Sono',sans-serif", fontSize:"18px", fontWeight:700, color:"#0a0a0a", margin:0 }}>Panel Admin</p>
-          <p style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"11px", color:"#888", margin:0 }}>{user?.name} · {user?.email}</p>
+          <p style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"11px", color:"#888", margin:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{user?.name} · {user?.email}</p>
         </div>
-        <img src="/images/nomada-frames/f09.png" alt="" style={{ width:"40px", imageRendering:"pixelated" }} />
+        <img src="/images/nomada-frames/f09.png" alt="" style={{ width:"36px", imageRendering:"pixelated", flexShrink:0 }} />
       </div>
 
       {/* Flash msg */}
       {msg && (
-        <div style={{ position:"fixed", top:"70px", right:"24px", zIndex:999, padding:"10px 20px", borderRadius:"100px", background: msg.startsWith("✓") ? "#dcfce7" : "#fee2e2", color: msg.startsWith("✓") ? "#166534" : "#991b1b", fontFamily:"'Montserrat',sans-serif", fontSize:"13px", fontWeight:600, boxShadow:"0 4px 16px rgba(0,0,0,0.1)" }}>
+        <div style={{ position:"fixed", top:"80px", right:"16px", zIndex:999, padding:"10px 20px", borderRadius:"100px", background: msg.startsWith("✓") ? "#dcfce7" : "#fee2e2", color: msg.startsWith("✓") ? "#166534" : "#991b1b", fontFamily:"'Montserrat',sans-serif", fontSize:"13px", fontWeight:600, boxShadow:"0 4px 16px rgba(0,0,0,0.1)" }}>
           {msg}
         </div>
       )}
 
       {/* Tabs */}
-      <div style={{ background:"#fff", borderBottom:"1px solid rgba(0,0,0,0.06)", padding:"0 32px", display:"flex", gap:"4px" }}>
+      <div style={{ background:"#fff", borderBottom:"1px solid rgba(0,0,0,0.06)", padding:"0 12px", display:"flex", gap:"2px", overflowX:"auto" }}>
         <button style={tabStyle("cola")} onClick={() => setTab("cola")}>
           Cola de revisión {reviewQueue.length > 0 && <span style={{ marginLeft:"6px", padding:"1px 7px", borderRadius:"100px", background:"#ef4444", color:"#fff", fontSize:"10px" }}>{reviewQueue.length}</span>}
         </button>
@@ -238,7 +235,7 @@ export default function Admin() {
 
       {loading && <NomadaLoader mensaje="Cargando datos..." fullScreen={false} />}
 
-      <div style={{ maxWidth:"1400px", margin:"0 auto", padding:"24px 32px", display:"grid", gridTemplateColumns: selected ? "1fr 420px" : "1fr", gap:"24px" }}>
+      <div style={{ maxWidth:"1400px", margin:"0 auto", padding:"16px", display:"grid", gridTemplateColumns: selected ? "minmax(0,1fr) min(420px,100%)" : "1fr", gap:"16px" }}>
 
         {/* ── COLA DE REVISIÓN ─────────────────────────────────────────────── */}
         {tab === "cola" && (
