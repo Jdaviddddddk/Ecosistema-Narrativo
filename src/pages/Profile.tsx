@@ -403,16 +403,87 @@ export default function Profile() {
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {user?.interests?.map((tag) => (
-                    <span key={tag} className="nexo-tag">
-                      {tag}
-                    </span>
-                  )) || ["Diseño Visual", "Fotografía", "Branding", "UI/UX"].map((tag) => (
-                    <span key={tag} className="nexo-tag">
-                      {tag}
-                    </span>
+                    <span key={tag} className="nexo-tag">{tag}</span>
                   ))}
                 </div>
               </div>
+
+              {/* Redes sociales */}
+              {(user?.contact?.instagram || user?.contact?.behance || user?.contact?.linkedin || user?.contact?.portfolio || user?.contact?.email) && (
+                <div className="mt-6 pt-6 border-t border-gray-100">
+                  <h4 className="text-sm font-semibold mb-4" style={{ fontFamily: "'Montserrat', sans-serif", color: "#1a1a1a" }}>
+                    Contacto y redes
+                  </h4>
+                  <div className="flex flex-col gap-3">
+                    {[
+                      {
+                        key: "instagram", label: "Instagram",
+                        href: (v: string) => `https://instagram.com/${v.replace("@","")}`,
+                        icon: "📸",
+                        display: (v: string) => `@${v.replace("@","")}`,
+                      },
+                      {
+                        key: "behance", label: "Behance",
+                        href: (v: string) => `https://behance.net/${v}`,
+                        icon: "🎨",
+                        display: (v: string) => v,
+                      },
+                      {
+                        key: "linkedin", label: "LinkedIn",
+                        href: (v: string) => `https://linkedin.com/in/${v}`,
+                        icon: "💼",
+                        display: (v: string) => v,
+                      },
+                      {
+                        key: "portfolio", label: "Portfolio",
+                        href: (v: string) => v.startsWith("http") ? v : `https://${v}`,
+                        icon: "🌐",
+                        display: (v: string) => v,
+                      },
+                      {
+                        key: "email", label: "Email",
+                        href: (v: string) => `mailto:${v}`,
+                        icon: "✉️",
+                        display: (v: string) => v,
+                      },
+                    ].map(({ key, label, href, icon, display }) => {
+                      const val = (user?.contact as any)?.[key];
+                      if (!val) return null;
+                      return (
+                        <a
+                          key={key}
+                          href={href(val)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: "flex", alignItems: "center", gap: "10px",
+                            padding: "10px 14px", borderRadius: "10px",
+                            border: "1px solid rgba(0,79,205,0.1)",
+                            background: "rgba(0,79,205,0.03)",
+                            textDecoration: "none",
+                            transition: "all 0.2s",
+                          }}
+                          onMouseEnter={e => {
+                            e.currentTarget.style.borderColor = "rgba(0,79,205,0.3)";
+                            e.currentTarget.style.background = "rgba(0,79,205,0.07)";
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.borderColor = "rgba(0,79,205,0.1)";
+                            e.currentTarget.style.background = "rgba(0,79,205,0.03)";
+                          }}
+                        >
+                          <span style={{ fontSize: "16px" }}>{icon}</span>
+                          <div>
+                            <p style={{ fontFamily: "'Montserrat',sans-serif", fontSize: "10px", color: "#aaa", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "1px" }}>{label}</p>
+                            <p style={{ fontFamily: "'Montserrat',sans-serif", fontSize: "13px", color: "#004FCD", fontWeight: 500 }}>{display(val)}</p>
+                          </div>
+                          <span style={{ marginLeft: "auto", color: "#ccc", fontSize: "12px" }}>↗</span>
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

@@ -12,7 +12,7 @@
 [[redirects]]
   from   = "/uploads/*"
   to     = "http://138.199.196.128:3001/uploads/:splat"
-  status = 200
+  status = 301
   force  = true
 
 [[redirects]]
