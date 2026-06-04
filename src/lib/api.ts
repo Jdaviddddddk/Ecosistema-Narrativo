@@ -36,9 +36,15 @@ async function fetchFormData(endpoint: string, formData: FormData) {
 }
 
 function fixImageUrls(project: any) {
-  const fix = (url: string) =>
-    url && url.startsWith('/uploads/') ? `${API_URL}${url}` : url;
-  // API_URL es "" en producción, así que /uploads/... ya es una ruta relativa válida
+  const fix = (url: string) => {
+    if (!url) return url;
+    // En producción siempre rutas relativas — Netlify proxy reenvía al VPS
+    // En local usamos la IP directa
+    if (url.startsWith('/uploads/')) {
+      return import.meta.env.PROD ? url : `${API_URL}${url}`;
+    }
+    return url;
+  };
   return {
     ...project,
     thumbnail: fix(project.thumbnail),
