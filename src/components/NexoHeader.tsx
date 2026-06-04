@@ -27,12 +27,16 @@ export default function NexoHeader() {
   if (location.pathname === "/") return null;
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "nexo-glass shadow-lg shadow-blue-500/5" : "bg-transparent"
-      }`}
+    <header
+      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      style={{
+        background: scrolled ? "rgba(255,255,255,0.97)" : "rgba(255,255,255,0.97)",
+        backdropFilter: "blur(12px)",
+        borderBottom: "1px solid rgba(0,0,0,0.07)",
+        boxShadow: scrolled ? "0 2px 20px rgba(0,79,205,0.08)" : "none",
+      }}
     >
-      <div className="max-w-7xl mx-auto px-6 py-4">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 md:py-4">
         <div className="flex items-center justify-between">
           {/* Logo NEXO */}
           <Link to="/" className="flex items-center gap-3 group" style={{ textDecoration: "none" }}>
@@ -112,13 +116,15 @@ export default function NexoHeader() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="md:hidden p-2 rounded-lg transition-colors"
+            style={{ background: "rgba(0,79,205,0.07)" }}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Menú"
           >
             <div className="w-6 h-5 flex flex-col justify-between">
-              <span className={`block h-0.5 bg-nexo-dark transition-all duration-300 ${mobileMenuOpen ? "rotate-45 translate-y-2" : ""}`} />
-              <span className={`block h-0.5 bg-nexo-dark transition-all duration-300 ${mobileMenuOpen ? "opacity-0" : ""}`} />
-              <span className={`block h-0.5 bg-nexo-dark transition-all duration-300 ${mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+              <span className={`block h-0.5 transition-all duration-300 ${mobileMenuOpen ? "rotate-45 translate-y-2" : ""}`} style={{ background: "#004FCD" }} />
+              <span className={`block h-0.5 transition-all duration-300 ${mobileMenuOpen ? "opacity-0" : ""}`} style={{ background: "#004FCD" }} />
+              <span className={`block h-0.5 transition-all duration-300 ${mobileMenuOpen ? "-rotate-45 -translate-y-2" : ""}`} style={{ background: "#004FCD" }} />
             </div>
           </button>
         </div>
@@ -144,18 +150,35 @@ export default function NexoHeader() {
               {isAuthenticated ? (
                 <>
                   <Link
+                    to="/upload"
+                    className="text-lg font-medium py-3 px-4 rounded-xl font-montserrat text-white flex items-center gap-2"
+                    style={{ background: "linear-gradient(135deg,#004FCD,#3b7de8)" }}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    + Subir proyecto
+                  </Link>
+                  <Link
                     to="/yo"
-                    className="text-lg font-medium py-3 px-4 rounded-xl bg-blue-50 text-nexo-primary font-montserrat"
+                    className="text-lg font-medium py-3 px-4 rounded-xl font-montserrat"
+                    style={{ background: "rgba(0,79,205,0.07)", color: "#004FCD" }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Mi Perfil
                   </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin"
+                      className="text-lg font-medium py-3 px-4 rounded-xl font-montserrat"
+                      style={{ background: "rgba(0,79,205,0.05)", color: "#004FCD" }}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      ⚙ Admin
+                    </Link>
+                  )}
                   <button
-                    onClick={() => {
-                      logout();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="text-lg font-medium py-3 px-4 rounded-xl text-red-500 text-left font-montserrat hover:bg-red-50 transition-colors"
+                    onClick={() => { logout(); setMobileMenuOpen(false); }}
+                    className="text-lg font-medium py-3 px-4 rounded-xl text-left font-montserrat transition-colors"
+                    style={{ color: "#ef4444" }}
                   >
                     Cerrar Sesión
                   </button>

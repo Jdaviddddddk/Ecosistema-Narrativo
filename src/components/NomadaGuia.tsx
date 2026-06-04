@@ -185,12 +185,24 @@ export default function NomadaGuia({ escena, onAccion, forzar = false }: NomadaG
         className="pointer-events-auto"
         style={{
           position: 'absolute',
-          bottom: '40px',
-          ...(isLeft ? { left: '40px' } : { right: '40px' }),
+          bottom: '16px',
+          left: '12px',
+          right: '12px',
           display: 'flex',
           alignItems: 'flex-end',
           gap: '0px',
-          flexDirection: isLeft ? 'row' : 'row-reverse',
+          flexDirection: 'row',
+          maxWidth: '520px',
+          margin: '0 auto',
+          // En desktop: posicionar a la izquierda o derecha
+          ...(typeof window !== 'undefined' && window.innerWidth >= 640
+            ? {
+                left: isLeft ? '40px' : 'auto',
+                right: isLeft ? 'auto' : '40px',
+                flexDirection: isLeft ? 'row' : 'row-reverse',
+                maxWidth: '480px',
+              }
+            : {}),
           opacity: saliendo ? 0 : 1,
           transform: saliendo ? 'translateY(20px) scale(0.95)' : 'translateY(0) scale(1)',
           transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -198,7 +210,9 @@ export default function NomadaGuia({ escena, onAccion, forzar = false }: NomadaG
         }}
       >
         {/* SVG de Nómada */}
-        <div style={{ width: '160px', flexShrink: 0, position: 'relative', zIndex: 1 }}>
+        <div style={{ width: '100px', flexShrink: 0, position: 'relative', zIndex: 1 }}
+          className="sm:w-40"
+        >
           <img
             src={config.svgSrc}
             alt="Nómada"
@@ -217,10 +231,12 @@ export default function NomadaGuia({ escena, onAccion, forzar = false }: NomadaG
             position: 'relative',
             background: 'rgba(255,255,255,0.96)',
             backdropFilter: 'blur(20px)',
-            borderRadius: isLeft ? '20px 20px 20px 4px' : '20px 20px 4px 20px',
+            borderRadius: '16px',
             border: '1px solid rgba(0,79,205,0.15)',
             boxShadow: '0 12px 40px rgba(0,79,205,0.12), 0 2px 8px rgba(0,0,0,0.06)',
-            padding: '24px 28px',
+            padding: '16px 18px',
+            flex: 1,
+            minWidth: 0,
             maxWidth: '360px',
             marginBottom: '12px',
           }}
