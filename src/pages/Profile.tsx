@@ -306,7 +306,7 @@ export default function Profile() {
                     url={`${window.location.origin}/profile/${user?.id}`}
                     label={`Perfil de ${user?.name} en NEXO`}
                   />
-                  <button onClick={handleEdit} className="flex items-center justify-center gap-2 px-6 py-2.5 bg-nexo-primary text-white rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium">
+                  <button onClick={handleEdit} className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl hover:opacity-90 transition-all text-sm font-medium text-white" style={{ background: "linear-gradient(135deg, #004FCD, #3b7de8)" }}>
                     <Edit2 size={16} /> Editar Perfil
                   </button>
                   <button onClick={logout} className="flex items-center justify-center gap-2 px-6 py-2.5 border border-red-200 text-red-600 rounded-xl hover:bg-red-50 transition-colors text-sm">
