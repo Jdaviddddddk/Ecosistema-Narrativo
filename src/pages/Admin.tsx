@@ -136,7 +136,7 @@ function CurationPanel({ project, onApply }: { project: any; onApply: (updates: 
 
 // ─── Admin Dashboard ─────────────────────────────────────────────────────────
 export default function Admin() {
-  const { isAdmin, user } = useAuth();
+  const { isAdmin, user, credential } = useAuth();
   const [tab, setTab]           = useState<Tab>("cola");
   const [projects, setProjects] = useState<any[]>([]);
   const [comments, setComments] = useState<any[]>([]);
@@ -149,10 +149,11 @@ export default function Admin() {
   if (!isAdmin) return <Navigate to="/" replace />;
 
   useEffect(() => {
+    if (!credential) return;
     Promise.all([
-      adminAPI.getProjects().catch(() => []),
-      adminAPI.getComments().catch(() => []),
-      adminAPI.getUsers().catch(() => []),
+      adminAPI.getProjects(credential).catch(() => []),
+      adminAPI.getComments(credential).catch(() => []),
+      adminAPI.getUsers(credential).catch(() => []),
     ]).then(([p, c, u]) => {
       setProjects(Array.isArray(p) ? p : []);
       setComments(Array.isArray(c) ? c : []);
@@ -165,9 +166,10 @@ export default function Admin() {
   const flash = (text: string) => { setMsg(text); setTimeout(() => setMsg(""), 3000); };
 
   const updateProject = useCallback(async (id: string, updates: any) => {
+    if (!credential) return;
     setSaving(true);
     try {
-      const updated = await adminAPI.updateProject(id, updates);
+      const updated = await adminAPI.updateProject(id, updates, credential);
       setProjects(prev => prev.map(p => p.id === id ? { ...p, ...updated } : p));
       if (selected?.id === id) setSelected((prev: any) => ({ ...prev, ...updated }));
       flash("✓ Proyecto actualizado");
@@ -177,7 +179,7 @@ export default function Admin() {
 
   const deleteProject = useCallback(async (id: string) => {
     if (!confirm("¿Eliminar este proyecto?")) return;
-    await adminAPI.deleteProject(id).catch(() => {});
+    await adminAPI.deleteProject(id, credential ?? '').catch(() => {});
     setProjects(prev => prev.filter(p => p.id !== id));
     if (selected?.id === id) setSelected(null);
     flash("✓ Proyecto eliminado");
@@ -192,7 +194,7 @@ export default function Admin() {
 
   const deleteUser = useCallback(async (id: string) => {
     if (!confirm("¿Eliminar este usuario? Sus proyectos no se eliminan.")) return;
-    await adminAPI.deleteUser(id).catch(() => {});
+    await adminAPI.deleteUser(id, credential ?? '').catch(() => {});
     setUsers(prev => prev.filter(u => u.id !== id));
     flash("✓ Usuario eliminado");
   }, []);

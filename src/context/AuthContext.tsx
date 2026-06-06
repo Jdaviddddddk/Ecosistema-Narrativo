@@ -31,6 +31,7 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
+  credential: string | null;
   isAuthenticated: boolean;
   isCommunityMember: boolean;
   isAdmin: boolean;
@@ -67,6 +68,9 @@ function createUserFromGoogle(googleUser: GoogleUser): User {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const [credential, setCredential] = useState<string | null>(() =>
+    sessionStorage.getItem('nexo_credential')
+  );
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -88,6 +92,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const googleUser = jwtDecode<GoogleUser>(googleCredential);
       const newUser = createUserFromGoogle(googleUser);
+      setCredential(googleCredential);
+      sessionStorage.setItem('nexo_credential', googleCredential);
       setUser(newUser);
       // Guardar perfil público en backend
       usersAPI.save({
@@ -111,7 +117,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(() => {
     setUser(null);
+    setCredential(null);
     localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem('nexo_credential');
   }, []);
 
   const updateProfile = useCallback((updates: Partial<Omit<User, 'id' | 'email' | 'googleData'>>) => {
@@ -144,6 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user,
+      credential,
       isAuthenticated: !!user,
       isCommunityMember: !!user?.isCommunityMember,
       isAdmin: !!(user && ADMIN_EMAILS.includes(user.email)),

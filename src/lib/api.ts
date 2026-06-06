@@ -54,16 +54,23 @@ function fixImageUrls(project: any) {
   };
 }
 
+// Elimina campos PII del response público de proyectos
+function stripPrivateFields(project: any) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { authorEmail, authorId, ...safe } = project;
+  return safe;
+}
+
 export const projectsAPI = {
   list: (filters?: { area?: string; status?: string; search?: string }) => {
     const params = new URLSearchParams();
     if (filters?.area) params.append('area', filters.area);
     if (filters?.status) params.append('status', filters.status);
     if (filters?.search) params.append('search', filters.search);
-    return fetchAPI(`/api/projects?${params}`).then((data: any[]) => data.map(fixImageUrls));
+    return fetchAPI(`/api/projects?${params}`).then((data: any[]) => data.map(p => stripPrivateFields(fixImageUrls(p))));
   },
 
-  get: (id: string) => fetchAPI(`/api/projects/${id}`).then(fixImageUrls),
+  get: (id: string) => fetchAPI(`/api/projects/${id}`).then(p => stripPrivateFields(fixImageUrls(p))),
   
   // Para crear proyecto con archivos (FormData)
   createWithFiles: (formData: FormData) => 
@@ -86,21 +93,21 @@ export const usersAPI = {
     fetchAPI(`/api/users/${id}`),
 };
 
-const ADMIN_EMAIL = 'jdarenas@universidadmayor.edu.co';
-const adminHeaders = { 'x-admin-email': ADMIN_EMAIL };
-
 export const adminAPI = {
-  getProjects: () => fetchAPI('/api/admin/projects', { headers: adminHeaders }),
-  updateProject: (id: string, data: any) =>
-    fetchAPI(`/api/admin/projects/${id}`, { method: 'PUT', body: JSON.stringify(data), headers: adminHeaders }),
-  deleteProject: (id: string) =>
-    fetchAPI(`/api/admin/projects/${id}`, { method: 'DELETE', headers: adminHeaders }),
-  getComments: () => fetchAPI('/api/admin/comments', { headers: adminHeaders }),
+  getProjects: (credential: string) =>
+    fetchAPI('/api/admin/projects', { headers: { Authorization: `Bearer ${credential}` } }),
+  updateProject: (id: string, data: any, credential: string) =>
+    fetchAPI(`/api/admin/projects/${id}`, { method: 'PUT', body: JSON.stringify(data), headers: { Authorization: `Bearer ${credential}` } }),
+  deleteProject: (id: string, credential: string) =>
+    fetchAPI(`/api/admin/projects/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${credential}` } }),
+  getComments: (credential: string) =>
+    fetchAPI('/api/admin/comments', { headers: { Authorization: `Bearer ${credential}` } }),
   deleteComment: (projectId: string, commentId: string) =>
     fetchAPI(`/api/projects/${projectId}/comments/${commentId}`, { method: 'DELETE' }),
-  getUsers: () => fetchAPI('/api/admin/users', { headers: adminHeaders }),
-  deleteUser: (id: string) =>
-    fetchAPI(`/api/admin/users/${id}`, { method: 'DELETE', headers: adminHeaders }),
+  getUsers: (credential: string) =>
+    fetchAPI('/api/admin/users', { headers: { Authorization: `Bearer ${credential}` } }),
+  deleteUser: (id: string, credential: string) =>
+    fetchAPI(`/api/admin/users/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${credential}` } }),
   curateProject: async (project: any) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
