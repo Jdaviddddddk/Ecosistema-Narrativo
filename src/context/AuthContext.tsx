@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { jwtDecode } from "jwt-decode";
 import { getUserProfile, saveUserProfile } from "@/lib/storage";
 import type { ContactInfo } from "@/lib/storage";
-import { usersAPI } from "@/lib/api";
+import { usersAPI, setAuthCredential } from "@/lib/api";
 
 export interface GoogleUser {
   sub: string;
@@ -68,9 +68,11 @@ function createUserFromGoogle(googleUser: GoogleUser): User {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [credential, setCredential] = useState<string | null>(() =>
-    sessionStorage.getItem('nexo_credential')
-  );
+  const [credential, setCredential] = useState<string | null>(() => {
+    const saved = sessionStorage.getItem('nexo_credential');
+    if (saved) setAuthCredential(saved);
+    return saved;
+  });
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
@@ -94,6 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const newUser = createUserFromGoogle(googleUser);
       setCredential(googleCredential);
       sessionStorage.setItem('nexo_credential', googleCredential);
+      setAuthCredential(googleCredential);
       setUser(newUser);
       // Guardar perfil público en backend
       usersAPI.save({
@@ -118,6 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     setUser(null);
     setCredential(null);
+    setAuthCredential(null);
     localStorage.removeItem(STORAGE_KEY);
     sessionStorage.removeItem('nexo_credential');
   }, []);

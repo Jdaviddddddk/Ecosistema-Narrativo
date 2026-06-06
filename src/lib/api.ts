@@ -2,36 +2,46 @@
 // En local apuntamos directo al VPS.
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://138.199.196.128:3001');
 
+let _credential: string | null = null;
+
+export function setAuthCredential(token: string | null) {
+  _credential = token;
+}
+
 async function fetchAPI(endpoint: string, options?: RequestInit) {
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    },
-  });
-  
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options?.headers as Record<string, string>),
+  };
+  if (_credential) headers['Authorization'] = `Bearer ${_credential}`;
+
+  const response = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Error desconocido' }));
     throw new Error(error.error || `HTTP ${response.status}`);
   }
-  
+
   return response.json();
 }
 
 // Para subir archivos con FormData (sin Content-Type manual)
 async function fetchFormData(endpoint: string, formData: FormData) {
+  const headers: Record<string, string> = {};
+  if (_credential) headers['Authorization'] = `Bearer ${_credential}`;
+
   const response = await fetch(`${API_URL}${endpoint}`, {
     method: 'POST',
     body: formData,
+    headers,
     // NO pongas Content-Type aquí — el browser lo pone automáticamente con el boundary
   });
-  
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Error desconocido' }));
     throw new Error(error.error || `HTTP ${response.status}`);
   }
-  
+
   return response.json();
 }
 
