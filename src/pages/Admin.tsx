@@ -34,20 +34,28 @@ const scoreBadge = (n: number) => {
 };
 
 // ─── Panel de curaduría IA ───────────────────────────────────────────────────
-function CurationPanel({ project, onApply }: { project: any; onApply: (updates: any) => void }) {
+function CurationPanel({ project, credential, onApply }: { project: any; credential: string | null; onApply: (updates: any) => void }) {
   const [analysis, setAnalysis] = useState<any>(null);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState("");
 
   const analyze = async () => {
-    setLoading(true); setError(""); setAnalysis(null);
+    if (!credential) {
+      setError("No hay credencial de autenticación");
+      return;
+    }
+    setLoading(true); 
+    setError(""); 
+    setAnalysis(null);
     try {
-      const res = await adminAPI.curateProject(project);
+      const res = await adminAPI.curateProject(project, credential);
       if (res.error) throw new Error(res.error);
       setAnalysis(res.analysis);
     } catch (e: any) {
       setError(e.message || "Error al analizar");
-    } finally { setLoading(false); }
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   const handleApply = () => {
@@ -69,8 +77,8 @@ function CurationPanel({ project, onApply }: { project: any; onApply: (updates: 
           <p style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"11px", color:"#888" }}>Claude analiza categoría, calidad y visibilidad sugerida</p>
         </div>
         <button
-          onClick={analyze} disabled={loading}
-          style={{ marginLeft:"auto", padding:"8px 18px", borderRadius:"100px", background:"linear-gradient(135deg,#004FCD,#3b7de8)", color:"#fff", border:"none", fontFamily:"'Montserrat',sans-serif", fontSize:"12px", fontWeight:600, cursor:loading?"wait":"pointer" }}
+          onClick={analyze} disabled={loading || !credential}
+          style={{ marginLeft:"auto", padding:"8px 18px", borderRadius:"100px", background:"linear-gradient(135deg,#004FCD,#3b7de8)", color:"#fff", border:"none", fontFamily:"'Montserrat',sans-serif", fontSize:"12px", fontWeight:600, cursor: loading || !credential ? "not-allowed" : "pointer", opacity: loading || !credential ? 0.6 : 1 }}
         >
           {loading ? "Analizando..." : analysis ? "Re-analizar" : "✦ Analizar"}
         </button>
@@ -220,7 +228,7 @@ export default function Admin() {
 
       {/* Flash msg */}
       {msg && (
-        <div style={{ position:"fixed", top:"80px", right:"16px", zIndex:999, padding:"10px 20px", borderRadius:"100px", background: msg.startsWith("✓") ? "#dcfce7" : "#fee2e2", color: msg.startsWith("✓") ? "#166534" : "#991b1b", fontFamily:"'Montserrat',sans-serif", fontSize:"13px", fontWeight:600, boxShadow:"0 4px 16px rgba(0,0,0,0.1)" }}>
+        <div style={{ position:"fixed", top:"80px", right:"16px", zIndex:999, padding:"10px 20px", borderRadius:"100px", background: msg.startsWith("✓") ? "#dcfce7" : "#fee2e2", color: msg.startsWith("✓") ? "#166534" : "#991b1b", fontFamily:"'Montserrat',sans-serif", fontSize:"12px", fontWeight:600 }}>
           {msg}
         </div>
       )}
@@ -254,7 +262,7 @@ export default function Admin() {
                   <div
                     key={p.id}
                     onClick={() => setSelected(selected?.id === p.id ? null : p)}
-                    style={{ padding:"16px 20px", background:"#fff", borderRadius:"14px", border: selected?.id===p.id ? "1.5px solid #004FCD" : "1px solid rgba(0,0,0,0.07)", cursor:"pointer", transition:"all 0.2s", display:"flex", gap:"16px", alignItems:"center" }}
+                    style={{ padding:"16px 20px", background:"#fff", borderRadius:"14px", border: selected?.id===p.id ? "1.5px solid #004FCD" : "1px solid rgba(0,0,0,0.07)", cursor:"pointer", transition:"all 0.2s", display:"flex", gap:"12px", alignItems:"flex-start" }}
                   >
                     {p.thumbnail && <img src={p.thumbnail} alt="" style={{ width:"64px", height:"48px", objectFit:"cover", borderRadius:"8px", flexShrink:0 }} />}
                     <div style={{ flex:1, minWidth:0 }}>
@@ -262,8 +270,8 @@ export default function Admin() {
                       <p style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"12px", color:"#888" }}>{p.author} · {p.area} · {p.semester} sem.</p>
                     </div>
                     <div style={{ display:"flex", gap:"8px", flexShrink:0 }}>
-                      <button onClick={e => { e.stopPropagation(); updateProject(p.id, { status:"Publicado" }); }} style={{ padding:"6px 14px", borderRadius:"100px", background:"#dcfce7", color:"#166534", border:"none", fontFamily:"'Montserrat',sans-serif", fontSize:"12px", fontWeight:600, cursor:"pointer" }}>✓ Publicar</button>
-                      <button onClick={e => { e.stopPropagation(); deleteProject(p.id); }} style={{ padding:"6px 14px", borderRadius:"100px", background:"#fee2e2", color:"#991b1b", border:"none", fontFamily:"'Montserrat',sans-serif", fontSize:"12px", fontWeight:600, cursor:"pointer" }}>✗ Rechazar</button>
+                      <button onClick={e => { e.stopPropagation(); updateProject(p.id, { status:"Publicado" }); }} style={{ padding:"6px 14px", borderRadius:"100px", background:"#dcfce7", color:"#166534", border:"none", fontFamily:"'Montserrat',sans-serif", fontSize:"11px", fontWeight:600, cursor:"pointer" }}>Publicar</button>
+                      <button onClick={e => { e.stopPropagation(); deleteProject(p.id); }} style={{ padding:"6px 14px", borderRadius:"100px", background:"#fee2e2", color:"#991b1b", border:"none", fontFamily:"'Montserrat',sans-serif", fontSize:"11px", fontWeight:600, cursor:"pointer" }}>Eliminar</button>
                     </div>
                   </div>
                 ))}
@@ -281,7 +289,7 @@ export default function Admin() {
                 <thead>
                   <tr style={{ background:"rgba(0,0,0,0.02)", borderBottom:"1px solid rgba(0,0,0,0.07)" }}>
                     {["Proyecto","Autor","Área","Estado","Visibilidad","Acciones"].map(h => (
-                      <th key={h} style={{ padding:"12px 16px", fontFamily:"'Montserrat',sans-serif", fontSize:"11px", color:"#888", textTransform:"uppercase", letterSpacing:"0.06em", textAlign:"left", fontWeight:600 }}>{h}</th>
+                      <th key={h} style={{ padding:"12px 16px", fontFamily:"'Montserrat',sans-serif", fontSize:"11px", color:"#888", textTransform:"uppercase", letterSpacing:"0.06em", textAlign:"left" }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -289,7 +297,7 @@ export default function Admin() {
                   {projects.map((p, i) => (
                     <tr key={p.id} style={{ borderBottom:"1px solid rgba(0,0,0,0.05)", background: i%2===0 ? "#fff" : "rgba(0,0,0,0.01)" }}>
                       <td style={{ padding:"12px 16px" }}>
-                        <button onClick={() => setSelected(selected?.id===p.id ? null : p)} style={{ fontFamily:"'Sono',sans-serif", fontSize:"14px", color:"#004FCD", background:"none", border:"none", cursor:"pointer", textAlign:"left", padding:0 }}>
+                        <button onClick={() => setSelected(selected?.id===p.id ? null : p)} style={{ fontFamily:"'Sono',sans-serif", fontSize:"14px", color:"#004FCD", background:"none", border:"none", cursor:"pointer" }}>
                           {p.title?.slice(0,40)}{p.title?.length>40?"…":""}
                         </button>
                       </td>
@@ -326,7 +334,7 @@ export default function Admin() {
                       <div style={{ display:"flex", gap:"8px", alignItems:"center", marginBottom:"4px" }}>
                         <span style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"12px", fontWeight:600, color:"#1a1a1a" }}>{c.authorName}</span>
                         <span style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"11px", color:"#bbb" }}>{new Date(c.createdAt).toLocaleDateString("es-CO")}</span>
-                        <Link to={`/projects/${c.projectId}`} target="_blank" style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"10px", color:"#004FCD", textDecoration:"none" }}>Ver proyecto ↗</Link>
+                        <Link to={`/projects/${c.projectId}`} target="_blank" style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"10px", color:"#004FCD", textDecoration:"none" }}>Ver proyecto</Link>
                       </div>
                       <p style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"13px", color:"#444", lineHeight:1.6, margin:0 }}>{c.text}</p>
                     </div>
@@ -338,7 +346,7 @@ export default function Admin() {
           </div>
         )}
 
-        {/* ── USUARIOS ─────────────────────────────────────────────────────── */}
+        {/* ── USUARIOS ────────────────────────────────────────────────────── */}
         {tab === "usuarios" && (
           <div>
             <h2 style={{ fontFamily:"'Sono',sans-serif", fontSize:"20px", color:"#0a0a0a", marginBottom:"16px" }}>Usuarios registrados</h2>
@@ -347,7 +355,7 @@ export default function Admin() {
                 <div key={u.id} style={{ padding:"16px", background:"#fff", borderRadius:"14px", border:"1px solid rgba(0,0,0,0.07)", display:"flex", gap:"12px", alignItems:"center" }}>
                   {u.avatar
                     ? <img src={u.avatar} alt="" style={{ width:"40px", height:"40px", borderRadius:"10px", objectFit:"cover", flexShrink:0 }} />
-                    : <div style={{ width:"40px", height:"40px", borderRadius:"10px", background:"linear-gradient(135deg,#004FCD,#3b7de8)", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontFamily:"'Sono',sans-serif", fontSize:"16px", fontWeight:700, flexShrink:0 }}>
+                    : <div style={{ width:"40px", height:"40px", borderRadius:"10px", background:"linear-gradient(135deg,#004FCD,#3b7de8)", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff", fontWeight:700, flexShrink:0 }}>
                         {u.name?.charAt(0).toUpperCase()}
                       </div>
                   }
@@ -357,9 +365,9 @@ export default function Admin() {
                     {u.isCommunityMember && <span style={{ fontFamily:"'Montserrat',sans-serif", fontSize:"10px", color:"#004FCD" }}>🏫 DDM</span>}
                   </div>
                   <div style={{ display:"flex", gap:"4px", flexShrink:0 }}>
-                    <Link to={`/profile/${u.id}`} target="_blank" style={{ padding:"4px 8px", borderRadius:"8px", border:"1px solid rgba(0,0,0,0.12)", color:"#555", textDecoration:"none", fontSize:"11px", fontFamily:"'Montserrat',sans-serif" }}>Ver</Link>
+                    <Link to={`/profile/${u.id}`} target="_blank" style={{ padding:"4px 8px", borderRadius:"8px", border:"1px solid rgba(0,0,0,0.12)", color:"#555", textDecoration:"none", fontSize:"11px" }}>Ver</Link>
                     {u.email !== user?.email && (
-                      <button onClick={() => deleteUser(u.id)} style={{ padding:"4px 8px", borderRadius:"8px", background:"#fee2e2", color:"#991b1b", border:"none", fontSize:"11px", fontFamily:"'Montserrat',sans-serif", cursor:"pointer" }}>✕</button>
+                      <button onClick={() => deleteUser(u.id)} style={{ padding:"4px 8px", borderRadius:"8px", background:"#fee2e2", color:"#991b1b", border:"none", fontSize:"11px", fontFamily:"'Montserrat',sans-serif", cursor:"pointer" }}>Eliminar</button>
                     )}
                   </div>
                 </div>
@@ -401,7 +409,8 @@ export default function Admin() {
               <div style={{ display:"flex", gap:"6px" }}>
                 {STATUS_OPTIONS.map(s => (
                   <button key={s} onClick={() => setSelected((p: any) => ({ ...p, status: s }))}
-                    style={{ flex:1, padding:"7px 4px", borderRadius:"10px", border: selected.status===s ? "1.5px solid #004FCD" : "1.5px solid rgba(0,0,0,0.1)", background: selected.status===s ? "rgba(0,79,205,0.07)" : "transparent", color: selected.status===s ? "#004FCD" : "#555", fontFamily:"'Montserrat',sans-serif", fontSize:"11px", fontWeight: selected.status===s ? 700 : 400, cursor:"pointer" }}>
+                    style={{ flex:1, padding:"7px 4px", borderRadius:"10px", border: selected.status===s ? "1.5px solid #004FCD" : "1.5px solid rgba(0,0,0,0.1)", background: selected.status===s ? "rgba(0,79,205,0.1)" : "transparent", color:"#0a0a0a", fontFamily:"'Montserrat',sans-serif", fontSize:"11px", fontWeight: selected.status===s ? 600 : 400, cursor:"pointer" }}
+                  >
                     {s}
                   </button>
                 ))}
@@ -414,7 +423,8 @@ export default function Admin() {
               <div style={{ display:"flex", gap:"6px" }}>
                 {VISIBILITY_OPTIONS.map(v => (
                   <button key={v} onClick={() => setSelected((p: any) => ({ ...p, visibility: v }))}
-                    style={{ flex:1, padding:"7px 4px", borderRadius:"10px", border: selected.visibility===v ? "1.5px solid #004FCD" : "1.5px solid rgba(0,0,0,0.1)", background: selected.visibility===v ? "rgba(0,79,205,0.07)" : "transparent", color: selected.visibility===v ? "#004FCD" : "#555", fontFamily:"'Montserrat',sans-serif", fontSize:"11px", fontWeight: selected.visibility===v ? 700 : 400, cursor:"pointer" }}>
+                    style={{ flex:1, padding:"7px 4px", borderRadius:"10px", border: selected.visibility===v ? "1.5px solid #004FCD" : "1.5px solid rgba(0,0,0,0.1)", background: selected.visibility===v ? "rgba(0,79,205,0.1)" : "transparent", color:"#0a0a0a", fontFamily:"'Montserrat',sans-serif", fontSize:"11px", fontWeight: selected.visibility===v ? 600 : 400, cursor:"pointer" }}
+                  >
                     {v}
                   </button>
                 ))}
@@ -424,14 +434,14 @@ export default function Admin() {
             <button
               onClick={() => updateProject(selected.id, { area: selected.area, status: selected.status, visibility: selected.visibility })}
               disabled={saving}
-              style={{ width:"100%", padding:"11px", borderRadius:"100px", background:"linear-gradient(135deg,#004FCD,#3b7de8)", color:"#fff", border:"none", fontFamily:"'Montserrat',sans-serif", fontSize:"13px", fontWeight:700, cursor:saving?"wait":"pointer", marginBottom:"8px" }}
+              style={{ width:"100%", padding:"11px", borderRadius:"100px", background:"linear-gradient(135deg,#004FCD,#3b7de8)", color:"#fff", border:"none", fontFamily:"'Montserrat',sans-serif", fontSize:"13px", fontWeight:600, cursor: saving ? "not-allowed" : "pointer", marginBottom:"8px", opacity: saving ? 0.7 : 1 }}
             >
               {saving ? "Guardando..." : "Guardar cambios"}
             </button>
 
             <button
               onClick={() => deleteProject(selected.id)}
-              style={{ width:"100%", padding:"11px", borderRadius:"100px", background:"#fee2e2", color:"#991b1b", border:"none", fontFamily:"'Montserrat',sans-serif", fontSize:"13px", fontWeight:600, cursor:"pointer" }}
+              style={{ width:"100%", padding:"11px", borderRadius:"100px", background:"#fee2e2", color:"#991b1b", border:"none", fontFamily:"'Montserrat',sans-serif", fontSize:"13px", fontWeight:600, cursor:"pointer", marginBottom:"16px" }}
             >
               Eliminar proyecto
             </button>
@@ -439,6 +449,7 @@ export default function Admin() {
             {/* IA Curation */}
             <CurationPanel
               project={selected}
+              credential={credential}
               onApply={(updates) => {
                 setSelected((p: any) => ({ ...p, ...updates }));
                 updateProject(selected.id, updates);
