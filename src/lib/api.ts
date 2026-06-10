@@ -118,13 +118,16 @@ export const adminAPI = {
     fetchAPI('/api/admin/users', { headers: { Authorization: `Bearer ${credential}` } }),
   deleteUser: (id: string, credential: string) =>
     fetchAPI(`/api/admin/users/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${credential}` } }),
-  curateProject: async (project: any) => {
+  curateProject: async (project: any, credential: string) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 60000); // 60s timeout
     try {
       const response = await fetch(`${API_URL}/api/curate`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${credential}`
+        },
         body: JSON.stringify({ project }),
         signal: controller.signal,
       });
